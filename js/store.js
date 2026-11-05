@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -224,6 +224,19 @@ function load() {
         const filled = current.filter((r) => Object.entries(r).some(([k, v]) => k !== 'id' && v));
         stored.boardInvestor.investors = filled.length ? current : currentInvestorRows();
         stored.boardVersion = 2;
+        changed = true;
+      }
+      // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
+      if (stored.clientMaterials && (stored.clientVersion || 0) < 1) {
+        const clients = stored.clientMaterials.find((s) => s.id === 'clients');
+        if (clients) {
+          clients.fields = clientFields();
+          const have = new Set(clients.entries.map((e) => (e.clientName || '').trim().toLowerCase()));
+          for (const row of clientRows()) {
+            if (!have.has(row.clientName.toLowerCase())) clients.entries.push({ ...row, id: `${row.id}-${Date.now().toString(36)}` });
+          }
+        }
+        stored.clientVersion = 1;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {

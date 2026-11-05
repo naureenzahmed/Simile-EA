@@ -856,17 +856,51 @@ function seedBoardInvestor() {
   };
 }
 
+export const CLIENT_INDUSTRIES = [
+  'Consumer & Retail', 'Financial Services', 'Travel & Hospitality', 'Media & Entertainment',
+  'Automotive', 'Healthcare', 'Telecom',
+];
+
+// Column types for Client Materials. "select" columns keep their own list of options.
+export const COLUMN_TYPES = [
+  { key: 'text', label: 'Text' },
+  { key: 'multiline', label: 'Long text' },
+  { key: 'number', label: 'Number' },
+  { key: 'date', label: 'Date' },
+  { key: 'url', label: 'Link' },
+  { key: 'select', label: 'Dropdown' },
+  { key: 'checkbox', label: 'Checkbox' },
+];
+
 export const CLIENT_FIELDS = [
   { key: 'clientName', label: 'Client Name' },
   { key: 'status', label: 'Status' },
-  { key: 'driveLink', label: 'Link to Drive' },
+  { key: 'driveLink', label: 'Link to Drive', type: 'url' },
   { key: 'clientPoc', label: 'PoC at Client' },
   { key: 'similePoc', label: 'PoC at Simile' },
-  { key: 'industry', label: 'Industry' },
+  { key: 'industry', label: 'Industry', type: 'select', options: CLIENT_INDUSTRIES },
   { key: 'testRunning', label: 'Test Running' },
   { key: 'onsiteDate', label: 'Onsite Date', type: 'date' },
   { key: 'onsiteGoal', label: 'Onsite Goal' },
 ];
+
+const CLIENTS = [
+  ['Deloitte', ''],
+  ['Wealthfront', 'Financial Services'],
+  ['Suntory', 'Consumer & Retail'],
+  ['CVS', 'Healthcare'],
+  ['Garnett Station Partners', 'Financial Services'],
+  ['Gallup', ''],
+  ['Itaú', 'Financial Services'],
+];
+
+export function clientFields() {
+  return CLIENT_FIELDS.map((f) => ({ ...f, ...(f.options ? { options: [...f.options] } : {}) }));
+}
+
+export function clientRows() {
+  return CLIENTS.map(([clientName, industry], i) => ({ id: `client-${i + 1}`, clientName, industry }));
+}
 
 function mkClubs(names) {
   return names.map((name) => ({
@@ -962,8 +996,8 @@ export function seedData() {
       {
         id: 'clients',
         title: 'Clients',
-        fields: CLIENT_FIELDS,
-        entries: [],
+        fields: clientFields(),
+        entries: clientRows(),
       },
     ],
     events: seedEvents(),
@@ -971,6 +1005,7 @@ export function seedData() {
     leadershipSchedule: seedLeadershipSchedule(),
     scheduleVersion: 3,
     copyVersion: 1,
+    clientVersion: 1,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',
