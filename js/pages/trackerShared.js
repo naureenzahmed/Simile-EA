@@ -138,7 +138,9 @@ function renderTableSection(s) {
             ${rows.map((row) => `
               <tr>
                 ${fields.map((f) => `
-                  <td><input type="text" class="cell-input" data-table-cell="${s.id}|${row.id}|${f.key}" value="${escapeHtml(row[f.key] || '')}" /></td>
+                  <td>${f.multiline
+                    ? `<textarea class="cell-input cell-textarea" rows="3" data-table-cell="${s.id}|${row.id}|${f.key}">${escapeHtml(row[f.key] || '')}</textarea>`
+                    : `<input type="text" class="cell-input" data-table-cell="${s.id}|${row.id}|${f.key}" value="${escapeHtml(row[f.key] || '')}" />`}</td>
                 `).join('')}
                 <td><button class="btn btn-ghost" data-remove-table-row="${s.id}|${row.id}" style="padding:3px 7px;">✕</button></td>
               </tr>

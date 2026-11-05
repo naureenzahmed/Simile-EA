@@ -198,6 +198,24 @@ function seedDocs() {
 }
 
 // Columns of the Client Materials "Clients" table.
+export const TECH_STACK_FIELDS = [
+  { key: 'software', label: 'Software' },
+  { key: 'description', label: 'Description', multiline: true },
+  { key: 'cost', label: 'Cost' },
+];
+
+const TECH_STACK = [
+  ['Grokbot', 'Grokbot will be able to reach ideal candidates and automate messaging them. Grokbot allows you to reach LinkedIn (used by sales and ops people heavily) and X (used heavily by engineers and technical people). It will also be able to scrape through new publications and research to find the appropriate people in highly technical fields.'],
+  ['Apollo', 'Apollo can support quick email pulling.'],
+  ['Juicebox', 'Juicebox can run through LinkedIn, Github, Google Scholar and 30 more data sources. We will be able to reach business oriented profiles just as much deep science.'],
+  ['Claude', 'Claude skills can be utilized to connect all of these software and automate the information transfer. Additionally, Claude skills can send the interviewer brief summaries right before the meeting and the appropriate interview questions. An alternative would be Gumloop.'],
+  ['Gem', 'Gem is an Applicant Tracking System (ATS). Once the ideal process is put in, email, scheduling and communication tracking is all automated.'],
+];
+
+export function techStackRows() {
+  return TECH_STACK.map(([software, description], i) => ({ id: `tech-${i + 1}`, software, description, cost: '' }));
+}
+
 export const CLIENT_FIELDS = [
   { key: 'clientName', label: 'Client Name' },
   { key: 'status', label: 'Status' },
@@ -224,12 +242,8 @@ function seedRecruitment() {
       title: 'Tech Stack',
       metrics: [],
       table: {
-        fields: [
-          { key: 'software', label: 'Software' },
-          { key: 'description', label: 'Description' },
-          { key: 'cost', label: 'Cost' },
-        ],
-        rows: [],
+        fields: TECH_STACK_FIELDS,
+        rows: techStackRows(),
       },
     },
     {
@@ -303,7 +317,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 5,
+    recruitmentVersion: 6,
     clientMaterials: [
       {
         id: 'clients',

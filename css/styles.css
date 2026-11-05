@@ -470,6 +470,10 @@ a.doc-title:hover { text-decoration: underline; }
 .cell-input:hover { border-color: #cfcdc9; }
 .cell-input:focus { border-color: #b8b6b2; background: var(--bg); }
 .doc-fields-table th, .doc-fields-table td { white-space: nowrap; }
+.doc-fields-table td:has(.cell-textarea) { white-space: normal; width: 100%; }
+.cell-textarea {
+  min-width: 360px; font-family: inherit; line-height: 1.5; resize: vertical; field-sizing: content; display: block;
+}
 
 .leads-table th, .leads-table td { white-space: nowrap; }
 .notes-box {

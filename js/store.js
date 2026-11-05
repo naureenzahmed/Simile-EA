@@ -1,4 +1,4 @@
-import { seedData } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -53,6 +53,20 @@ function load() {
           };
         }
         stored.recruitmentVersion = 5;
+        changed = true;
+      }
+      // Recruitment v6: fill the Tech Stack table with the chosen tools.
+      if (stored.recruitment && stored.recruitmentVersion < 6) {
+        const tech = stored.recruitment.find((s) => s.id === 'rec-tech-stack');
+        if (tech && tech.table) {
+          tech.table.fields = TECH_STACK_FIELDS;
+          const have = new Set(tech.table.rows.map((r) => (r.software || '').trim().toLowerCase()));
+          tech.table.rows = tech.table.rows.filter((r) => r.software || r.description || r.cost);
+          for (const row of techStackRows()) {
+            if (!have.has(row.software.toLowerCase())) tech.table.rows.push(row);
+          }
+        }
+        stored.recruitmentVersion = 6;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {
