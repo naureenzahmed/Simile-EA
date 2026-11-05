@@ -672,3 +672,8 @@ a.doc-title:hover { text-decoration: underline; }
 .home-sub-title { font-size: 13px; font-weight: 600; margin-top: 8px; }
 .home-about .notes-box { min-height: 110px; }
 .cover-notes { min-height: 0; margin: 0 0 10px; padding: 8px 10px; font-size: 12px; field-sizing: content; }
+
+/* Potential Investors: a wide table, so keep the text columns narrower. */
+#potential-investors td.board-wide, #potential-investors .board-table .board-textarea { min-width: 200px; }
+#potential-investors .board-link .cell-input { min-width: 150px; }
+#potential-investors td:first-child .cell-input { min-width: 220px; }

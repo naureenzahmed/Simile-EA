@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -210,6 +210,12 @@ function load() {
         applyCopyFixes(stored);
         stored.pageNotes = { ...(stored.pageNotes || {}), ...NOTE_FIXES };
         stored.copyVersion = 1;
+        changed = true;
+      }
+      // Board v1: add the Potential Investors list from the investor targets sheet.
+      if (stored.boardInvestor && (stored.boardVersion || 0) < 1) {
+        if (!stored.boardInvestor['potential-investors']?.length) stored.boardInvestor['potential-investors'] = potentialInvestorRows();
+        stored.boardVersion = 1;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {
