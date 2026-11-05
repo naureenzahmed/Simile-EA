@@ -261,7 +261,7 @@ function seedEvents() {
   }));
 }
 
-export const LEADERS = ['Lainie', 'Eileen', 'Julia', 'Olivia', 'Madison', 'Mihika', 'Matan'];
+export const LEADERS = ['Lainie', 'Eileen', 'Julia', 'Olivia', 'Madison', 'Mihika', 'Matan', 'Joon', 'Michael'];
 export const SCHEDULE_TYPES = [
   { key: 'customer', label: 'Customer meeting', color: '#ff7a66' },
   { key: 'onsite', label: 'Onsite', color: '#7fb8e6' },
@@ -299,6 +299,14 @@ export function seedLeadershipSchedule() {
     ['Matan', 'customer', 'Customer kickoff', '2026-11-23', '2026-11-23', '16:00'],
     ['Matan', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
     ['Matan', 'office', 'In office (NYC)', '2026-11-11', '2026-11-11', ''],
+    ['Joon', 'customer', 'Customer QBR', '2026-11-18', '2026-11-18', '10:30'],
+    ['Joon', 'onsite', 'Client onsite', '2026-12-07', '2026-12-08', ''],
+    ['Joon', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
+    ['Joon', 'office', 'In office (SF)', '2026-11-24', '2026-11-24', ''],
+    ['Michael', 'customer', 'Prospect demo', '2026-11-24', '2026-11-24', '11:00'],
+    ['Michael', 'onsite', 'Client onsite', '2026-11-10', '2026-11-11', ''],
+    ['Michael', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
+    ['Michael', 'office', 'In office (NYC)', '2026-11-04', '2026-11-04', ''],
   ].map(([person, type, title, start, end, time], i) => ({ id: `sched-${i + 1}`, person, type, title, start, end, time, notes: '' }));
 }
 
@@ -414,7 +422,7 @@ export function seedData() {
     ],
     events: seedEvents(),
     leadershipSchedule: seedLeadershipSchedule(),
-    scheduleVersion: 2,
+    scheduleVersion: 3,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',

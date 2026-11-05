@@ -93,6 +93,19 @@ function load() {
         stored.scheduleVersion = 2;
         changed = true;
       }
+      // Schedule v3: add Joon and Michael, each with one entry of every type.
+      if (stored.leadershipSchedule && stored.scheduleVersion < 3) {
+        const added = ['Joon', 'Michael'];
+        if (stored.scheduleLeaders) {
+          for (const name of added) if (!stored.scheduleLeaders.includes(name)) stored.scheduleLeaders.push(name);
+        }
+        const ids = new Set(stored.leadershipSchedule.map((e) => e.id));
+        for (const e of seedLeadershipSchedule()) {
+          if (added.includes(e.person) && !ids.has(e.id)) stored.leadershipSchedule.push(e);
+        }
+        stored.scheduleVersion = 3;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
