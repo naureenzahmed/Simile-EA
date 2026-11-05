@@ -243,6 +243,45 @@ export function schoolRows() {
   return TOP_SCHOOLS.map(([school, city, strengths, labs, orgs], i) => ({ id: `school-${i + 1}`, school, city, strengths, labs, orgs }));
 }
 
+// Columns of the Recruitment Event Attendance conferences table.
+export const CONFERENCE_FIELDS = [
+  { key: 'event', label: 'Event', multiline: true },
+  { key: 'category', label: 'Category', multiline: true },
+  { key: 'region', label: 'Region' },
+  { key: 'dates', label: 'Dates' },
+  { key: 'location', label: 'Location', multiline: true },
+  { key: 'details', label: 'Details', multiline: true },
+  { key: 'link', label: 'Link', type: 'url' },
+];
+
+const CONFERENCES = [
+  ['RAISE Summit 2026', 'Simile', 'Europe', 'Jul 8–9, 2026', 'Carrousel du Louvre, Paris, and online', 'Joon Sung Park, Simile’s CEO and co-founder, is listed as a speaker. The speaker page doesn’t name his session.', 'https://tickets.raisesummit.com/2026/speaker/2388172/joon-sung-park'],
+  ['Disney Accelerator 2026', 'Simile', '', '2026', '', 'A startup program, not a conference. Simile was one of three companies in this year’s five-company group, with FieldAI and Physical Intelligence, that worked on park operations and guest experience.', 'https://www.kentertechhub.com/disney-accel-2026-en/'],
+  ['TEDAI 2023', 'Before Simile (Joon’s research years)', '', '2023', '', 'Joon gave a talk called “A Simulation of Human Reality, Powered by AI” while he was a Stanford PhD student.', 'https://ted-ai-new-website-git-newpage-0611-xy-ai.vercel.app/speakers/joon-sung-park'],
+  ['UIST 2023', 'Before Simile (Joon’s research years)', '', '2023', '', 'The Generative Agents paper won a Best Paper Award. UIST is an academic human-computer interaction conference.', ''],
+  ['ICLR 2027', 'Deep learning and AI research', 'United States', 'Apr 26–30, 2027', 'Moscone Center, San Francisco, CA', 'One of the top three machine learning conferences.', 'https://www.beri.net/events/iclr-2027'],
+  ['CVPR 2027', 'Deep learning and AI research', 'United States', 'Jun 20–24, 2027', 'Seattle, WA', 'The main computer vision conference.', 'https://www.thecvf.com/?p=137'],
+  ['WACV 2027', 'Deep learning and AI research', 'United States', 'Jan 4–8, 2027', 'Orlando, FL', 'A smaller computer vision conference.', 'https://www.thecvf.com/?p=137'],
+  ['NeurIPS 2026 (Atlanta)', 'Deep learning and AI research', 'United States', 'Dec 8–13, 2026', 'Atlanta, GA', 'NeurIPS is split across three cities this year: Sydney (Dec 6–12), Atlanta and Paris. Atlanta is the North American site.', 'https://aiweekly.co/node/12069'],
+  ['NVIDIA GTC 2027', 'Simulation and digital twins', 'United States', 'Mar 14–18, 2027', 'San Jose McEnery Convention Center and venues across San Jose, CA', 'The biggest single event that covers AI, simulation (Omniverse), robotics and digital twins together.', 'https://www.nvidia.com/en-zz/gtc/faq/'],
+  ['I/ITSEC 2026', 'Simulation and digital twins', 'United States', 'Nov 30–Dec 4, 2026', 'Orlando, FL', 'Known as the world’s largest event for modeling, simulation and training. It leans toward defense.', 'https://www.tradefairdates.com/IITSEC-M2078/Orlando.html'],
+  ['Digital Twin Summit (North America)', 'Simulation and digital twins', 'United States', 'Aug 19, 2026', 'Denver, CO', 'The 2026 edition was on Aug 19 in Denver. Expect a similar summer date in 2027.', 'https://community.esri.com/t5/digital-twin-events/eb-p/digital-twin-events'],
+  ['AAAI 2027', 'Deep learning and AI research', 'Canada', 'Feb 16–23, 2027', 'Palais des congrès, Montréal, QC', 'A major AI research conference.', 'https://trybibby.com/conference-deadlines/aaai-2027'],
+  ['Upper Bound 2027', 'AI research and business', 'Canada', 'May 18–21, 2027', 'Edmonton Convention Centre, Edmonton, AB', 'Run by Amii. It mixes AI research with business adoption.', 'https://www.amii.ca/events/upper-bound-2027'],
+  ['ALL IN 2027', 'AI industry', 'Canada', 'Sep 22–23, 2027', 'Palais des congrès, Montréal, QC', 'Canada’s largest AI conference, organized by Scale AI with Mila.', 'https://www.beri.net/events/all-in-2027'],
+  ['ICASSP 2027', 'Speech and signal processing', 'Canada', 'May 16–21, 2027', 'Toronto, ON', 'The main conference for signal processing and speech AI.', 'https://www.opencurious.com/ai-conference-deadlines/icml-2027'],
+  ['NeurIPS 2026 (Paris)', 'Deep learning and AI research', 'Europe', 'Dec 9–13, 2026', 'Paris, France', 'The European site of NeurIPS this year.', 'https://aiweekly.co/node/12069'],
+  ['Winter Simulation Conference 2026', 'Simulation and digital twins', 'Europe', 'Dec 6–9, 2026', 'Glasgow, UK', 'The top academic simulation conference. It’s usually held in the US, so a European location is unusual.', 'https://www.informs.org/Meetings-Conferences/Community-Conferences-Calendar/(cc_year)/2026/(cc_month)/12'],
+  ['Hannover Messe 2027', 'Simulation and digital twins', 'Europe', 'Apr 5–8, 2027', 'Hannover, Germany', 'The main event for industrial AI and digital twins, with a focus on industrial IoT, digital twin and AI solutions.', 'https://www.hannovermesse.de/en/for-visitors/opening-hours/'],
+  ['Digital Twins and Applications Europe 2027 (IET)', 'Simulation and digital twins', 'Europe', 'Jun 8–9, 2027', 'Madrid, Spain', 'Covers energy, manufacturing and smart cities. Paper submissions are due Jan 30, 2027.', 'https://digitaltwins.theiet.org/dta-europe-2027'],
+  ['EUROSIM', 'Simulation and digital twins', 'Europe', '2026 edition held', 'Genova, Italy', 'The conference of the Federation of European Simulation Societies. The 2026 edition was in Genova.', 'https://easychair.org/cfp/topic?tid=17638670'],
+  ['IEEE Digital Twin Conference', 'Simulation and digital twins', 'Europe', 'Sep 7–11, 2026', 'Rende, Italy', 'The 2026 edition was in Rende.', 'https://swc-ieee-2026.github.io/digitaltwin'],
+];
+
+export function conferenceRows() {
+  return CONFERENCES.map(([event, category, region, dates, location, details, link], i) => ({ id: `conf-${i + 1}`, event, category, region, dates, location, details, link }));
+}
+
 export const EVENT_TYPES = ['GTM Offsite', 'Sales Kickoff', 'Executive Customer Dinner', 'Industry Event', 'Other'];
 export const EVENT_STATUSES = ['Idea', 'Planning', 'Confirmed', 'Completed', 'Cancelled'];
 export const EVENT_PHASES = [
@@ -459,6 +498,8 @@ function seedRecruitment() {
     {
       id: 'rec-attendance',
       title: 'Event Attendance',
+      note: 'Conferences and events worth attending, plus the ones Simile and Joon have already been part of.',
+      table: { fields: CONFERENCE_FIELDS, rows: conferenceRows() },
       entities: [
         { name: 'Socratica Symposium', links: [] },
         { name: 'GenAI Genesis', links: [] },
@@ -507,7 +548,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 8,
+    recruitmentVersion: 9,
     clientMaterials: [
       {
         id: 'clients',

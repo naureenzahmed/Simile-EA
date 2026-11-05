@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -167,6 +167,16 @@ function load() {
           schools.table = { fields: SCHOOL_FIELDS, rows: schoolRows() };
         }
         stored.recruitmentVersion = 8;
+        changed = true;
+      }
+      // Recruitment v9: Event Attendance gets a table of conferences.
+      if (stored.recruitment && stored.recruitmentVersion < 9) {
+        const attendance = stored.recruitment.find((s) => s.id === 'rec-attendance');
+        if (attendance && !attendance.table) {
+          attendance.note = attendance.note || 'Conferences and events worth attending, plus the ones Simile and Joon have already been part of.';
+          attendance.table = { fields: CONFERENCE_FIELDS, rows: conferenceRows() };
+        }
+        stored.recruitmentVersion = 9;
         changed = true;
       }
       // Copy v1: fix spelling, grammar and tone in the starter text.
