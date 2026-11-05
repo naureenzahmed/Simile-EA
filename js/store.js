@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -177,6 +177,32 @@ function load() {
           attendance.table = { fields: CONFERENCE_FIELDS, rows: conferenceRows() };
         }
         stored.recruitmentVersion = 9;
+        changed = true;
+      }
+      // Recruitment v10: drop the old event list from Event Attendance.
+      if (stored.recruitment && stored.recruitmentVersion < 10) {
+        const attendance = stored.recruitment.find((s) => s.id === 'rec-attendance');
+        const old = ['Socratica Symposium', 'GenAI Genesis', 'Hack the North', 'MILA ALL-IN'];
+        if (attendance?.entities) attendance.entities = attendance.entities.filter((e) => !old.includes(e.name));
+        stored.recruitmentVersion = 10;
+        changed = true;
+      }
+      // Recruitment v11: Partnership Events gets a table of partner companies.
+      if (stored.recruitment && stored.recruitmentVersion < 11) {
+        const partnerships = stored.recruitment.find((s) => s.id === 'rec-partnerships');
+        if (partnerships && !partnerships.table) partnerships.table = { fields: PARTNER_FIELDS, rows: [] };
+        stored.recruitmentVersion = 11;
+        changed = true;
+      }
+      // Recruitment v12: Partnership Events targets drop to 30 leads and 30% conversion.
+      if (stored.recruitment && stored.recruitmentVersion < 12) {
+        const partnerships = stored.recruitment.find((s) => s.id === 'rec-partnerships');
+        const targets = { m1: ['40 per event', '30 per event'], m2: ['37.5%', '30%'], m3: ['15 per event', '9 per event'] };
+        for (const m of partnerships?.metrics || []) {
+          const t = targets[m.id];
+          if (t && m.target === t[0]) m.target = t[1];
+        }
+        stored.recruitmentVersion = 12;
         changed = true;
       }
       // Copy v1: fix spelling, grammar and tone in the starter text.

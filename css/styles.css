@@ -657,3 +657,7 @@ a.doc-title:hover { text-decoration: underline; }
 #rec-attendance td:nth-child(4) .cell-input { min-width: 128px; width: 128px; }
 #rec-attendance .board-link .cell-input { min-width: 90px; width: 100px; }
 #rec-attendance .doc-fields-table th, #rec-attendance .doc-fields-table td { padding-left: 4px; padding-right: 4px; }
+
+/* Recruitment: Tech Stack boxes are all the same size within each column */
+#rec-tech-stack .cell-textarea { field-sizing: fixed; height: 102px; resize: none; overflow-y: auto; }
+#rec-tech-stack td { vertical-align: top; }

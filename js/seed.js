@@ -282,6 +282,14 @@ export function conferenceRows() {
   return CONFERENCES.map(([event, category, region, dates, location, details, link], i) => ({ id: `conf-${i + 1}`, event, category, region, dates, location, details, link }));
 }
 
+// Columns of the Recruitment Partnership Events companies table.
+export const PARTNER_FIELDS = [
+  { key: 'company', label: 'Company Name' },
+  { key: 'event', label: 'Event' },
+  { key: 'date', label: 'Date' },
+  { key: 'notes', label: 'Notes', multiline: true },
+];
+
 export const EVENT_TYPES = ['GTM Offsite', 'Sales Kickoff', 'Executive Customer Dinner', 'Industry Event', 'Other'];
 export const EVENT_STATUSES = ['Idea', 'Planning', 'Confirmed', 'Completed', 'Cancelled'];
 export const EVENT_PHASES = [
@@ -500,12 +508,7 @@ function seedRecruitment() {
       title: 'Event Attendance',
       note: 'Conferences and events worth attending, plus the ones Simile and Joon have already been part of.',
       table: { fields: CONFERENCE_FIELDS, rows: conferenceRows() },
-      entities: [
-        { name: 'Socratica Symposium', links: [] },
-        { name: 'GenAI Genesis', links: [] },
-        { name: 'Hack the North', links: [] },
-        { name: 'MILA ALL-IN', links: [] },
-      ],
+      entities: [],
       metrics: [
         { id: 'm1', label: 'Leads (#)', target: 100, values: {} },
         { id: 'm2', label: 'Interviews booked (%)', target: '20%', values: {} },
@@ -516,10 +519,11 @@ function seedRecruitment() {
       id: 'rec-partnerships',
       title: 'Partnership Events',
       entities: [],
+      table: { fields: PARTNER_FIELDS, rows: [] },
       metrics: [
-        { id: 'm1', label: 'Leads (#)', target: '40 per event', values: {} },
-        { id: 'm2', label: 'Interviews booked (%)', target: '37.5%', values: {} },
-        { id: 'm3', label: 'Interviews booked (#)', target: '15 per event', values: {} },
+        { id: 'm1', label: 'Leads (#)', target: '30 per event', values: {} },
+        { id: 'm2', label: 'Interviews booked (%)', target: '30%', values: {} },
+        { id: 'm3', label: 'Interviews booked (#)', target: '9 per event', values: {} },
       ],
     },
     {
@@ -548,7 +552,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 9,
+    recruitmentVersion: 12,
     clientMaterials: [
       {
         id: 'clients',
