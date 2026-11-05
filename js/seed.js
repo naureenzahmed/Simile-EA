@@ -222,24 +222,13 @@ function seedRecruitment() {
     {
       id: 'rec-schools',
       title: 'School Partnerships',
-      entities: [
-        { name: 'MIT', links: mkClubs(['MIT Driverless']) },
-        { name: 'Waterloo', links: mkClubs(['Coop Programs', 'Socratica', 'Design Teams', 'WATonomous', 'WAT.ai']) },
-        { name: 'UBC', links: mkClubs(['UBC Thunderbots']) },
-        { name: 'UofT', links: mkClubs(['UTMIST']) },
-        { name: 'McGill', links: mkClubs(['McGill Ventures', 'McHacks', 'NOBE McGill', 'JEG Consulting', 'Nord Consulting', 'MES']) },
-        { name: 'McMaster', links: mkClubs(['DeltaHacks', 'McMaster AI Society', 'McMaster Robotics']) },
-        { name: 'TMU', links: mkClubs(['Hack the 6ix', 'TMU AI']) },
-        { name: 'Simon Fraser', links: mkClubs(['SFU Surge', 'SFU AI Club']) },
-        { name: 'Western', links: mkClubs(['Hack Western', 'Ivey FinTech Club']) },
-        { name: 'Queen’s', links: mkClubs([]) },
-        { name: 'Concordia', links: mkClubs(['ConUHacks', 'Space Concordia', 'District 3']) },
-      ],
-      metrics: [
-        { id: 'm1', label: 'Leads (#)', target: 10, values: {} },
-        { id: 'm2', label: 'Interview Booked (%)', target: '1%', values: {} },
-        { id: 'm3', label: 'Interview Booked (#)', target: 5, values: {} },
-      ],
+      entities: [],
+      metrics: [],
+    },
+    {
+      id: 'rec-tech-stack',
+      title: 'Tech Stack',
+      metrics: [],
     },
     {
       id: 'rec-sponsorships',
@@ -340,6 +329,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
+    recruitmentVersion: 2,
     clientMaterials: [
       {
         id: 'clients',

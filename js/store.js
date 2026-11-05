@@ -12,6 +12,18 @@ function load() {
       const fresh = seedData();
       // Backfill any keys added to the seed after this data was first saved.
       let changed = false;
+      // Recruitment v2: empty School Partnerships, add a Tech Stack section.
+      // Runs before the backfill below, which would otherwise set the version first.
+      if (stored.recruitment && (stored.recruitmentVersion || 1) < 2) {
+        const schools = stored.recruitment.find((s) => s.id === 'rec-schools');
+        if (schools) { schools.entities = []; schools.metrics = []; }
+        if (!stored.recruitment.some((s) => s.id === 'rec-tech-stack')) {
+          const at = stored.recruitment.findIndex((s) => s.id === 'rec-schools');
+          stored.recruitment.splice(at + 1, 0, { id: 'rec-tech-stack', title: 'Tech Stack', metrics: [] });
+        }
+        stored.recruitmentVersion = 2;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
