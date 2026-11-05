@@ -32,6 +32,29 @@ function load() {
         stored.recruitmentVersion = 3;
         changed = true;
       }
+      // Recruitment v4: Tech Stack moves to the top.
+      if (stored.recruitment && stored.recruitmentVersion < 4) {
+        const tech = stored.recruitment.find((s) => s.id === 'rec-tech-stack');
+        if (tech) stored.recruitment = [tech, ...stored.recruitment.filter((s) => s !== tech)];
+        stored.recruitmentVersion = 4;
+        changed = true;
+      }
+      // Recruitment v5: Tech Stack gets a Software / Description / Cost table.
+      if (stored.recruitment && stored.recruitmentVersion < 5) {
+        const tech = stored.recruitment.find((s) => s.id === 'rec-tech-stack');
+        if (tech && !tech.table) {
+          tech.table = {
+            fields: [
+              { key: 'software', label: 'Software' },
+              { key: 'description', label: 'Description' },
+              { key: 'cost', label: 'Cost' },
+            ],
+            rows: [],
+          };
+        }
+        stored.recruitmentVersion = 5;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }

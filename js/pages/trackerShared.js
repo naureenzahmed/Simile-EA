@@ -48,6 +48,7 @@ export function renderTrackerPage(container, data, key, opts) {
 }
 
 function renderSection(s, weeks) {
+  if (s.table) return renderTableSection(s);
   if (s.isIntro) {
     return `<div class="card page-intro">${(Array.isArray(s.note) ? s.note : [s.note]).map((p) => `<p style="margin:0 0 8px;">${escapeHtml(p)}</p>`).join('')}</div>`;
   }
@@ -110,6 +111,40 @@ function renderSection(s, weeks) {
         <input type="text" id="add-metric-input-${s.id}" placeholder="Metric name" />
         <button class="btn btn-primary" data-confirm-add-metric="${s.id}">Add</button>
         <button class="btn btn-ghost" data-cancel-add-metric="${s.id}">Cancel</button>
+      </div>
+    </div>
+  `;
+}
+
+// A section that holds a plain editable table (columns in s.table.fields).
+function renderTableSection(s) {
+  const { fields, rows } = s.table;
+  return `
+    <div class="card tracker-card" id="${s.id}">
+      <div class="toolbar" style="margin-bottom:6px;">
+        <h4 style="margin:0;">${escapeHtml(s.title)}</h4>
+        <div style="display:flex; gap:6px;">
+          <button class="btn btn-ghost" data-add-table-row="${s.id}" style="padding:4px 8px;">+ Add row</button>
+          <button class="btn btn-ghost btn-danger" data-remove-section="${s.id}" style="padding:4px 8px;">Remove section</button>
+        </div>
+      </div>
+      ${s.note ? `<div class="section-desc">${escapeHtml(s.note)}</div>` : ''}
+      <div class="tracker-scroll">
+        <table class="list-table doc-fields-table">
+          <thead>
+            <tr>${fields.map((f) => `<th>${escapeHtml(f.label)}</th>`).join('')}<th></th></tr>
+          </thead>
+          <tbody>
+            ${rows.map((row) => `
+              <tr>
+                ${fields.map((f) => `
+                  <td><input type="text" class="cell-input" data-table-cell="${s.id}|${row.id}|${f.key}" value="${escapeHtml(row[f.key] || '')}" /></td>
+                `).join('')}
+                <td><button class="btn btn-ghost" data-remove-table-row="${s.id}|${row.id}" style="padding:3px 7px;">✕</button></td>
+              </tr>
+            `).join('') || `<tr><td colspan="${fields.length + 1}" class="empty-hint">No rows yet. Click "+ Add row" to add one.</td></tr>`}
+          </tbody>
+        </table>
       </div>
     </div>
   `;
@@ -184,6 +219,36 @@ function wireEvents(container, data, key, opts, sections) {
       const [sectionId, metricId] = btn.dataset.removeMetric.split('|');
       const section = sections.find((s) => s.id === sectionId);
       section.metrics = section.metrics.filter((m) => m.id !== metricId);
+      commit();
+      renderTrackerPage(container, data, key, opts);
+    });
+  });
+
+  document.querySelectorAll('[data-add-table-row]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const section = sections.find((s) => s.id === btn.dataset.addTableRow);
+      const row = { id: uid('row') };
+      section.table.fields.forEach((f) => { row[f.key] = ''; });
+      section.table.rows.push(row);
+      commit();
+      renderTrackerPage(container, data, key, opts);
+    });
+  });
+
+  document.querySelectorAll('[data-table-cell]').forEach((input) => {
+    input.addEventListener('input', () => {
+      const [sectionId, rowId, field] = input.dataset.tableCell.split('|');
+      const row = sections.find((s) => s.id === sectionId).table.rows.find((r) => r.id === rowId);
+      row[field] = input.value;
+      commit();
+    });
+  });
+
+  document.querySelectorAll('[data-remove-table-row]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const [sectionId, rowId] = btn.dataset.removeTableRow.split('|');
+      const section = sections.find((s) => s.id === sectionId);
+      section.table.rows = section.table.rows.filter((r) => r.id !== rowId);
       commit();
       renderTrackerPage(container, data, key, opts);
     });

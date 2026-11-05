@@ -220,14 +220,22 @@ function mkClubs(names) {
 function seedRecruitment() {
   return [
     {
+      id: 'rec-tech-stack',
+      title: 'Tech Stack',
+      metrics: [],
+      table: {
+        fields: [
+          { key: 'software', label: 'Software' },
+          { key: 'description', label: 'Description' },
+          { key: 'cost', label: 'Cost' },
+        ],
+        rows: [],
+      },
+    },
+    {
       id: 'rec-schools',
       title: 'School Partnerships',
       entities: [],
-      metrics: [],
-    },
-    {
-      id: 'rec-tech-stack',
-      title: 'Tech Stack',
       metrics: [],
     },
     {
@@ -295,7 +303,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 3,
+    recruitmentVersion: 5,
     clientMaterials: [
       {
         id: 'clients',
