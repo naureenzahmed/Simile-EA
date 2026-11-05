@@ -12,6 +12,7 @@ export function renderEvents(container) {
       <div class="page-title" style="margin:0;">${EVENTS_TITLE}</div>
       <button class="btn btn-primary" id="add-event-btn">+ Add event</button>
     </div>
+    <datalist id="event-owners">${(getData().scheduleLeaders || []).map((n) => `<option value="${escapeHtml(n)}"></option>`).join('')}</datalist>
     <div class="stack-16">
       ${renderContents(events)}
       ${events.map(renderEventSection).join('')}
@@ -80,21 +81,45 @@ function renderEventSection(e) {
       </div>
       <div class="section-desc" data-event-meta="${e.id}">${metaLine(e)}</div>
       <div class="event-phases">
-        ${EVENT_PHASES.map((p) => `
+        ${EVENT_PHASES.map((p) => {
+          const items = e.checklist[p.key] || [];
+          return `
           <div class="event-phase">
-            <div class="event-phase-title">${p.label}</div>
-            <ul class="checklist">
-              ${(e.checklist[p.key] || []).map((item) => `
-                <li class="${item.done ? 'done' : ''}">
-                  <input type="checkbox" data-check="${e.id}|${p.key}|${item.id}" ${item.done ? 'checked' : ''} />
-                  <textarea class="checklist-text" rows="1" data-check-text="${e.id}|${p.key}|${item.id}">${escapeHtml(item.text)}</textarea>
-                  <button class="btn btn-ghost checklist-remove" data-check-remove="${e.id}|${p.key}|${item.id}" title="Remove">✕</button>
-                </li>
-              `).join('')}
-            </ul>
-            <input type="text" class="cell-input checklist-add" data-check-add="${e.id}|${p.key}" placeholder="+ Add item (press Enter)" />
-          </div>
-        `).join('')}
+            <div class="event-phase-title">${p.label} <span class="event-phase-count">${items.filter((i) => i.done).length}/${items.length}</span></div>
+            <div class="tracker-scroll">
+              <table class="list-table checklist-table">
+                <thead>
+                  <tr><th class="ct-check">Done</th><th class="ct-action">Action Item</th><th class="ct-link">Link</th><th class="ct-notes">Notes</th><th class="ct-owner">Owner</th><th></th></tr>
+                </thead>
+                <tbody>
+                  ${items.map((item) => {
+                    const key = `${e.id}|${p.key}|${item.id}`;
+                    const link = item.link || '';
+                    const href = /^https?:\/\//i.test(link) ? link : link ? `https://${link}` : '';
+                    return `
+                    <tr class="${item.done ? 'done' : ''}">
+                      <td class="ct-check"><input type="checkbox" data-check="${key}" ${item.done ? 'checked' : ''} aria-label="Done" /></td>
+                      <td><textarea class="cell-input checklist-text" rows="1" data-check-text="${key}">${escapeHtml(item.text)}</textarea></td>
+                      <td>
+                        <div class="board-link">
+                          <input type="url" class="cell-input" data-check-field="${key}|link" value="${escapeHtml(link)}" placeholder="Paste link" />
+                          <a class="board-open ${href ? '' : 'hidden'}" href="${escapeHtml(href)}" target="_blank" rel="noopener" title="Open link">↗</a>
+                        </div>
+                      </td>
+                      <td><textarea class="cell-input checklist-text" rows="1" data-check-field="${key}|notes">${escapeHtml(item.notes || '')}</textarea></td>
+                      <td><input type="text" class="cell-input" list="event-owners" data-check-field="${key}|owner" value="${escapeHtml(item.owner || '')}" placeholder="Who" /></td>
+                      <td><button class="btn btn-ghost" data-check-remove="${key}" title="Remove" style="padding:3px 7px;">✕</button></td>
+                    </tr>`;
+                  }).join('')}
+                  <tr class="checklist-add-row">
+                    <td></td>
+                    <td colspan="5"><input type="text" class="cell-input checklist-add" data-check-add="${e.id}|${p.key}" placeholder="+ Add action item (press Enter)" /></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>`;
+        }).join('')}
       </div>
     </div>
   `;
@@ -157,6 +182,22 @@ function wireEvents(container, events) {
     });
   });
 
+  container.querySelectorAll('[data-check-field]').forEach((input) => {
+    input.addEventListener('input', () => {
+      const parts = input.dataset.checkField.split('|');
+      const field = parts.pop();
+      findItem(events, parts.join('|')).item[field] = input.value;
+      commit();
+      // Keep the "open link" arrow in step with the typed link.
+      const open = input.parentElement.querySelector('.board-open');
+      if (open) {
+        const v = input.value.trim();
+        open.href = /^https?:\/\//i.test(v) ? v : `https://${v}`;
+        open.classList.toggle('hidden', !v);
+      }
+    });
+  });
+
   container.querySelectorAll('[data-check-remove]').forEach((btn) => {
     btn.addEventListener('click', () => {
       const { list, item } = findItem(events, btn.dataset.checkRemove);
@@ -170,7 +211,7 @@ function wireEvents(container, events) {
     input.addEventListener('keydown', (ev) => {
       if (ev.key !== 'Enter' || !input.value.trim()) return;
       const [eventId, phase] = input.dataset.checkAdd.split('|');
-      findEvent(events, eventId).checklist[phase].push({ id: uid('chk'), text: input.value.trim(), done: false });
+      findEvent(events, eventId).checklist[phase].push({ id: uid('chk'), text: input.value.trim(), done: false, link: '', notes: '', owner: '' });
       commit();
       rerender();
       container.querySelector(`[data-check-add="${eventId}|${phase}"]`)?.focus();

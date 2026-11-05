@@ -319,7 +319,7 @@ const EVENT_CHECKLIST = {
 export function eventChecklist(eventId) {
   const out = {};
   for (const phase of EVENT_PHASES) {
-    out[phase.key] = EVENT_CHECKLIST[phase.key].map((text, i) => ({ id: `${eventId}-${phase.key}-${i + 1}`, text, done: false }));
+    out[phase.key] = EVENT_CHECKLIST[phase.key].map((text, i) => ({ id: `${eventId}-${phase.key}-${i + 1}`, text, done: false, link: '', notes: '', owner: '' }));
   }
   return out;
 }

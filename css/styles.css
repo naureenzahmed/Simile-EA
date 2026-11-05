@@ -568,21 +568,24 @@ a.doc-title:hover { text-decoration: underline; }
 .events-table select.cell-input { min-width: 150px; }
 .checklist-link { font-size: 12px; color: var(--accent); text-decoration: none; white-space: nowrap; }
 .checklist-link:hover { text-decoration: underline; }
-.event-phases { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 10px; }
-@media (max-width: 860px) { .event-phases { grid-template-columns: 1fr; } }
-.event-phase { background: var(--bg-raised-2); border: 1px solid var(--border); border-radius: 5px; padding: 10px; }
-.event-phase-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); margin-bottom: 6px; }
-.checklist { list-style: none; margin: 0 0 8px; padding: 0; }
-.checklist li { display: flex; align-items: flex-start; gap: 6px; padding: 2px 0; }
-.checklist input[type="checkbox"] { accent-color: var(--accent); width: 15px; height: 15px; flex-shrink: 0; cursor: pointer; margin-top: 6px; }
-.checklist-text { flex: 1; min-width: 0; background: transparent; border: 1px solid transparent; border-radius: 4px; padding: 3px 5px; font: inherit; font-size: 13px; line-height: 1.4; color: var(--text); outline: none; resize: none; field-sizing: content; overflow: hidden; }
-.checklist-text:hover { border-color: var(--border); }
-.checklist-text:focus { border-color: #b8b6b2; background: var(--bg); }
-.checklist li.done .checklist-text { text-decoration: line-through; color: var(--text-dim); }
-.checklist-remove { padding: 1px 6px; opacity: 0; margin-top: 2px; }
-.events-name { min-width: 210px; }
-.checklist li:hover .checklist-remove, .checklist-remove:focus { opacity: 1; }
-.checklist-add { min-width: 0; background: var(--bg); }
+.event-phases { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
+.event-phase-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); margin-bottom: 4px; }
+.event-phase-count { font-weight: 500; letter-spacing: 0; text-transform: none; margin-left: 6px; color: #9a9591; }
+.checklist-table { width: 100%; table-layout: fixed; }
+.checklist-table th, .checklist-table td { vertical-align: top; }
+.checklist-table .ct-check { width: 48px; text-align: center; }
+.checklist-table .ct-action { width: 34%; }
+.checklist-table .ct-link { width: 18%; }
+.checklist-table .ct-notes { width: 30%; }
+.checklist-table .ct-owner { width: 130px; }
+.checklist-table th:last-child { width: 40px; }
+.checklist-table .cell-input { min-width: 0; width: 100%; }
+.checklist-table .board-link .cell-input { min-width: 0; }
+.checklist-table input[type="checkbox"] { accent-color: var(--accent); width: 16px; height: 16px; margin-top: 5px; cursor: pointer; }
+.checklist-table textarea.checklist-text { display: block; resize: none; field-sizing: content; overflow: hidden; line-height: 1.4; font: inherit; font-size: 12px; }
+.checklist-table tr.done .checklist-text[data-check-text] { text-decoration: line-through; color: var(--text-dim); }
+.checklist-add-row td { border-bottom: none; }
+.checklist-add { background: var(--bg); }
 
 /* Leadership Schedule Management */
 .sched-filters { margin-bottom: 16px; display: flex; flex-direction: column; gap: 10px; }
