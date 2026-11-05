@@ -23,7 +23,6 @@ export function renderRoadmap(container) {
     ${notesBoxHtml('roadmap')}
     <div class="goal-banner" id="roadmap-timeline-section">
       <div class="goal-title-row">
-        <div class="goal-icon"><svg viewBox="150 140 350 320" aria-hidden="true"><path d="M213 392L226.073 247.108C228.863 216.186 254.782 192.5 285.83 192.5H422.625" stroke="url(#paint0_linear_roadmap)" stroke-width="50"/><path d="M483 192.5C483 210.449 468.449 225 450.5 225C432.551 225 418 210.449 418 192.5C418 174.551 432.551 160 450.5 160C468.449 160 483 174.551 483 192.5Z" stroke="#34D399" stroke-width="42"/><path d="M452 209L438.927 353.892C436.137 384.814 410.218 408.5 379.17 408.5H242.375" stroke="url(#paint1_linear_roadmap)" stroke-width="50"/><path d="M182 406C182 388.051 196.551 373.5 214.5 373.5C232.449 373.5 247 388.051 247 406C247 423.949 232.449 438.5 214.5 438.5C196.551 438.5 182 423.949 182 406Z" stroke="#34D399" stroke-width="42"/><defs><linearGradient id="paint0_linear_roadmap" x1="300" y1="231" x2="226.5" y2="364.5" gradientUnits="userSpaceOnUse"><stop stop-color="#34D399"/><stop offset="0.807292" stop-color="#34D399" stop-opacity="0"/></linearGradient><linearGradient id="paint1_linear_roadmap" x1="365" y1="370" x2="438.5" y2="236.5" gradientUnits="userSpaceOnUse"><stop stop-color="#34D399"/><stop offset="0.807292" stop-color="#34D399" stop-opacity="0"/></linearGradient></defs></svg></div>
         <div>
           <div class="section-label">Roadmap</div>
           <div class="goal-big">Road map</div>

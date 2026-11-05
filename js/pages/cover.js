@@ -30,6 +30,15 @@ function buildManifest(data) {
       subsections: data.docs.map((s) => ({ id: s.id, label: s.title })),
     },
     {
+      key: 'roadmap', label: 'Roadmap',
+      subsections: [
+        { id: 'roadmap-timeline-section', label: 'Timeline / List / Board' },
+        { id: 'roadmap-okr-section', label: 'OKRs' },
+        { id: 'roadmap-calendar-section', label: 'Calendar' },
+        { id: 'roadmap-tracked-goals', label: 'Tracked Goals' },
+      ],
+    },
+    {
       key: 'territoryManagement', label: 'Territory Management',
       subsections: [],
     },
@@ -44,15 +53,6 @@ function buildManifest(data) {
     {
       key: 'gtmExperiments', label: 'GTM Experiments',
       subsections: [],
-    },
-    {
-      key: 'roadmap', label: 'Roadmap',
-      subsections: [
-        { id: 'roadmap-timeline-section', label: 'Timeline / List / Board' },
-        { id: 'roadmap-okr-section', label: 'OKRs' },
-        { id: 'roadmap-calendar-section', label: 'Calendar' },
-        { id: 'roadmap-tracked-goals', label: 'Tracked Goals' },
-      ],
     },
   ];
 }

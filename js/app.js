@@ -7,11 +7,11 @@ import { blankPage } from './pages/blankPage.js';
 const PAGES = {
   home: { label: 'Home', render: renderCover },
   documentation: { label: 'Documentation', render: renderDocumentation },
+  roadmap: { label: 'Roadmap', render: renderRoadmap },
   territoryManagement: { label: 'Territory Management', render: blankPage('Territory Management') },
   inboundLeads: { label: 'Leads Management', render: blankPage('Leads Management') },
   paidConversions: { label: 'Outbound', render: blankPage('Outbound') },
   gtmExperiments: { label: 'GTM Experiments', render: blankPage('GTM Experiments') },
-  roadmap: { label: 'Roadmap', render: renderRoadmap },
 };
 
 const FOLDER_ICON = '<svg class="folder-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 3.5A1.5 1.5 0 0 1 3 2h3.2c.4 0 .78.16 1.06.44L8.4 3.6H13A1.5 1.5 0 0 1 14.5 5.1V12.5A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5v-9Z"/></svg>';
