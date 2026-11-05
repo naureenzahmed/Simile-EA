@@ -41,12 +41,12 @@ function render(sections, sectionId, entityIndex, linkId) {
 
         <div class="ts-field">
           <div class="ts-field-label">What they get out of the partnership</div>
-          <textarea id="club-theyget" placeholder="Value for the club/organization">${escapeHtml(club.theyGet || '')}</textarea>
+          <textarea id="club-theyget" placeholder="What the club or organization gets">${escapeHtml(club.theyGet || '')}</textarea>
         </div>
 
         <div class="ts-field">
           <div class="ts-field-label">What we get out of the partnership</div>
-          <textarea id="club-weget" placeholder="Value for us">${escapeHtml(club.weGet || '')}</textarea>
+          <textarea id="club-weget" placeholder="What we get">${escapeHtml(club.weGet || '')}</textarea>
         </div>
 
         <div class="ts-field">
@@ -59,12 +59,12 @@ function render(sections, sectionId, entityIndex, linkId) {
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Date of the Event</div>
+          <div class="ts-field-label">Event date</div>
           <input type="date" id="club-event-date" value="${club.eventDate || ''}" />
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Date for the Partnership</div>
+          <div class="ts-field-label">Partnership date</div>
           <input type="date" id="club-partnership-date" value="${club.partnershipDate || ''}" />
         </div>
       </div>

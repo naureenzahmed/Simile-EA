@@ -70,7 +70,7 @@ function renderSection(s, weeks) {
               <div class="entity-name">${escapeHtml(e.name)}</div>
               ${e.note
                 ? `<div class="entity-note">${escapeHtml(e.note)}</div>`
-                : `<div class="entity-org-list">${e.links && e.links.length ? e.links.map((l) => `<button type="button" class="entity-org-box" data-open-club="${s.id}|${entityIndex}|${l.id}">${escapeHtml(l.name)}</button>`).join('') : '<span class="entity-org-empty">—</span>'}</div>`
+                : `<div class="entity-org-list">${e.links && e.links.length ? e.links.map((l) => `<button type="button" class="entity-org-box" data-open-club="${s.id}|${entityIndex}|${l.id}">${escapeHtml(l.name)}</button>`).join('') : '<span class="entity-org-empty">None yet</span>'}</div>`
               }
             </div>
           `).join('')}
@@ -93,7 +93,7 @@ function renderSection(s, weeks) {
                 <tr>
                   <td class="tracker-sticky-col">${escapeHtml(m.label)}</td>
                   <td class="tracker-note">${escapeHtml(m.note || '')}</td>
-                  <td class="tracker-target">${m.target ?? '—'}</td>
+                  <td class="tracker-target">${m.target ?? 'Not set'}</td>
                   ${(s.columns || weeks).map((w) => `
                     <td class="tracker-week-td ${w.isCurrent ? 'current-week' : ''}">
                       <input type="text" inputmode="decimal" class="tracker-input" data-metric="${s.id}|${m.id}|${w.key}" value="${escapeHtml(m.values?.[w.key] ?? '')}" />

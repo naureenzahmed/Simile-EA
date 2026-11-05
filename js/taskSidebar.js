@@ -77,7 +77,7 @@ function render(taskId) {
 
         <div class="ts-field">
           <div class="ts-field-label">Impact · Required</div>
-          <input type="text" id="ts-impact" value="${escapeHtml(task.impact)}" placeholder="What's the impact? (short — quant or qual)" />
+          <input type="text" id="ts-impact" value="${escapeHtml(task.impact)}" placeholder="What's the impact? Keep it short, with numbers or a clear outcome." />
         </div>
 
         <div class="ts-field">
@@ -91,7 +91,7 @@ function render(taskId) {
           <div class="ts-field-label">Assignee</div>
           <select id="ts-assignee">
             <option value="">Unassigned</option>
-            ${data.people.map((p) => `<option value="${p.id}" ${p.id === task.assigneeId ? 'selected' : ''}>${p.name} — ${p.role}</option>`).join('')}
+            ${data.people.map((p) => `<option value="${p.id}" ${p.id === task.assigneeId ? 'selected' : ''}>${p.name} (${p.role})</option>`).join('')}
           </select>
         </div>
 
@@ -153,7 +153,7 @@ function render(taskId) {
         <div class="ts-field">
           <div class="ts-field-label">Depending tasks</div>
           <div id="ts-dependents">
-            ${dependingTasks.map((t) => `<span class="ts-chip">${escapeHtml(t.title)}</span>`).join('') || '<span class="empty-hint" style="padding:0;">Nothing depends on this yet</span>'}
+            ${dependingTasks.map((t) => `<span class="ts-chip">${escapeHtml(t.title)}</span>`).join('') || '<span class="empty-hint" style="padding:0;">Nothing depends on this yet.</span>'}
           </div>
         </div>
 
@@ -169,7 +169,7 @@ function render(taskId) {
             `).join('')}
           </div>
           <div class="ts-inline" style="margin-top:6px;">
-            <input type="text" id="ts-subtask-input" placeholder="Add a subtask..." />
+            <input type="text" id="ts-subtask-input" placeholder="Add a subtask…" />
             <button class="btn" id="ts-subtask-add" style="flex: 0 0 auto;">Add</button>
           </div>
         </div>
@@ -185,7 +185,7 @@ function render(taskId) {
             `).join('')}
           </div>
           <div class="ts-inline" style="margin-top:8px;">
-            <textarea id="ts-comment-input" placeholder="Write a comment..." style="min-height: 40px;"></textarea>
+            <textarea id="ts-comment-input" placeholder="Write a comment…" style="min-height: 40px;"></textarea>
           </div>
           <button class="btn" id="ts-comment-add" style="margin-top:6px;">Send</button>
         </div>
@@ -216,7 +216,7 @@ function wireEvents(task) {
     document.getElementById(id).addEventListener('change', (e) => {
       task[key] = transform(e.target.value);
       commit();
-      notifySlack(`Task "${task.title}" updated — ${label} changed.`);
+      notifySlack(`Task "${task.title}" updated: ${label} changed.`);
       if (checkConflicts) notifyConflictsIfAny(task, computeConflicts(task, data.tasks));
       if (onCloseCallback) onCloseCallback();
       render(task.id);

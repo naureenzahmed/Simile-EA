@@ -10,7 +10,7 @@ export function renderTeamManagement(container) {
     ${notesBoxHtml('operations')}
 
     <div id="ops-milestones">
-      <div class="section-label">Key milestones</div>
+      <div class="section-label">Key Milestones</div>
       <div class="section-desc">Key dates across every roadmap, in order.</div>
       <div class="card" style="margin-bottom:24px;">
         <div id="milestones-list"></div>
@@ -20,7 +20,7 @@ export function renderTeamManagement(container) {
 
     <div id="ops-availability">
       <div class="section-label">Availability</div>
-      <div class="section-desc">Engineers &amp; designers — who's open right now.</div>
+      <div class="section-desc">Engineers and designers who are free right now.</div>
       <div class="card" style="margin-bottom:24px;">
         <div id="availability-summary"></div>
         <div id="people-list"></div>
@@ -28,7 +28,7 @@ export function renderTeamManagement(container) {
     </div>
 
     <div id="ops-teams">
-      <div class="section-label">Team composition</div>
+      <div class="section-label">Team Composition</div>
       <div class="section-desc">Who's on each team, grouped by role.</div>
       <div class="grid-3" id="team-grid"></div>
     </div>
@@ -58,7 +58,7 @@ function renderMilestones(data) {
       <div class="milestone-row">
         <div class="milestone-date">${fmtDate(m.date)}</div>
         <div><span class="team-dot" style="background:${team?.color || '#666'}; display:inline-block; margin-right:8px;"></span>${escapeHtml(m.title)}</div>
-        <div style="color: var(--text-dim);">${escapeHtml(team?.name || '—')}</div>
+        <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'No team')}</div>
         <div class="milestone-rel">${relativeDay(m.date)}</div>
       </div>
     `;
@@ -107,7 +107,7 @@ function renderAvailability(data) {
           <span class="avatar" style="background:${team?.color || '#666'};">${initials(p.name)}</span>
           <div>${escapeHtml(p.name)}<span class="role">${escapeHtml(p.role)}</span></div>
         </div>
-        <div style="color: var(--text-dim);">${escapeHtml(team?.name || '—')}</div>
+        <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'No team')}</div>
         <div>${isBusy ? 'Working on a task' : 'Open to work'}</div>
         <div><span class="status-badge ${isBusy ? 'progress' : 'done'}">${isBusy ? 'Active' : 'Free'}</span></div>
       </div>

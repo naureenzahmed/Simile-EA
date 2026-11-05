@@ -45,7 +45,7 @@ function seedTasks() {
       tasks.push({
         id: uid('task'),
         title: `Task ${i}`,
-        description: 'Example task description — replace with the real scope of work.',
+        description: 'Example task description. Replace it with the real scope of work.',
         impact: 'Example impact statement.',
         status: TASK_STATUSES[randomInt(0, TASK_STATUSES.length - 1)],
         assigneeId: assignee ? assignee.id : null,
@@ -146,7 +146,7 @@ function seedOkrs() {
 function seedDocs() {
   return [
     {
-      id: 'docs-logins', title: 'Software Login',
+      id: 'docs-logins', title: 'Software Logins',
       fields: [
         { key: 'name', label: 'Software Name' },
         { key: 'loginProcess', label: 'Login Process' },
@@ -156,13 +156,13 @@ function seedDocs() {
       entries: [],
     },
     {
-      id: 'docs-tofu', title: 'Set Up Instructions',
+      id: 'docs-tofu', title: 'Setup Instructions',
       entries: [
         { id: 'tofu-1', title: 'Setting up HubSpot sequences', url: '', notes: '' },
         { id: 'tofu-2', title: 'Setting up HeyReach sequences', url: '', notes: '' },
         { id: 'tofu-3', title: 'Setting up Google Ads', url: '', notes: '' },
-        { id: 'tofu-4', title: 'Setting up LinkedIn ads', url: '', notes: '' },
-        { id: 'tofu-5', title: 'Setting up Meta ads', url: '', notes: '' },
+        { id: 'tofu-4', title: 'Setting up LinkedIn Ads', url: '', notes: '' },
+        { id: 'tofu-5', title: 'Setting up Meta Ads', url: '', notes: '' },
         { id: 'tofu-6', title: 'Setting up ChatGPT Ads', url: '', notes: '' },
       ],
     },
@@ -171,22 +171,22 @@ function seedDocs() {
       entries: [
         { id: 'sales-doc-1', title: 'Sales Document', url: '', notes: '' },
         { id: 'pitch-doc-1', title: 'Pitch Document', url: '', notes: '' },
-        { id: 'demos-doc-1', title: 'Demos Documents', url: '', notes: '' },
+        { id: 'demos-doc-1', title: 'Demo Documents', url: '', notes: '' },
         { id: 'marketing-materials-1', title: 'Marketing Materials', url: '', notes: '' },
-        { id: 'one-pager-1', title: 'One Pager', url: '', notes: '' },
+        { id: 'one-pager-1', title: 'One-Pager', url: '', notes: '' },
       ],
     },
     {
-      id: 'docs-ads-materials', title: 'Ads Materials',
+      id: 'docs-ads-materials', title: 'Ad Materials',
       entries: [
-        { id: 'ad-creatives-google', title: 'Ad Creatives - Google', url: '', notes: '' },
-        { id: 'ad-creatives-meta', title: 'Ad Creatives - Meta', url: '', notes: '' },
-        { id: 'ad-creatives-chatgpt', title: 'Ad Creatives - ChatGPT', url: '', notes: '' },
-        { id: 'ad-creatives-linkedin', title: 'Ad Creatives - LinkedIn', url: '', notes: '' },
+        { id: 'ad-creatives-google', title: 'Ad Creatives: Google', url: '', notes: '' },
+        { id: 'ad-creatives-meta', title: 'Ad Creatives: Meta', url: '', notes: '' },
+        { id: 'ad-creatives-chatgpt', title: 'Ad Creatives: ChatGPT', url: '', notes: '' },
+        { id: 'ad-creatives-linkedin', title: 'Ad Creatives: LinkedIn', url: '', notes: '' },
       ],
     },
     {
-      id: 'docs-ads-audiences', title: 'Ads Audiences Lists',
+      id: 'docs-ads-audiences', title: 'Ad Audience Lists',
       entries: [
         { id: 'ad-audience-google', title: 'Google', url: '', notes: '' },
         { id: 'ad-audience-meta', title: 'Meta', url: '', notes: '' },
@@ -197,7 +197,7 @@ function seedDocs() {
   ];
 }
 
-// Columns of the Client Materials "Clients" table.
+// Columns of the Recruitment Tech Stack table.
 export const TECH_STACK_FIELDS = [
   { key: 'software', label: 'Software' },
   { key: 'description', label: 'Description', multiline: true },
@@ -205,23 +205,50 @@ export const TECH_STACK_FIELDS = [
 ];
 
 const TECH_STACK = [
-  ['Grokbot', 'Grokbot will be able to reach ideal candidates and automate messaging them. Grokbot allows you to reach LinkedIn (used by sales and ops people heavily) and X (used heavily by engineers and technical people). It will also be able to scrape through new publications and research to find the appropriate people in highly technical fields.', '$30/mo (SuperGrok). Grok Business is $30/user/mo, SuperGrok Lite $10/mo, SuperGrok Heavy $300/mo, Enterprise custom.'],
-  ['Apollo', 'Apollo can support quick email pulling.', '$49–$119/user/mo billed yearly (Basic $49, Professional $79, Organization $119); about $59–$149 billed monthly. Free plan available. Credits, add-ons and overages can raise the total a lot.'],
-  ['Juicebox', 'Juicebox can run through LinkedIn, Github, Google Scholar and 30 more data sources. We will be able to reach business oriented profiles just as much deep science.', 'About $99–$179/seat/mo billed yearly (Starter $99, or $119 monthly; Growth $179). Agents add-on $199/agent/mo. Unlimited searches; contact/export credits capped at 500/mo (Starter) or 1,500/mo (Growth). Prices changed July 2026.'],
-  ['Claude', 'Claude skills can be utilized to connect all of these software and automate the information transfer. Additionally, Claude skills can send the interviewer brief summaries right before the meeting and the appropriate interview questions. An alternative would be Gumloop.', '$20–$25/user/mo for most people (Pro $20, Team Standard $25). Max 5x $100/mo, Max 20x $200/mo, Team Premium $125/user/mo.'],
-  ['Gem', 'Gem is an Applicant Tracking System (ATS). Once the ideal process is put in, email, scheduling and communication tracking is all automated.', 'Most expensive item. Custom quote based on company headcount; Startups plan $270/mo. Median buyer pays about $25,700/yr (SMB average ~$19,800/yr, enterprise average ~$94,600/yr).'],
+  ['Grokbot', 'Grokbot will reach ideal candidates and automate messages to them. It covers LinkedIn, where sales and ops people spend most of their time, and X, where engineers and technical people are most active. It can also scan new publications and research to find the right people in highly technical fields.', '$30/mo for SuperGrok. Grok Business is $30/user/mo, SuperGrok Lite is $10/mo, SuperGrok Heavy is $300/mo and Enterprise is custom.'],
+  ['Apollo', 'Apollo makes it quick to pull email addresses.', '$49–$119/user/mo billed yearly (Basic is $49, Professional is $79 and Organization is $119), or about $59–$149 billed monthly. There is a free plan. Credits, add-ons and overages can raise the total a lot.'],
+  ['Juicebox', 'Juicebox searches LinkedIn, GitHub, Google Scholar and 30 more data sources, so we can reach business-oriented profiles just as easily as deep science ones.', 'About $99–$179/seat/mo billed yearly (Starter is $99, or $119 billed monthly, and Growth is $179). The Agents add-on is $199/agent/mo. Searches are unlimited, but contact and export credits are capped at 500/mo on Starter and 1,500/mo on Growth. Prices changed in July 2026.'],
+  ['Claude', 'Claude skills can connect all of these tools and automate the handoff of information between them. They can also send each interviewer a short summary and the right interview questions just before the meeting. Gumloop is an alternative.', '$20–$25/user/mo for most people (Pro is $20 and Team Standard is $25). Max 5x is $100/mo, Max 20x is $200/mo and Team Premium is $125/user/mo.'],
+  ['Gem', 'Gem is an applicant tracking system (ATS). Once the ideal process is set up, email, scheduling and communication tracking are all automated.', 'The most expensive item. Pricing is a custom quote based on company headcount, and the Startups plan is $270/mo. The median buyer pays about $25,700/yr (the SMB average is about $19,800/yr and the enterprise average is about $94,600/yr).'],
 ];
 
 export function techStackRows() {
   return TECH_STACK.map(([software, description, cost], i) => ({ id: `tech-${i + 1}`, software, description, cost }));
 }
 
+// Columns of the Recruitment School Partnerships table.
+export const SCHOOL_FIELDS = [
+  { key: 'school', label: 'School', multiline: true },
+  { key: 'city', label: 'City' },
+  { key: 'strengths', label: 'Strengths', multiline: true },
+  { key: 'labs', label: 'Notable Labs', multiline: true },
+  { key: 'orgs', label: 'Notable Organizations', multiline: true },
+];
+
+// Top schools for deep learning, AI, ML and simulation.
+const TOP_SCHOOLS = [
+  ['Stanford University', 'Stanford, CA', 'Deep learning, NLP, human-centered AI, generative agents and social simulation', 'Stanford AI Lab (SAIL), Stanford HAI, Center for Research on Foundation Models (CRFM), Stanford HCI Group', 'Stanford ACM, Stanford AI Alignment, TreeHacks'],
+  ['MIT', 'Cambridge, MA', 'Machine learning, robotics, computational science and simulation', 'CSAIL, MIT Media Lab, MIT-IBM Watson AI Lab, Center for Computational Science and Engineering', 'MIT Machine Intelligence Community, HackMIT'],
+  ['Carnegie Mellon University', 'Pittsburgh, PA', 'Machine learning, robotics, language technologies', 'Machine Learning Department, Robotics Institute, Language Technologies Institute', 'ScottyLabs (runs TartanHacks)'],
+  ['UC Berkeley', 'Berkeley, CA', 'Deep learning, reinforcement learning, AI safety', 'Berkeley AI Research (BAIR), Center for Human-Compatible AI (CHAI), Sky Computing Lab', 'Machine Learning at Berkeley, Cal Hacks'],
+  ['University of Toronto', 'Toronto, ON', 'Deep learning, computer vision, graphics and physics simulation', 'Vector Institute, Dynamic Graphics Project', 'University of Toronto Machine Intelligence Student Team (UTMIST)'],
+  ['Université de Montréal and McGill University', 'Montreal, QC', 'Deep learning, generative models, reinforcement learning', 'Mila (Quebec AI Institute), IVADO, McGill Centre for Intelligent Machines', 'McGill AI Society, McHacks'],
+  ['University of Waterloo', 'Waterloo, ON', 'Machine learning, AI engineering, systems', 'Waterloo.AI (Waterloo Artificial Intelligence Institute)', 'Hack the North, Socratica, Waterloo Data Science Club'],
+  ['University of Washington', 'Seattle, WA', 'NLP, computer vision, human-computer interaction', 'Paul G. Allen School of Computer Science & Engineering, UW NLP, Allen Institute for AI (AI2, nearby)', 'DubHacks'],
+  ['Princeton University', 'Princeton, NJ', 'Machine learning theory, NLP, computational social science', 'Princeton Language and Intelligence (PLI), Princeton Visual AI Lab', 'HackPrinceton'],
+  ['University of Oxford', 'Oxford, UK', 'Machine learning theory, Bayesian ML, computer vision', 'Oxford Applied and Theoretical Machine Learning Group (OATML), Visual Geometry Group (VGG)', 'Oxford AI Society (OxAI)'],
+];
+
+export function schoolRows() {
+  return TOP_SCHOOLS.map(([school, city, strengths, labs, orgs], i) => ({ id: `school-${i + 1}`, school, city, strengths, labs, orgs }));
+}
+
 export const EVENT_TYPES = ['GTM Offsite', 'Sales Kickoff', 'Executive Customer Dinner', 'Industry Event', 'Other'];
 export const EVENT_STATUSES = ['Idea', 'Planning', 'Confirmed', 'Completed', 'Cancelled'];
 export const EVENT_PHASES = [
-  { key: 'pre', label: 'Pre-event' },
-  { key: 'during', label: 'During' },
-  { key: 'after', label: 'After event' },
+  { key: 'pre', label: 'Before the Event' },
+  { key: 'during', label: 'During the Event' },
+  { key: 'after', label: 'After the Event' },
 ];
 
 const EVENT_CHECKLIST = {
@@ -231,14 +258,14 @@ const EVENT_CHECKLIST = {
     'Booth staffing, scripts and run-of-show',
   ],
   during: [
-    'Follow up with event organiser for Wi-Fi and connection',
-    'Lead list',
+    'Wi-Fi and connection confirmed with the event organizer',
+    'Lead list on hand',
     'Calendar open for call bookings',
-    'HubSpot to track all the conversations',
+    'HubSpot ready to track every conversation',
   ],
   after: [
-    'Follow-ups on conversations',
-    'Marketing on the recap from our attendance',
+    'Follow-ups on every conversation',
+    'Marketing recap of our attendance',
   ],
 };
 
@@ -410,8 +437,10 @@ function seedRecruitment() {
     {
       id: 'rec-schools',
       title: 'School Partnerships',
+      note: 'Top schools for deep learning, AI, ML and simulation.',
       entities: [],
       metrics: [],
+      table: { fields: SCHOOL_FIELDS, rows: schoolRows() },
     },
     {
       id: 'rec-sponsorships',
@@ -420,11 +449,11 @@ function seedRecruitment() {
         { id: 'm1', label: 'Budget', target: '$1,000 / in-kind / intros', values: {} },
         { id: 'm2', label: 'Our interest', target: 'Videos, talent', values: {} },
         { id: 'm3', label: 'Type of talent', target: 'Eng / Ops / Sales', values: {} },
-        { id: 'm4', label: 'Number of events', note: 'Look at hiring from that same level of talent.', target: null, values: {} },
+        { id: 'm4', label: 'Number of events', note: 'Look at hiring from the same level of talent.', target: null, values: {} },
         { id: 'm5', label: 'Demographic reached', target: null, values: {} },
         { id: 'm6', label: 'Leads (#)', target: '40 per event', values: {} },
-        { id: 'm7', label: 'Interview Booked (%)', target: '75%', values: {} },
-        { id: 'm8', label: 'Interview Booked (#)', target: '15 per event', values: {} },
+        { id: 'm7', label: 'Interviews booked (%)', target: '75%', values: {} },
+        { id: 'm8', label: 'Interviews booked (#)', target: '15 per event', values: {} },
       ],
     },
     {
@@ -438,8 +467,8 @@ function seedRecruitment() {
       ],
       metrics: [
         { id: 'm1', label: 'Leads (#)', target: 100, values: {} },
-        { id: 'm2', label: 'Interview Booked (%)', target: '20%', values: {} },
-        { id: 'm3', label: 'Interview Booked (#)', target: 20, values: {} },
+        { id: 'm2', label: 'Interviews booked (%)', target: '20%', values: {} },
+        { id: 'm3', label: 'Interviews booked (#)', target: 20, values: {} },
       ],
     },
     {
@@ -448,8 +477,8 @@ function seedRecruitment() {
       entities: [],
       metrics: [
         { id: 'm1', label: 'Leads (#)', target: '40 per event', values: {} },
-        { id: 'm2', label: 'Interview Booked (%)', target: '37.5%', values: {} },
-        { id: 'm3', label: 'Interview Booked (#)', target: '15 per event', values: {} },
+        { id: 'm2', label: 'Interviews booked (%)', target: '37.5%', values: {} },
+        { id: 'm3', label: 'Interviews booked (#)', target: '15 per event', values: {} },
       ],
     },
     {
@@ -457,8 +486,8 @@ function seedRecruitment() {
       title: 'Total',
       metrics: [
         { id: 'm1', label: 'Leads (#)', target: null, values: {} },
-        { id: 'm2', label: 'Interview Booked (%)', target: null, values: {} },
-        { id: 'm3', label: 'Interview Booked (#)', target: null, values: {} },
+        { id: 'm2', label: 'Interviews booked (%)', target: null, values: {} },
+        { id: 'm3', label: 'Interviews booked (#)', target: null, values: {} },
       ],
     },
   ];
@@ -478,7 +507,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 7,
+    recruitmentVersion: 8,
     clientMaterials: [
       {
         id: 'clients',
@@ -491,14 +520,15 @@ export function seedData() {
     boardInvestor: seedBoardInvestor(),
     leadershipSchedule: seedLeadershipSchedule(),
     scheduleVersion: 3,
+    copyVersion: 1,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',
     pageNotes: {
-      recruitment: 'This is to bring top-of-funnel talent towards Simile.\n\nA note on events: it’s much more interesting to do events in partnership with others, since it has the same impact with much less effort and time spent. For school partnerships, the goal is to create relationships early, so when there is very strong talent, it gets funneled to us quickly.\n\nTo create a successful funnel for Simile, there need to be multiple long-term relationships put in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for those already in the ecosystem\n• Event attendance, to really understand who we are getting in front of and whether we are getting in front of the right people — whether that is a potential employee of a future client, or our own future employee\n• Event partnerships, as our ICPs converge\n• Companies to track employees at, as these would be recruiting for more senior roles with the same level of intensity and grit as Simile\n• The count from overview leads into interview booked, and the delta between them',
-      operations: 'This page shows all team milestones as well as each teammate’s capacity. It also includes team composition, so any changes in a project or shifts in direction can be easily assigned to a teammate who has the capacity for it. Anyone newly onboarded can see who is working on what, what everyone’s capacity looks like, and who they can reach out to for support at any given time.',
-      documentation: 'This houses all the processes, SOPs, and links that would be helpful, so it’s easy access for myself, anyone working with me, and anyone I need to train. I can just send them this document list. It will have all the history and the lists I used for any of my campaigns. This is created for efficiency for myself but also for anyone working with me.',
-      roadmap: 'This allows anyone working with me to understand timelines on a weekly basis by looking at exactly when I plan on starting initiatives, experiments, or tasks and when I plan on finishing them. It gives a better idea of what’s going on with my progress.\n\nOn top of that, it has goals, metrics, and objectives to really show what the progress is and really understand how much more needs to be done to hit the end goals. It also includes a monthly calendar with deadlines, so there’s a better idea of what needs to happen each month and each day. Working backwards, we can understand what needs to be done.',
+      recruitment: 'This page is about bringing top-of-funnel talent to Simile.\n\nA note on events: partnering with others on events is much more interesting, since it has the same impact for far less time and effort. With school partnerships, the goal is to build relationships early, so that when very strong talent comes along, it gets funneled to us quickly.\n\nTo build a successful funnel for Simile, we need several long-term relationships in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for people already in the ecosystem\n• Event attendance, to understand who we’re getting in front of and whether they’re the right people, whether that’s a future client or a future employee\n• Event partnerships, as our ICPs converge\n• The total count from leads to interviews booked, and the gap between them',
+      operations: 'This page shows every team milestone and each teammate’s capacity. It also shows team composition, so when a project changes or the direction shifts, the work can go to a teammate who has room for it. Anyone newly onboarded can see who’s working on what, how much capacity everyone has and who they can go to for support at any time.',
+      documentation: 'This page keeps all the processes, SOPs and helpful links in one place, so they’re easy to find for me, anyone working with me and anyone I need to train. I can just send them this page. It also keeps the history and the lists I used for each of my campaigns. I made it to save time for myself and for anyone I work with.',
+      roadmap: 'This lets anyone working with me follow my timeline week by week, with exactly when I plan to start and finish each initiative, experiment or task. It gives a clear picture of my progress.\n\nIt also has goals, metrics and objectives that show where things stand and how much more needs to happen to hit the end goals. The monthly calendar of deadlines shows what needs to happen each month and each day, so we can work backwards from the goals.',
     },
     tasks: seedTasks(),
   };

@@ -74,7 +74,7 @@ export function renderLeadershipSchedule(container) {
           `).join('')}
           ${view.adding === 'type' ? `
             <span class="sched-add-form">
-              <input type="color" id="sched-new-type-color" value="${nextColor}" title="Colour" />
+              <input type="color" id="sched-new-type-color" value="${nextColor}" title="Color" />
               <input type="text" id="sched-new-type" class="cell-input" placeholder="Meeting type" />
               <button class="btn btn-primary" id="sched-new-type-save">Add</button>
               <button class="btn btn-ghost" data-cancel-add>Cancel</button>

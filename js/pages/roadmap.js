@@ -44,7 +44,7 @@ export function renderRoadmap(container) {
       </div>
     </div>
     <div class="inline-add-form" id="slack-settings-form" style="display:none;">
-      <input type="text" id="slack-webhook-input" placeholder="Slack Incoming Webhook URL" value="${escapeHtml(getSlackWebhookUrl())}" style="max-width:420px;" />
+      <input type="text" id="slack-webhook-input" placeholder="Slack incoming webhook URL" value="${escapeHtml(getSlackWebhookUrl())}" style="max-width:420px;" />
       <button class="btn btn-primary" id="slack-webhook-save">Save</button>
       <button class="btn btn-ghost" id="slack-settings-cancel">Cancel</button>
     </div>
@@ -178,7 +178,7 @@ function renderInitiativeRow(init, data, timelineStart, laneWidth, weekPx, today
     const color = team?.color || 'var(--accent)';
     const conflict = taskHasConflict(t, data.tasks);
     return `
-      <div class="tl-bar ${conflict ? 'tl-bar-conflict' : ''}" data-task-bar="${t.id}" style="left:${left}px; width:${width}px; background:${color};" title="${escapeHtml(t.title)}${conflict ? ' — scheduling conflict' : ''}">
+      <div class="tl-bar ${conflict ? 'tl-bar-conflict' : ''}" data-task-bar="${t.id}" style="left:${left}px; width:${width}px; background:${color};" title="${escapeHtml(t.title)}${conflict ? ' (scheduling conflict)' : ''}">
         <span class="status-dot"></span>${escapeHtml(t.title)}${conflict ? ' ⚠' : ''}
       </div>
     `;
@@ -204,7 +204,7 @@ function renderInitiativeRow(init, data, timelineStart, laneWidth, weekPx, today
 
 function renderList(view, data) {
   if (!data.tasks.length) {
-    view.innerHTML = `<div class="card empty-hint">No tasks yet. Click “+ Task” to create one.</div>`;
+    view.innerHTML = `<div class="card empty-hint">No tasks yet. Click "+ Task" to create one.</div>`;
     return;
   }
   view.innerHTML = `
@@ -217,7 +217,7 @@ function renderList(view, data) {
           return `
             <tr data-row="${t.id}">
               <td>${escapeHtml(t.title)}</td>
-              <td>${escapeHtml(init?.name || '—')}</td>
+              <td>${escapeHtml(init?.name || 'No section')}</td>
               <td>${escapeHtml(person?.name || 'Unassigned')}</td>
               <td>${statusBadge(t.status)}</td>
               <td>${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}</td>
@@ -258,7 +258,7 @@ function renderBoard(view, data) {
                   </div>
                 </div>
               `;
-            }).join('') || `<div class="empty-hint">No tasks</div>`}
+            }).join('') || `<div class="empty-hint">No tasks.</div>`}
           </div>
         `;
       }).join('')}

@@ -27,10 +27,6 @@ export function renderCover(container) {
 function buildManifest(data) {
   return [
     {
-      key: 'documentation', label: 'Documentation',
-      subsections: data.docs.map((s) => ({ id: s.id, label: s.title })),
-    },
-    {
       key: 'roadmap', label: 'GTM Roadmap',
       subsections: [
         { id: 'roadmap-timeline-section', label: 'Timeline / List / Board' },
@@ -44,9 +40,9 @@ function buildManifest(data) {
       subsections: [
         { id: 'schedule-leadership', label: 'Leadership Schedule Management' },
         { id: 'schedule-team', label: 'Team Management' },
-        { id: 'ops-milestones', label: 'Key milestones' },
+        { id: 'ops-milestones', label: 'Key Milestones' },
         { id: 'ops-availability', label: 'Availability' },
-        { id: 'ops-teams', label: 'Team composition' },
+        { id: 'ops-teams', label: 'Team Composition' },
       ],
     },
     {
@@ -64,6 +60,10 @@ function buildManifest(data) {
     {
       key: 'events', label: 'Events & Offsites',
       subsections: [{ id: 'events-contents', label: 'Table of Contents' }, ...data.events.map((e) => ({ id: e.id, label: e.name || 'Untitled event' }))],
+    },
+    {
+      key: 'documentation', label: 'Documentation',
+      subsections: data.docs.map((s) => ({ id: s.id, label: s.title })),
     },
   ];
 }

@@ -642,3 +642,9 @@ a.doc-title:hover { text-decoration: underline; }
 .schedule-part { scroll-margin-top: 16px; }
 .schedule-part + .schedule-part { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--border); }
 .schedule-part-title { font-size: 24px; font-weight: 400; letter-spacing: -0.01em; margin: 0; }
+
+/* Recruitment: School Partnerships table */
+#rec-schools .doc-fields-table td:has(.cell-textarea) { width: auto; }
+#rec-schools .cell-textarea { min-width: 210px; }
+#rec-schools td:first-child .cell-input { min-width: 170px; }
+#rec-schools td:nth-child(2) .cell-input { min-width: 110px; width: 115px; }

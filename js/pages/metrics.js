@@ -3,7 +3,7 @@ import { escapeHtml } from '../utils.js';
 
 export function renderTrackedGoals(container) {
   container.innerHTML = `
-    <div class="section-label">Tracked goals</div>
+    <div class="section-label">Tracked Goals</div>
     <div class="grid-3" id="metric-cards"></div>
   `;
   renderCards(getData());

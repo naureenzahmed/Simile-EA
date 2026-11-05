@@ -1,6 +1,59 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
+
+// Copy edit (2026-11): old starter text -> corrected text. Only exact matches change,
+// so anything someone typed in themselves is left alone.
+const COPY_FIXES = {
+    "Example task description — replace with the real scope of work.": "Example task description. Replace it with the real scope of work.",
+    "Software Login": "Software Logins",
+    "Set Up Instructions": "Setup Instructions",
+    "Setting up LinkedIn ads": "Setting up LinkedIn Ads",
+    "Setting up Meta ads": "Setting up Meta Ads",
+    "Demos Documents": "Demo Documents",
+    "One Pager": "One-Pager",
+    "Ads Materials": "Ad Materials",
+    "Ad Creatives - Google": "Ad Creatives: Google",
+    "Ad Creatives - Meta": "Ad Creatives: Meta",
+    "Ad Creatives - ChatGPT": "Ad Creatives: ChatGPT",
+    "Ad Creatives - LinkedIn": "Ad Creatives: LinkedIn",
+    "Ads Audiences Lists": "Ad Audience Lists",
+    "Grokbot will be able to reach ideal candidates and automate messaging them. Grokbot allows you to reach LinkedIn (used by sales and ops people heavily) and X (used heavily by engineers and technical people). It will also be able to scrape through new publications and research to find the appropriate people in highly technical fields.": "Grokbot will reach ideal candidates and automate messages to them. It covers LinkedIn, where sales and ops people spend most of their time, and X, where engineers and technical people are most active. It can also scan new publications and research to find the right people in highly technical fields.",
+    "$30/mo (SuperGrok). Grok Business is $30/user/mo, SuperGrok Lite $10/mo, SuperGrok Heavy $300/mo, Enterprise custom.": "$30/mo for SuperGrok. Grok Business is $30/user/mo, SuperGrok Lite is $10/mo, SuperGrok Heavy is $300/mo and Enterprise is custom.",
+    "Apollo can support quick email pulling.": "Apollo makes it quick to pull email addresses.",
+    "$49–$119/user/mo billed yearly (Basic $49, Professional $79, Organization $119); about $59–$149 billed monthly. Free plan available. Credits, add-ons and overages can raise the total a lot.": "$49–$119/user/mo billed yearly (Basic is $49, Professional is $79 and Organization is $119), or about $59–$149 billed monthly. There is a free plan. Credits, add-ons and overages can raise the total a lot.",
+    "Juicebox can run through LinkedIn, Github, Google Scholar and 30 more data sources. We will be able to reach business oriented profiles just as much deep science.": "Juicebox searches LinkedIn, GitHub, Google Scholar and 30 more data sources, so we can reach business-oriented profiles just as easily as deep science ones.",
+    "About $99–$179/seat/mo billed yearly (Starter $99, or $119 monthly; Growth $179). Agents add-on $199/agent/mo. Unlimited searches; contact/export credits capped at 500/mo (Starter) or 1,500/mo (Growth). Prices changed July 2026.": "About $99–$179/seat/mo billed yearly (Starter is $99, or $119 billed monthly, and Growth is $179). The Agents add-on is $199/agent/mo. Searches are unlimited, but contact and export credits are capped at 500/mo on Starter and 1,500/mo on Growth. Prices changed in July 2026.",
+    "Claude skills can be utilized to connect all of these software and automate the information transfer. Additionally, Claude skills can send the interviewer brief summaries right before the meeting and the appropriate interview questions. An alternative would be Gumloop.": "Claude skills can connect all of these tools and automate the handoff of information between them. They can also send each interviewer a short summary and the right interview questions just before the meeting. Gumloop is an alternative.",
+    "$20–$25/user/mo for most people (Pro $20, Team Standard $25). Max 5x $100/mo, Max 20x $200/mo, Team Premium $125/user/mo.": "$20–$25/user/mo for most people (Pro is $20 and Team Standard is $25). Max 5x is $100/mo, Max 20x is $200/mo and Team Premium is $125/user/mo.",
+    "Gem is an Applicant Tracking System (ATS). Once the ideal process is put in, email, scheduling and communication tracking is all automated.": "Gem is an applicant tracking system (ATS). Once the ideal process is set up, email, scheduling and communication tracking are all automated.",
+    "Most expensive item. Custom quote based on company headcount; Startups plan $270/mo. Median buyer pays about $25,700/yr (SMB average ~$19,800/yr, enterprise average ~$94,600/yr).": "The most expensive item. Pricing is a custom quote based on company headcount, and the Startups plan is $270/mo. The median buyer pays about $25,700/yr (the SMB average is about $19,800/yr and the enterprise average is about $94,600/yr).",
+    "Follow up with event organiser for Wi-Fi and connection": "Wi-Fi and connection confirmed with the event organizer",
+    "Lead list": "Lead list on hand",
+    "HubSpot to track all the conversations": "HubSpot ready to track every conversation",
+    "Follow-ups on conversations": "Follow-ups on every conversation",
+    "Marketing on the recap from our attendance": "Marketing recap of our attendance",
+    "Interview Booked (%)": "Interviews booked (%)",
+    "Interview Booked (#)": "Interviews booked (#)",
+    "Look at hiring from that same level of talent.": "Look at hiring from the same level of talent."
+  };
+
+// Page notes are read-only on the site, so they are replaced outright.
+const NOTE_FIXES = {
+    "recruitment": "This page is about bringing top-of-funnel talent to Simile.\n\nA note on events: partnering with others on events is much more interesting, since it has the same impact for far less time and effort. With school partnerships, the goal is to build relationships early, so that when very strong talent comes along, it gets funneled to us quickly.\n\nTo build a successful funnel for Simile, we need several long-term relationships in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for people already in the ecosystem\n• Event attendance, to understand who we’re getting in front of and whether they’re the right people, whether that’s a future client or a future employee\n• Event partnerships, as our ICPs converge\n• The total count from leads to interviews booked, and the gap between them",
+    "operations": "This page shows every team milestone and each teammate’s capacity. It also shows team composition, so when a project changes or the direction shifts, the work can go to a teammate who has room for it. Anyone newly onboarded can see who’s working on what, how much capacity everyone has and who they can go to for support at any time.",
+    "documentation": "This page keeps all the processes, SOPs and helpful links in one place, so they’re easy to find for me, anyone working with me and anyone I need to train. I can just send them this page. It also keeps the history and the lists I used for each of my campaigns. I made it to save time for myself and for anyone I work with.",
+    "roadmap": "This lets anyone working with me follow my timeline week by week, with exactly when I plan to start and finish each initiative, experiment or task. It gives a clear picture of my progress.\n\nIt also has goals, metrics and objectives that show where things stand and how much more needs to happen to hit the end goals. The monthly calendar of deadlines shows what needs to happen each month and each day, so we can work backwards from the goals."
+  };
+
+function applyCopyFixes(value) {
+  if (typeof value === 'string') return Object.prototype.hasOwnProperty.call(COPY_FIXES, value) ? COPY_FIXES[value] : value;
+  if (Array.isArray(value)) return value.map(applyCopyFixes);
+  if (value && typeof value === 'object') {
+    for (const k of Object.keys(value)) value[k] = applyCopyFixes(value[k]);
+  }
+  return value;
+}
 
 let data = load();
 
@@ -104,6 +157,23 @@ function load() {
           if (added.includes(e.person) && !ids.has(e.id)) stored.leadershipSchedule.push(e);
         }
         stored.scheduleVersion = 3;
+        changed = true;
+      }
+      // Recruitment v8: School Partnerships gets a table of top AI and ML schools.
+      if (stored.recruitment && stored.recruitmentVersion < 8) {
+        const schools = stored.recruitment.find((s) => s.id === 'rec-schools');
+        if (schools && !schools.table) {
+          schools.note = schools.note || 'Top schools for deep learning, AI, ML and simulation.';
+          schools.table = { fields: SCHOOL_FIELDS, rows: schoolRows() };
+        }
+        stored.recruitmentVersion = 8;
+        changed = true;
+      }
+      // Copy v1: fix spelling, grammar and tone in the starter text.
+      if ((stored.copyVersion || 0) < 1) {
+        applyCopyFixes(stored);
+        stored.pageNotes = { ...(stored.pageNotes || {}), ...NOTE_FIXES };
+        stored.copyVersion = 1;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {

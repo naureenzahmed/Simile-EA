@@ -76,7 +76,7 @@ function renderEventSection(e) {
     <div class="card doc-card" id="${e.id}">
       <div class="toolbar" style="margin-bottom:2px;">
         <h4 style="margin:0;" data-event-title="${e.id}">${escapeHtml(e.name) || 'Untitled event'}</h4>
-        <a class="checklist-link" href="#/events?anchor=events-contents">↑ Table of contents</a>
+        <a class="checklist-link" href="#/events?anchor=events-contents">↑ Back to Table of Contents</a>
       </div>
       <div class="section-desc" data-event-meta="${e.id}">${metaLine(e)}</div>
       <div class="event-phases">

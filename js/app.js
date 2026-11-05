@@ -10,13 +10,13 @@ import { renderBoardInvestor, BOARD_TITLE } from './pages/boardInvestor.js';
 
 const PAGES = {
   home: { label: 'Home', render: renderCover },
-  documentation: { label: 'Documentation', render: renderDocumentation },
   roadmap: { label: 'GTM Roadmap', render: renderRoadmap },
   schedule: { label: SCHEDULE_PAGE_TITLE, render: renderScheduleManagement },
   boardInvestor: { label: BOARD_TITLE, render: renderBoardInvestor },
   recruitment: { label: 'Recruitment', render: renderRecruitment },
   clientMaterials: { label: 'Client Materials', render: renderClientMaterials },
   events: { label: EVENTS_TITLE, render: renderEvents },
+  documentation: { label: 'Documentation', render: renderDocumentation },
 };
 
 const FOLDER_ICON = '<svg class="folder-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 3.5A1.5 1.5 0 0 1 3 2h3.2c.4 0 .78.16 1.06.44L8.4 3.6H13A1.5 1.5 0 0 1 14.5 5.1V12.5A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5v-9Z"/></svg>';
