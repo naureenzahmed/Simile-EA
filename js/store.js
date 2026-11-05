@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -81,6 +81,16 @@ function load() {
           }
         }
         stored.recruitmentVersion = 7;
+        changed = true;
+      }
+      // Schedule v2: make sure every leader has one entry of each type.
+      if (stored.leadershipSchedule && (stored.scheduleVersion || 1) < 2) {
+        const have = new Set(stored.leadershipSchedule.map((e) => `${e.person}|${e.type}`));
+        const ids = new Set(stored.leadershipSchedule.map((e) => e.id));
+        for (const e of seedLeadershipSchedule()) {
+          if (!have.has(`${e.person}|${e.type}`) && !ids.has(e.id)) { stored.leadershipSchedule.push(e); have.add(`${e.person}|${e.type}`); }
+        }
+        stored.scheduleVersion = 2;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {

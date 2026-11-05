@@ -635,3 +635,9 @@ a.doc-title:hover { text-decoration: underline; }
 .sched-pill:hover { background: color-mix(in srgb, var(--c) 36%, white); }
 .sched-panel-actions { display: flex; gap: 8px; padding-top: 16px; }
 .ts-body input.sched-time { width: 100%; background: var(--bg-raised-2); border: 1px solid var(--border); border-radius: 7px; padding: 7px 9px; color: var(--text); }
+.sched-chip-add { opacity: 1; border-style: dashed; color: var(--text-dim); background: transparent; }
+.sched-chip-add:hover { color: var(--accent); border-color: var(--accent); }
+.sched-add-form { display: inline-flex; align-items: center; gap: 6px; }
+.sched-add-form .cell-input { min-width: 150px; width: 170px; padding: 4px 8px; }
+.sched-add-form .btn { padding: 4px 10px; }
+.sched-add-form input[type="color"] { width: 28px; height: 26px; padding: 0; border: 1px solid var(--border); border-radius: 5px; background: none; cursor: pointer; }

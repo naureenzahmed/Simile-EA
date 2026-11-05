@@ -1,19 +1,25 @@
 import { getData, commit } from '../store.js';
 import { uid, escapeHtml, todayISO } from '../utils.js';
-import { LEADERS, SCHEDULE_TYPES } from '../seed.js';
+
 
 export const SCHEDULE_TITLE = 'Leadership Schedule Management';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
+// Colours offered for new meeting types (first unused one is picked by default).
+const EXTRA_COLORS = ['#b48ee0', '#e88fb4', '#5fc4c4', '#c9b458', '#8f9bb3', '#f2a65a', '#6c8cff', '#a3c45f'];
+
 // View state lives here (not saved), so it survives re-renders while you click around.
+// Filters store what is hidden, so newly added people and types show by default.
 const view = {
   month: todayISO().slice(0, 7), // "YYYY-MM"
-  types: new Set(SCHEDULE_TYPES.map((t) => t.key)),
-  people: new Set(LEADERS),
+  hiddenTypes: new Set(),
+  hiddenPeople: new Set(),
+  adding: null, // 'person' | 'type' while an add form is open
 };
 
-const typeOf = (key) => SCHEDULE_TYPES.find((t) => t.key === key) || { key, label: key || 'Other', color: '#b8b6b2' };
+const lists = () => ({ leaders: getData().scheduleLeaders, types: getData().scheduleTypes });
+const typeOf = (key) => lists().types.find((t) => t.key === key) || { key, label: key || 'Other', color: '#b8b6b2' };
 
 function iso(d) {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -45,7 +51,9 @@ function fmtTime(t) {
 
 export function renderLeadershipSchedule(container) {
   const entries = getData().leadershipSchedule;
-  const visible = entries.filter((e) => view.types.has(e.type) && view.people.has(e.person));
+  const { leaders, types } = lists();
+  const visible = entries.filter((e) => !view.hiddenTypes.has(e.type) && !view.hiddenPeople.has(e.person));
+  const nextColor = EXTRA_COLORS.find((c) => !types.some((t) => t.color === c)) || EXTRA_COLORS[0];
   const today = todayISO();
   const days = gridDays(view.month);
 
@@ -59,17 +67,32 @@ export function renderLeadershipSchedule(container) {
       <div class="sched-filter-row">
         <div class="sched-filter-label">Type</div>
         <div class="sched-chips">
-          ${SCHEDULE_TYPES.map((t) => `
-            <button class="sched-chip ${view.types.has(t.key) ? 'on' : ''}" data-filter-type="${t.key}" title="Show or hide ${escapeHtml(t.label)}">
+          ${types.map((t) => `
+            <button class="sched-chip ${view.hiddenTypes.has(t.key) ? '' : 'on'}" data-filter-type="${t.key}" title="Show or hide ${escapeHtml(t.label)}">
               <span class="sched-swatch" style="background:${t.color}"></span>${escapeHtml(t.label)}
             </button>
           `).join('')}
+          ${view.adding === 'type' ? `
+            <span class="sched-add-form">
+              <input type="color" id="sched-new-type-color" value="${nextColor}" title="Colour" />
+              <input type="text" id="sched-new-type" class="cell-input" placeholder="Meeting type" />
+              <button class="btn btn-primary" id="sched-new-type-save">Add</button>
+              <button class="btn btn-ghost" data-cancel-add>Cancel</button>
+            </span>
+          ` : '<button class="sched-chip sched-chip-add" id="sched-add-type">+ Add type</button>'}
         </div>
       </div>
       <div class="sched-filter-row">
         <div class="sched-filter-label">Person</div>
         <div class="sched-chips">
-          ${LEADERS.map((p) => `<button class="sched-chip ${view.people.has(p) ? 'on' : ''}" data-filter-person="${escapeHtml(p)}">${escapeHtml(p)}</button>`).join('')}
+          ${leaders.map((p) => `<button class="sched-chip ${view.hiddenPeople.has(p) ? '' : 'on'}" data-filter-person="${escapeHtml(p)}">${escapeHtml(p)}</button>`).join('')}
+          ${view.adding === 'person' ? `
+            <span class="sched-add-form">
+              <input type="text" id="sched-new-person" class="cell-input" placeholder="Name" />
+              <button class="btn btn-primary" id="sched-new-person-save">Add</button>
+              <button class="btn btn-ghost" data-cancel-add>Cancel</button>
+            </span>
+          ` : '<button class="sched-chip sched-chip-add" id="sched-add-person">+ Add person</button>'}
         </div>
       </div>
       <div class="sched-filter-foot">
@@ -87,7 +110,7 @@ export function renderLeadershipSchedule(container) {
           <h4 style="margin:0 0 0 8px;">${monthLabel(view.month)}</h4>
         </div>
         <div class="sched-legend">
-          ${SCHEDULE_TYPES.map((t) => `<span><span class="sched-swatch" style="background:${t.color}"></span>${escapeHtml(t.label)}</span>`).join('')}
+          ${types.map((t) => `<span><span class="sched-swatch" style="background:${t.color}"></span>${escapeHtml(t.label)}</span>`).join('')}
         </div>
       </div>
       <div class="sched-grid">
@@ -116,15 +139,51 @@ export function renderLeadershipSchedule(container) {
 
 function wire(container, entries) {
   const rerender = () => renderLeadershipSchedule(container);
+  const { leaders, types } = lists();
   const toggle = (set, value) => { if (set.has(value)) set.delete(value); else set.add(value); rerender(); };
 
-  container.querySelectorAll('[data-filter-type]').forEach((b) => b.addEventListener('click', () => toggle(view.types, b.dataset.filterType)));
-  container.querySelectorAll('[data-filter-person]').forEach((b) => b.addEventListener('click', () => toggle(view.people, b.dataset.filterPerson)));
+  container.querySelectorAll('[data-filter-type]').forEach((b) => b.addEventListener('click', () => toggle(view.hiddenTypes, b.dataset.filterType)));
+  container.querySelectorAll('[data-filter-person]').forEach((b) => b.addEventListener('click', () => toggle(view.hiddenPeople, b.dataset.filterPerson)));
   container.querySelector('#sched-show-all').addEventListener('click', () => {
-    SCHEDULE_TYPES.forEach((t) => view.types.add(t.key));
-    LEADERS.forEach((p) => view.people.add(p));
+    view.hiddenTypes.clear();
+    view.hiddenPeople.clear();
     rerender();
   });
+
+  // Add a person or a meeting type from the filter rows.
+  const openAdd = (kind) => {
+    view.adding = kind;
+    rerender();
+    container.querySelector(kind === 'person' ? '#sched-new-person' : '#sched-new-type')?.focus();
+  };
+  container.querySelector('#sched-add-person')?.addEventListener('click', () => openAdd('person'));
+  container.querySelector('#sched-add-type')?.addEventListener('click', () => openAdd('type'));
+  container.querySelectorAll('[data-cancel-add]').forEach((b) => b.addEventListener('click', () => { view.adding = null; rerender(); }));
+
+  const addPerson = () => {
+    const input = container.querySelector('#sched-new-person');
+    const name = input.value.trim();
+    if (!name) return input.focus();
+    if (leaders.some((p) => p.toLowerCase() === name.toLowerCase())) { input.select(); return; }
+    leaders.push(name);
+    commit();
+    view.adding = null;
+    rerender();
+  };
+  const addType = () => {
+    const input = container.querySelector('#sched-new-type');
+    const label = input.value.trim();
+    if (!label) return input.focus();
+    if (types.some((t) => t.label.toLowerCase() === label.toLowerCase())) { input.select(); return; }
+    types.push({ key: uid('type'), label, color: container.querySelector('#sched-new-type-color').value });
+    commit();
+    view.adding = null;
+    rerender();
+  };
+  container.querySelector('#sched-new-person-save')?.addEventListener('click', addPerson);
+  container.querySelector('#sched-new-type-save')?.addEventListener('click', addType);
+  container.querySelector('#sched-new-person')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') addPerson(); if (e.key === 'Escape') { view.adding = null; rerender(); } });
+  container.querySelector('#sched-new-type')?.addEventListener('keydown', (e) => { if (e.key === 'Enter') addType(); if (e.key === 'Escape') { view.adding = null; rerender(); } });
 
   container.querySelector('#sched-prev').addEventListener('click', () => { view.month = shiftMonth(view.month, -1); rerender(); });
   container.querySelector('#sched-next').addEventListener('click', () => { view.month = shiftMonth(view.month, 1); rerender(); });
@@ -145,7 +204,8 @@ function wire(container, entries) {
 // Side panel for adding or editing one entry.
 function openPanel(container, entries, entry, day) {
   closePanel();
-  const e = entry || { person: LEADERS[0], type: SCHEDULE_TYPES[0].key, title: '', start: day, end: day, time: '', notes: '' };
+  const { leaders, types } = lists();
+  const e = entry || { person: leaders[0] || '', type: types[0]?.key || '', title: '', start: day, end: day, time: '', notes: '' };
 
   const overlay = document.createElement('div');
   overlay.className = 'sidebar-overlay';
@@ -160,10 +220,10 @@ function openPanel(container, entries, entry, day) {
     </div>
     <div class="ts-body">
       <div class="ts-field"><div class="ts-field-label">Who</div>
-        <select id="sp-person">${LEADERS.map((p) => `<option ${p === e.person ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('')}</select>
+        <select id="sp-person">${leaders.map((p) => `<option ${p === e.person ? 'selected' : ''}>${escapeHtml(p)}</option>`).join('')}</select>
       </div>
       <div class="ts-field"><div class="ts-field-label">Type</div>
-        <select id="sp-type">${SCHEDULE_TYPES.map((t) => `<option value="${t.key}" ${t.key === e.type ? 'selected' : ''}>${escapeHtml(t.label)}</option>`).join('')}</select>
+        <select id="sp-type">${types.map((t) => `<option value="${t.key}" ${t.key === e.type ? 'selected' : ''}>${escapeHtml(t.label)}</option>`).join('')}</select>
       </div>
       <div class="ts-field"><div class="ts-field-label">Title</div>
         <input type="text" id="sp-title" value="${escapeHtml(e.title)}" placeholder="e.g. Customer QBR" />

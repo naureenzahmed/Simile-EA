@@ -269,7 +269,7 @@ export const SCHEDULE_TYPES = [
   { key: 'office', label: 'In office', color: '#7cc49a' },
 ];
 
-function seedLeadershipSchedule() {
+export function seedLeadershipSchedule() {
   return [
     ['Lainie', 'customer', 'Customer QBR', '2026-11-10', '2026-11-10', '10:00'],
     ['Eileen', 'onsite', 'Client onsite', '2026-11-17', '2026-11-18', ''],
@@ -278,6 +278,27 @@ function seedLeadershipSchedule() {
     ['Madison', 'customer', 'Prospect intro call', '2026-11-11', '2026-11-11', '14:00'],
     ['Mihika', 'office', 'In office (NYC)', '2026-11-16', '2026-11-16', ''],
     ['Matan', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
+    ['Lainie', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
+    ['Lainie', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
+    ['Lainie', 'office', 'In office (SF)', '2026-11-16', '2026-11-16', ''],
+    ['Eileen', 'customer', 'Customer check-in', '2026-11-05', '2026-11-05', '11:00'],
+    ['Eileen', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
+    ['Eileen', 'office', 'In office (SF)', '2026-11-10', '2026-11-10', ''],
+    ['Julia', 'customer', 'Renewal call', '2026-11-17', '2026-11-17', '13:00'],
+    ['Julia', 'onsite', 'Client onsite', '2026-12-01', '2026-12-02', ''],
+    ['Julia', 'office', 'In office (NYC)', '2026-11-23', '2026-11-23', ''],
+    ['Olivia', 'customer', 'Customer QBR', '2026-11-12', '2026-11-12', '15:00'],
+    ['Olivia', 'onsite', 'Client onsite', '2026-11-24', '2026-11-25', ''],
+    ['Olivia', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
+    ['Madison', 'onsite', 'Client onsite', '2026-11-18', '2026-11-19', ''],
+    ['Madison', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
+    ['Madison', 'office', 'In office (SF)', '2026-11-03', '2026-11-03', ''],
+    ['Mihika', 'customer', 'Prospect demo', '2026-11-09', '2026-11-09', '09:30'],
+    ['Mihika', 'onsite', 'Client onsite', '2026-11-30', '2026-12-01', ''],
+    ['Mihika', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
+    ['Matan', 'customer', 'Customer kickoff', '2026-11-23', '2026-11-23', '16:00'],
+    ['Matan', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
+    ['Matan', 'office', 'In office (NYC)', '2026-11-11', '2026-11-11', ''],
   ].map(([person, type, title, start, end, time], i) => ({ id: `sched-${i + 1}`, person, type, title, start, end, time, notes: '' }));
 }
 
@@ -393,6 +414,9 @@ export function seedData() {
     ],
     events: seedEvents(),
     leadershipSchedule: seedLeadershipSchedule(),
+    scheduleVersion: 2,
+    scheduleLeaders: [...LEADERS],
+    scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',
     pageNotes: {
       recruitment: 'This is to bring top-of-funnel talent towards Simile.\n\nA note on events: it’s much more interesting to do events in partnership with others, since it has the same impact with much less effort and time spent. For school partnerships, the goal is to create relationships early, so when there is very strong talent, it gets funneled to us quickly.\n\nTo create a successful funnel for Simile, there need to be multiple long-term relationships put in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for those already in the ecosystem\n• Event attendance, to really understand who we are getting in front of and whether we are getting in front of the right people — whether that is a potential employee of a future client, or our own future employee\n• Event partnerships, as our ICPs converge\n• Companies to track employees at, as these would be recruiting for more senior roles with the same level of intensity and grit as Simile\n• The count from overview leads into interview booked, and the delta between them',
