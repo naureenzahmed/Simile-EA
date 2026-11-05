@@ -15,6 +15,15 @@ function load() {
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
+      // Swap the template's old team colors for the Simile palette.
+      const NEW_COLORS = { '#6c8cff': '#ff7a66', '#ef6f6c': '#7fb8e6', '#57c785': '#e0a95a' };
+      for (const team of stored.teams || []) {
+        if (NEW_COLORS[team.color]) { team.color = NEW_COLORS[team.color]; changed = true; }
+      }
+      // Backfill notes for pages added after this data was first saved.
+      for (const key of Object.keys(fresh.pageNotes)) {
+        if (!(key in stored.pageNotes)) { stored.pageNotes[key] = fresh.pageNotes[key]; changed = true; }
+      }
       if (changed) save(stored);
       return stored;
     }

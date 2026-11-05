@@ -1,9 +1,9 @@
 import { addDays, todayISO, uid } from './utils.js';
 
 export const TEAMS = [
-  { id: 'team-a', name: 'Team A', color: '#6c8cff' },
-  { id: 'team-b', name: 'Team B', color: '#ef6f6c' },
-  { id: 'team-c', name: 'Team C', color: '#57c785' },
+  { id: 'team-a', name: 'Team A', color: '#ff7a66' },
+  { id: 'team-b', name: 'Team B', color: '#7fb8e6' },
+  { id: 'team-c', name: 'Team C', color: '#e0a95a' },
 ];
 
 export const PEOPLE = [
@@ -197,6 +197,135 @@ function seedDocs() {
   ];
 }
 
+// Columns of the Client Materials "Clients" table.
+export const CLIENT_FIELDS = [
+  { key: 'clientName', label: 'Client Name' },
+  { key: 'status', label: 'Status' },
+  { key: 'driveLink', label: 'Link to Drive' },
+  { key: 'clientPoc', label: 'PoC at Client' },
+  { key: 'similePoc', label: 'PoC at Simile' },
+  { key: 'industry', label: 'Industry' },
+  { key: 'testRunning', label: 'Test Running' },
+  { key: 'onsiteDate', label: 'Onsite Date', type: 'date' },
+  { key: 'onsiteGoal', label: 'Onsite Goal' },
+];
+
+function mkClubs(names) {
+  return names.map((name) => ({
+    id: uid('club'), name, goal: '', theyGet: '', weGet: '',
+    progressCurrent: 0, progressTarget: 100, eventDate: '', partnershipDate: '',
+  }));
+}
+
+function seedRecruitment() {
+  return [
+    {
+      id: 'rec-schools',
+      title: 'School Partnerships',
+      entities: [
+        { name: 'MIT', links: mkClubs(['MIT Driverless']) },
+        { name: 'Waterloo', links: mkClubs(['Coop Programs', 'Socratica', 'Design Teams', 'WATonomous', 'WAT.ai']) },
+        { name: 'UBC', links: mkClubs(['UBC Thunderbots']) },
+        { name: 'UofT', links: mkClubs(['UTMIST']) },
+        { name: 'McGill', links: mkClubs(['McGill Ventures', 'McHacks', 'NOBE McGill', 'JEG Consulting', 'Nord Consulting', 'MES']) },
+        { name: 'McMaster', links: mkClubs(['DeltaHacks', 'McMaster AI Society', 'McMaster Robotics']) },
+        { name: 'TMU', links: mkClubs(['Hack the 6ix', 'TMU AI']) },
+        { name: 'Simon Fraser', links: mkClubs(['SFU Surge', 'SFU AI Club']) },
+        { name: 'Western', links: mkClubs(['Hack Western', 'Ivey FinTech Club']) },
+        { name: 'Queen’s', links: mkClubs([]) },
+        { name: 'Concordia', links: mkClubs(['ConUHacks', 'Space Concordia', 'District 3']) },
+      ],
+      metrics: [
+        { id: 'm1', label: 'Leads (#)', target: 10, values: {} },
+        { id: 'm2', label: 'Interview Booked (%)', target: '1%', values: {} },
+        { id: 'm3', label: 'Interview Booked (#)', target: 5, values: {} },
+      ],
+    },
+    {
+      id: 'rec-sponsorships',
+      title: 'Event Sponsorships',
+      metrics: [
+        { id: 'm1', label: 'Budget', target: '$1,000 / in-kind / intros', values: {} },
+        { id: 'm2', label: 'Our interest', target: 'Videos, talent', values: {} },
+        { id: 'm3', label: 'Type of talent', target: 'Eng / Ops / Sales', values: {} },
+        { id: 'm4', label: 'Number of events', note: 'Look at hiring from that same level of talent.', target: null, values: {} },
+        { id: 'm5', label: 'Demographic reached', target: null, values: {} },
+        { id: 'm6', label: 'Leads (#)', target: '40 per event', values: {} },
+        { id: 'm7', label: 'Interview Booked (%)', target: '75%', values: {} },
+        { id: 'm8', label: 'Interview Booked (#)', target: '15 per event', values: {} },
+      ],
+    },
+    {
+      id: 'rec-attendance',
+      title: 'Event Attendance',
+      entities: [
+        { name: 'Socratica Symposium', links: [] },
+        { name: 'GenAI Genesis', links: [] },
+        { name: 'Hack the North', links: [] },
+        { name: 'MILA ALL-IN', links: [] },
+      ],
+      metrics: [
+        { id: 'm1', label: 'Leads (#)', target: 100, values: {} },
+        { id: 'm2', label: 'Interview Booked (%)', target: '20%', values: {} },
+        { id: 'm3', label: 'Interview Booked (#)', target: 20, values: {} },
+      ],
+    },
+    {
+      id: 'rec-partnerships',
+      title: 'Partnership Events',
+      entities: [
+        { name: 'Mecka AI', note: 'Recruit same level of talent' },
+        { name: 'Rootly', note: '' },
+        { name: 'Turbopuffer', note: 'Strong technical talent, able to work under pressure' },
+        { name: 'Nationgraph', note: '' },
+        { name: 'Cambridge', note: 'New avenues of growth and sales skills' },
+        { name: 'Shopify', note: '' },
+        { name: 'Gumloop', note: '' },
+        { name: 'Sanctuary AI', note: '' },
+      ],
+      metrics: [
+        { id: 'm1', label: 'Leads (#)', target: '40 per event', values: {} },
+        { id: 'm2', label: 'Interview Booked (%)', target: '37.5%', values: {} },
+        { id: 'm3', label: 'Interview Booked (#)', target: '15 per event', values: {} },
+      ],
+    },
+    {
+      id: 'rec-companies',
+      title: 'Companies to Track Employees',
+      note: 'Companies with a similar culture and ambition in the industry. There’s a lot of overlap and the right industry backgrounds. As these companies get significantly larger, employees lose ownership — Simile can offer all the benefits these companies provide, on top of responsibility and ownership.',
+      entities: [
+        { name: 'Sanctuary AI', links: [] },
+        { name: 'Waabi', links: [] },
+        { name: 'Stan', links: [] },
+        { name: 'Gumloop', links: [] },
+        { name: 'Float Financial', links: [] },
+        { name: 'Venn', links: [] },
+        { name: 'Botpress', links: [] },
+        { name: 'Planned', links: [] },
+        { name: 'Deck', links: [] },
+        { name: 'Rootly', links: [] },
+        { name: 'Shopify', links: [] },
+        { name: 'Turbopuffer', links: [] },
+        { name: 'Ramp', links: [] },
+      ],
+      metrics: [
+        { id: 'm1', label: 'Leads (#)', target: 130, values: {} },
+        { id: 'm2', label: 'Interview Booked (%)', target: '15%', values: {} },
+        { id: 'm3', label: 'Interview Booked (#)', target: 20, values: {} },
+      ],
+    },
+    {
+      id: 'rec-total',
+      title: 'Total',
+      metrics: [
+        { id: 'm1', label: 'Leads (#)', target: null, values: {} },
+        { id: 'm2', label: 'Interview Booked (%)', target: null, values: {} },
+        { id: 'm3', label: 'Interview Booked (#)', target: null, values: {} },
+      ],
+    },
+  ];
+}
+
 export function seedData() {
   const year = new Date().getFullYear();
   return {
@@ -210,8 +339,19 @@ export function seedData() {
     metrics: seedMetrics(),
     okrs: seedOkrs(),
     docs: seedDocs(),
+    recruitment: seedRecruitment(),
+    clientMaterials: [
+      {
+        id: 'clients',
+        title: 'Clients',
+        fields: CLIENT_FIELDS,
+        entries: [],
+      },
+    ],
     slackWebhookUrl: '',
     pageNotes: {
+      recruitment: 'This is to bring top-of-funnel talent towards Simile.\n\nA note on events: it’s much more interesting to do events in partnership with others, since it has the same impact with much less effort and time spent. For school partnerships, the goal is to create relationships early, so when there is very strong talent, it gets funneled to us quickly.\n\nTo create a successful funnel for Simile, there need to be multiple long-term relationships put in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for those already in the ecosystem\n• Event attendance, to really understand who we are getting in front of and whether we are getting in front of the right people — whether that is a potential employee of a future client, or our own future employee\n• Event partnerships, as our ICPs converge\n• Companies to track employees at, as these would be recruiting for more senior roles with the same level of intensity and grit as Simile\n• The count from overview leads into interview booked, and the delta between them',
+      operations: 'This page shows all team milestones as well as each teammate’s capacity. It also includes team composition, so any changes in a project or shifts in direction can be easily assigned to a teammate who has the capacity for it. Anyone newly onboarded can see who is working on what, what everyone’s capacity looks like, and who they can reach out to for support at any given time.',
       documentation: 'This houses all the processes, SOPs, and links that would be helpful, so it’s easy access for myself, anyone working with me, and anyone I need to train. I can just send them this document list. It will have all the history and the lists I used for any of my campaigns. This is created for efficiency for myself but also for anyone working with me.',
       roadmap: 'This allows anyone working with me to understand timelines on a weekly basis by looking at exactly when I plan on starting initiatives, experiments, or tasks and when I plan on finishing them. It gives a better idea of what’s going on with my progress.\n\nOn top of that, it has goals, metrics, and objectives to really show what the progress is and really understand how much more needs to be done to hit the end goals. It also includes a monthly calendar with deadlines, so there’s a better idea of what needs to happen each month and each day. Working backwards, we can understand what needs to be done.',
     },

@@ -59,6 +59,7 @@ a { color: inherit; }
   align-items: flex-end;
   gap: 28px;
   align-self: stretch;
+  min-width: 0;
 }
 
 .wordmark {
@@ -80,7 +81,8 @@ a { color: inherit; }
 
 /* Folder tabs: each tab is a file-folder tab. Inactive ones sit behind
    and overlap; the active one comes forward and joins the page below. */
-.nav-tabs { display: flex; align-items: flex-end; margin-bottom: -1px; padding-left: 6px; }
+.nav-tabs { display: flex; align-items: flex-end; margin-bottom: -1px; padding: 4px 0 0 6px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
+.nav-tabs::-webkit-scrollbar { display: none; }
 .nav-tab {
   position: relative;
   display: flex;

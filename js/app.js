@@ -2,13 +2,18 @@ import { getData, commit } from './store.js';
 import { renderCover } from './pages/cover.js';
 import { renderDocumentation } from './pages/documentation.js';
 import { renderRoadmap } from './pages/roadmap.js';
+import { renderClientMaterials } from './pages/clientMaterials.js';
+import { renderTeamManagement } from './pages/teamManagement.js';
+import { renderRecruitment } from './pages/recruitment.js';
 import { blankPage } from './pages/blankPage.js';
 
 const PAGES = {
   home: { label: 'Home', render: renderCover },
   documentation: { label: 'Documentation', render: renderDocumentation },
   roadmap: { label: 'Roadmap', render: renderRoadmap },
-  territoryManagement: { label: 'Territory Management', render: blankPage('Territory Management') },
+  operations: { label: 'Team Management', render: renderTeamManagement },
+  recruitment: { label: 'Recruitment', render: renderRecruitment },
+  clientMaterials: { label: 'Client Materials', render: renderClientMaterials },
   inboundLeads: { label: 'Leads Management', render: blankPage('Leads Management') },
   paidConversions: { label: 'Outbound', render: blankPage('Outbound') },
   gtmExperiments: { label: 'GTM Experiments', render: blankPage('GTM Experiments') },

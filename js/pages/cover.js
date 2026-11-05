@@ -39,8 +39,20 @@ function buildManifest(data) {
       ],
     },
     {
-      key: 'territoryManagement', label: 'Territory Management',
-      subsections: [],
+      key: 'operations', label: 'Team Management',
+      subsections: [
+        { id: 'ops-milestones', label: 'Key milestones' },
+        { id: 'ops-availability', label: 'Availability' },
+        { id: 'ops-teams', label: 'Team composition' },
+      ],
+    },
+    {
+      key: 'recruitment', label: 'Recruitment',
+      subsections: data.recruitment.filter((s) => !s.isIntro).map((s) => ({ id: s.id, label: s.title })),
+    },
+    {
+      key: 'clientMaterials', label: 'Client Materials',
+      subsections: data.clientMaterials.map((s) => ({ id: s.id, label: s.title })),
     },
     {
       key: 'inboundLeads', label: 'Leads Management',
