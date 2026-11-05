@@ -33,6 +33,7 @@ function buildManifest(data) {
         { id: 'roadmap-okr-section', label: 'OKRs' },
         { id: 'roadmap-calendar-section', label: 'Calendar' },
         { id: 'roadmap-tracked-goals', label: 'Tracked Goals' },
+        { id: 'roadmap-clients', label: 'Client Materials' },
       ],
     },
     {
@@ -52,10 +53,6 @@ function buildManifest(data) {
     {
       key: 'recruitment', label: 'Recruitment',
       subsections: data.recruitment.filter((s) => !s.isIntro).map((s) => ({ id: s.id, label: s.title })),
-    },
-    {
-      key: 'clientMaterials', label: 'Client Materials',
-      subsections: data.clientMaterials.map((s) => ({ id: s.id, label: s.title })),
     },
     {
       key: 'events', label: 'Events & Offsites',

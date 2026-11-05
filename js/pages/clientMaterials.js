@@ -10,7 +10,6 @@ export function renderClientMaterials(container) {
   if (clients) clients.fields = CLIENT_FIELDS;
 
   container.innerHTML = `
-    <div class="page-title">Client Materials</div>
     <div id="client-sections" class="stack-16"></div>
   `;
 
