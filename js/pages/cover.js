@@ -55,15 +55,11 @@ function buildManifest(data) {
       subsections: data.clientMaterials.map((s) => ({ id: s.id, label: s.title })),
     },
     {
+      key: 'events', label: 'Events & Offsites',
+      subsections: [{ id: 'events-contents', label: 'Table of Contents' }, ...data.events.map((e) => ({ id: e.id, label: e.name || 'Untitled event' }))],
+    },
+    {
       key: 'inboundLeads', label: 'Leads Management',
-      subsections: [],
-    },
-    {
-      key: 'paidConversions', label: 'Outbound',
-      subsections: [],
-    },
-    {
-      key: 'gtmExperiments', label: 'GTM Experiments',
       subsections: [],
     },
   ];

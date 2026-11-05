@@ -216,6 +216,51 @@ export function techStackRows() {
   return TECH_STACK.map(([software, description, cost], i) => ({ id: `tech-${i + 1}`, software, description, cost }));
 }
 
+export const EVENT_TYPES = ['GTM Offsite', 'Sales Kickoff', 'Executive Customer Dinner', 'Industry Event', 'Other'];
+export const EVENT_STATUSES = ['Idea', 'Planning', 'Confirmed', 'Completed', 'Cancelled'];
+export const EVENT_PHASES = [
+  { key: 'pre', label: 'Pre-event' },
+  { key: 'during', label: 'During' },
+  { key: 'after', label: 'After event' },
+];
+
+const EVENT_CHECKLIST = {
+  pre: [
+    'Lead list of target accounts',
+    'Booth presentation and materials',
+    'Booth staffing, scripts and run-of-show',
+  ],
+  during: [
+    'Follow up with event organiser for Wi-Fi and connection',
+    'Lead list',
+    'Calendar open for call bookings',
+    'HubSpot to track all the conversations',
+  ],
+  after: [
+    'Follow-ups on conversations',
+    'Marketing on the recap from our attendance',
+  ],
+};
+
+export function eventChecklist(eventId) {
+  const out = {};
+  for (const phase of EVENT_PHASES) {
+    out[phase.key] = EVENT_CHECKLIST[phase.key].map((text, i) => ({ id: `${eventId}-${phase.key}-${i + 1}`, text, done: false }));
+  }
+  return out;
+}
+
+function seedEvents() {
+  return [
+    ['evt-gtm-offsite', 'Q1 GTM Offsite', 'GTM Offsite', 'Two-day offsite for sales, marketing and customer success to agree on 2027 targets, territories and plays.', '2027-01-14', 'Napa, CA', 'Planning'],
+    ['evt-sales-kickoff', '2027 Sales Kickoff', 'Sales Kickoff', 'Annual kickoff covering the product roadmap, the new pitch, enablement sessions and awards.', '2027-02-03', 'San Francisco, CA', 'Planning'],
+    ['evt-exec-dinner', 'NYC Executive Customer Dinner', 'Executive Customer Dinner', 'Private dinner for about 12 customer and prospect executives to build relationships and hear feedback.', '2026-12-03', 'New York, NY', 'Confirmed'],
+    ['evt-industry', 'Industry Conference (booth)', 'Industry Event', 'Booth at a large industry conference to meet target accounts and book follow-up calls.', '2027-03-10', 'Las Vegas, NV', 'Idea'],
+  ].map(([id, name, type, description, date, location, status]) => ({
+    id, name, type, description, date, location, status, checklist: eventChecklist(id),
+  }));
+}
+
 export const CLIENT_FIELDS = [
   { key: 'clientName', label: 'Client Name' },
   { key: 'status', label: 'Status' },
@@ -326,6 +371,7 @@ export function seedData() {
         entries: [],
       },
     ],
+    events: seedEvents(),
     slackWebhookUrl: '',
     pageNotes: {
       recruitment: 'This is to bring top-of-funnel talent towards Simile.\n\nA note on events: it’s much more interesting to do events in partnership with others, since it has the same impact with much less effort and time spent. For school partnerships, the goal is to create relationships early, so when there is very strong talent, it gets funneled to us quickly.\n\nTo create a successful funnel for Simile, there need to be multiple long-term relationships put in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for those already in the ecosystem\n• Event attendance, to really understand who we are getting in front of and whether we are getting in front of the right people — whether that is a potential employee of a future client, or our own future employee\n• Event partnerships, as our ICPs converge\n• Companies to track employees at, as these would be recruiting for more senior roles with the same level of intensity and grit as Simile\n• The count from overview leads into interview booked, and the delta between them',
