@@ -1,6 +1,6 @@
 import { seedData } from './seed.js';
 
-const STORAGE_KEY = 'simileEAData.v1';
+const STORAGE_KEY = 'simileEAData.v2';
 
 let data = load();
 

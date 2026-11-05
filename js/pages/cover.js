@@ -1,6 +1,5 @@
 import { getData } from '../store.js';
 import { escapeHtml } from '../utils.js';
-import { SOURCE_TYPES, sourceSectionId } from './inboundLeads.js';
 
 export function renderCover(container) {
   const data = getData();
@@ -32,19 +31,19 @@ function buildManifest(data) {
     },
     {
       key: 'territoryManagement', label: 'Territory Management',
-      subsections: data.territoryManagement.map((s) => ({ id: s.id, label: s.title })),
+      subsections: [],
     },
     {
       key: 'inboundLeads', label: 'Leads Management',
-      subsections: SOURCE_TYPES.map((source) => ({ id: sourceSectionId(source), label: source })),
+      subsections: [],
     },
     {
       key: 'paidConversions', label: 'Outbound',
-      subsections: data.paidConversions.filter((s) => !s.isIntro).map((s) => ({ id: s.id, label: s.title })),
+      subsections: [],
     },
     {
       key: 'gtmExperiments', label: 'GTM Experiments',
-      subsections: data.gtmExperiments.map((s) => ({ id: s.id, label: s.title })),
+      subsections: [],
     },
     {
       key: 'roadmap', label: 'Roadmap',

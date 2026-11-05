@@ -1,19 +1,16 @@
 import { getData, commit } from './store.js';
 import { renderCover } from './pages/cover.js';
 import { renderDocumentation } from './pages/documentation.js';
-import { renderTerritoryManagement } from './pages/territoryManagement.js';
 import { renderRoadmap } from './pages/roadmap.js';
-import { renderPaidConversions } from './pages/paidConversions.js';
-import { renderInboundLeads } from './pages/inboundLeads.js';
-import { renderGtmExperiments } from './pages/gtmExperiments.js';
+import { blankPage } from './pages/blankPage.js';
 
 const PAGES = {
   home: { label: 'Home', render: renderCover },
   documentation: { label: 'Documentation', render: renderDocumentation },
-  territoryManagement: { label: 'Territory Management', render: renderTerritoryManagement },
-  inboundLeads: { label: 'Leads Management', render: renderInboundLeads },
-  paidConversions: { label: 'Outbound', render: renderPaidConversions },
-  gtmExperiments: { label: 'GTM Experiments', render: renderGtmExperiments },
+  territoryManagement: { label: 'Territory Management', render: blankPage('Territory Management') },
+  inboundLeads: { label: 'Leads Management', render: blankPage('Leads Management') },
+  paidConversions: { label: 'Outbound', render: blankPage('Outbound') },
+  gtmExperiments: { label: 'GTM Experiments', render: blankPage('GTM Experiments') },
   roadmap: { label: 'Roadmap', render: renderRoadmap },
 };
 
@@ -50,7 +47,6 @@ export function rerender() {
 function renderHeader(route) {
   const data = getData();
   const header = document.getElementById('app-header');
-  const pct = data.companyGoal.target ? Math.round((data.companyGoal.current / data.companyGoal.target) * 100) : 0;
 
   header.innerHTML = `
     <div class="header-left">
@@ -63,26 +59,8 @@ function renderHeader(route) {
         `).join('')}
       </nav>
     </div>
-    <div class="header-goal" id="header-goal">
-      <div>
-        <div class="goal-sub">${escapeAttr(data.companyGoal.title)}</div>
-        <div class="goal-value">${data.companyGoal.current}${data.companyGoal.unit} <span class="goal-sub">/ ${data.companyGoal.target}${data.companyGoal.unit}</span></div>
-      </div>
-      <span class="pill">${pct}%</span>
-    </div>
   `;
 
-  document.getElementById('header-goal').addEventListener('click', () => {
-    const title = prompt('Goal title', data.companyGoal.title);
-    if (title === null) return;
-    const current = Number(prompt('Current value', data.companyGoal.current));
-    const target = Number(prompt('Target value', data.companyGoal.target));
-    data.companyGoal.title = title;
-    if (!Number.isNaN(current)) data.companyGoal.current = current;
-    if (!Number.isNaN(target)) data.companyGoal.target = target;
-    commit();
-    rerender();
-  });
 }
 
 function escapeAttr(s) {
