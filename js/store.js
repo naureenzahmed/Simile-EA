@@ -69,6 +69,20 @@ function load() {
         stored.recruitmentVersion = 6;
         changed = true;
       }
+      // Recruitment v7: fill in Tech Stack costs (leaves any typed-in cost alone).
+      if (stored.recruitment && stored.recruitmentVersion < 7) {
+        const tech = stored.recruitment.find((s) => s.id === 'rec-tech-stack');
+        if (tech && tech.table) {
+          tech.table.fields = TECH_STACK_FIELDS;
+          const costs = Object.fromEntries(techStackRows().map((r) => [r.software.toLowerCase(), r.cost]));
+          for (const row of tech.table.rows) {
+            const cost = costs[(row.software || '').trim().toLowerCase()];
+            if (cost && !row.cost) row.cost = cost;
+          }
+        }
+        stored.recruitmentVersion = 7;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }

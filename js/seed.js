@@ -201,19 +201,19 @@ function seedDocs() {
 export const TECH_STACK_FIELDS = [
   { key: 'software', label: 'Software' },
   { key: 'description', label: 'Description', multiline: true },
-  { key: 'cost', label: 'Cost' },
+  { key: 'cost', label: 'Cost', multiline: true },
 ];
 
 const TECH_STACK = [
-  ['Grokbot', 'Grokbot will be able to reach ideal candidates and automate messaging them. Grokbot allows you to reach LinkedIn (used by sales and ops people heavily) and X (used heavily by engineers and technical people). It will also be able to scrape through new publications and research to find the appropriate people in highly technical fields.'],
-  ['Apollo', 'Apollo can support quick email pulling.'],
-  ['Juicebox', 'Juicebox can run through LinkedIn, Github, Google Scholar and 30 more data sources. We will be able to reach business oriented profiles just as much deep science.'],
-  ['Claude', 'Claude skills can be utilized to connect all of these software and automate the information transfer. Additionally, Claude skills can send the interviewer brief summaries right before the meeting and the appropriate interview questions. An alternative would be Gumloop.'],
-  ['Gem', 'Gem is an Applicant Tracking System (ATS). Once the ideal process is put in, email, scheduling and communication tracking is all automated.'],
+  ['Grokbot', 'Grokbot will be able to reach ideal candidates and automate messaging them. Grokbot allows you to reach LinkedIn (used by sales and ops people heavily) and X (used heavily by engineers and technical people). It will also be able to scrape through new publications and research to find the appropriate people in highly technical fields.', '$30/mo (SuperGrok). Grok Business is $30/user/mo, SuperGrok Lite $10/mo, SuperGrok Heavy $300/mo, Enterprise custom.'],
+  ['Apollo', 'Apollo can support quick email pulling.', '$49–$119/user/mo billed yearly (Basic $49, Professional $79, Organization $119); about $59–$149 billed monthly. Free plan available. Credits, add-ons and overages can raise the total a lot.'],
+  ['Juicebox', 'Juicebox can run through LinkedIn, Github, Google Scholar and 30 more data sources. We will be able to reach business oriented profiles just as much deep science.', 'About $99–$179/seat/mo billed yearly (Starter $99, or $119 monthly; Growth $179). Agents add-on $199/agent/mo. Unlimited searches; contact/export credits capped at 500/mo (Starter) or 1,500/mo (Growth). Prices changed July 2026.'],
+  ['Claude', 'Claude skills can be utilized to connect all of these software and automate the information transfer. Additionally, Claude skills can send the interviewer brief summaries right before the meeting and the appropriate interview questions. An alternative would be Gumloop.', '$20–$25/user/mo for most people (Pro $20, Team Standard $25). Max 5x $100/mo, Max 20x $200/mo, Team Premium $125/user/mo.'],
+  ['Gem', 'Gem is an Applicant Tracking System (ATS). Once the ideal process is put in, email, scheduling and communication tracking is all automated.', 'Most expensive item. Custom quote based on company headcount; Startups plan $270/mo. Median buyer pays about $25,700/yr (SMB average ~$19,800/yr, enterprise average ~$94,600/yr).'],
 ];
 
 export function techStackRows() {
-  return TECH_STACK.map(([software, description], i) => ({ id: `tech-${i + 1}`, software, description, cost: '' }));
+  return TECH_STACK.map(([software, description, cost], i) => ({ id: `tech-${i + 1}`, software, description, cost }));
 }
 
 export const CLIENT_FIELDS = [
@@ -317,7 +317,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 6,
+    recruitmentVersion: 7,
     clientMaterials: [
       {
         id: 'clients',
