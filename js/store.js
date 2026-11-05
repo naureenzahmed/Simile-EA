@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -216,6 +216,14 @@ function load() {
       if (stored.boardInvestor && (stored.boardVersion || 0) < 1) {
         if (!stored.boardInvestor['potential-investors']?.length) stored.boardInvestor['potential-investors'] = potentialInvestorRows();
         stored.boardVersion = 1;
+        changed = true;
+      }
+      // Board v2: the Investors table gets its firms and new columns (link, industry and PoC are gone).
+      if (stored.boardInvestor && (stored.boardVersion || 0) < 2) {
+        const current = stored.boardInvestor.investors || [];
+        const filled = current.filter((r) => Object.entries(r).some(([k, v]) => k !== 'id' && v));
+        stored.boardInvestor.investors = filled.length ? current : currentInvestorRows();
+        stored.boardVersion = 2;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {

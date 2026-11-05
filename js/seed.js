@@ -768,14 +768,16 @@ export const BOARD_SECTIONS = [
     ],
   },
   {
-    id: 'investors', title: 'Investors', note: 'Our VCs and who we work with at each firm.',
+    id: 'investors', title: 'Investors', note: 'Our current investors, the round each came in on and who we work with at each firm.',
     addLabel: 'Add investor',
     fields: [
       { key: 'firm', label: 'Firm Name' },
-      { key: 'link', label: 'Link', type: 'url' },
-      { key: 'industry', label: 'Industry' },
-      { key: 'stage', label: 'Stage', width: 'sm' },
-      { key: 'poc', label: 'PoC' },
+      { key: 'stage', label: 'Stage' },
+      { key: 'partner', label: 'Partner' },
+      { key: 'partnerEmail', label: 'Partner Email' },
+      { key: 'partnerPhone', label: 'Partner Number' },
+      { key: 'boardMember', label: 'Board Member' },
+      { key: 'terms', label: 'Terms Summary', type: 'multiline' },
     ],
   },
   {
@@ -822,6 +824,22 @@ export const BOARD_SECTIONS = [
   },
 ];
 
+const CURRENT_INVESTORS = [
+  ['Index Ventures', 'Series A lead, Series B'],
+  ['Greenoaks', 'Series B lead'],
+  ['Bain Capital Ventures (BCV)', 'Series A, Series B'],
+  ['A*', 'Series A, Series B'],
+  ['Hanabi Capital', 'Series A, Series B'],
+  ['Factory', 'Series B'],
+  ['CVS Health Ventures', 'Series B'],
+  ['Definition', 'Series B'],
+  ['Itaú Ventures', 'Series B extension'],
+];
+
+export function currentInvestorRows() {
+  return CURRENT_INVESTORS.map(([firm, stage], i) => ({ id: `investors-${i + 1}`, firm, stage }));
+}
+
 export function potentialInvestorRows() {
   return POTENTIAL_INVESTORS.map((r, i) => ({ id: `potential-investors-${i + 1}`, ...r }));
 }
@@ -831,7 +849,7 @@ function seedBoardInvestor() {
   return {
     'board-decks': rows('board-decks', ['Q4 2025', 'Q1 2026', 'Q2 2026', 'Q3 2026']),
     'investor-updates': rows('investor-updates', ['August 2026', 'September 2026', 'October 2026']),
-    investors: [],
+    investors: currentInvestorRows(),
     'potential-investors': potentialInvestorRows(),
     'pitch-deck': rows('pitch-deck', ['Current']),
     'key-milestones': rows('key-milestones', ['Revenue', 'Pipeline', 'Headcount', 'Product Updates']),

@@ -677,3 +677,4 @@ a.doc-title:hover { text-decoration: underline; }
 #potential-investors td.board-wide, #potential-investors .board-table .board-textarea { min-width: 200px; }
 #potential-investors .board-link .cell-input { min-width: 150px; }
 #potential-investors td:first-child .cell-input { min-width: 220px; }
+#investors td:nth-child(-n+2) .cell-input { min-width: 200px; }
