@@ -5,7 +5,6 @@ import { renderRoadmap } from './pages/roadmap.js';
 import { renderClientMaterials } from './pages/clientMaterials.js';
 import { renderTeamManagement } from './pages/teamManagement.js';
 import { renderRecruitment } from './pages/recruitment.js';
-import { blankPage } from './pages/blankPage.js';
 import { renderEvents, EVENTS_TITLE } from './pages/events.js';
 import { renderLeadershipSchedule, SCHEDULE_TITLE } from './pages/leadershipSchedule.js';
 import { renderBoardInvestor, BOARD_TITLE } from './pages/boardInvestor.js';
@@ -20,7 +19,6 @@ const PAGES = {
   recruitment: { label: 'Recruitment', render: renderRecruitment },
   clientMaterials: { label: 'Client Materials', render: renderClientMaterials },
   events: { label: EVENTS_TITLE, render: renderEvents },
-  inboundLeads: { label: 'Leads Management', render: blankPage('Leads Management') },
 };
 
 const FOLDER_ICON = '<svg class="folder-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 3.5A1.5 1.5 0 0 1 3 2h3.2c.4 0 .78.16 1.06.44L8.4 3.6H13A1.5 1.5 0 0 1 14.5 5.1V12.5A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5v-9Z"/></svg>';

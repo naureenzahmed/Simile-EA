@@ -67,9 +67,5 @@ function buildManifest(data) {
       key: 'events', label: 'Events & Offsites',
       subsections: [{ id: 'events-contents', label: 'Table of Contents' }, ...data.events.map((e) => ({ id: e.id, label: e.name || 'Untitled event' }))],
     },
-    {
-      key: 'inboundLeads', label: 'Leads Management',
-      subsections: [],
-    },
   ];
 }
