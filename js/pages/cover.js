@@ -1,18 +1,46 @@
-import { getData } from '../store.js';
+import { getData, commit } from '../store.js';
 import { escapeHtml } from '../utils.js';
 import { BOARD_SECTIONS } from '../seed.js';
 
+const ABOUT_PARTS = [
+  { key: 'background', label: 'Background', placeholder: 'Where I come from and what I have worked on.' },
+  { key: 'experience', label: 'Relevant Experience', placeholder: 'Roles and projects that apply to this job.' },
+  { key: 'goals', label: 'What I Want to Get Out of This', placeholder: 'What I hope to learn and achieve.' },
+];
+
 export function renderCover(container) {
   const data = getData();
+  data.home = data.home || { background: '', experience: '', goals: '', why: '', cardNotes: {} };
+  data.home.cardNotes = data.home.cardNotes || {};
+  const home = data.home;
   const pages = buildManifest(data);
 
   container.innerHTML = `
     <div class="page-title">Simile EA</div>
-    <div class="section-desc" style="margin-top:-14px; margin-bottom: 20px;">Jump to any page or section below.</div>
+
+    <div class="card doc-card home-about" id="home-about">
+      <h4 style="margin:0 0 4px;">About Naureen</h4>
+      <div class="home-about-grid">
+        ${ABOUT_PARTS.map((p) => `
+          <div class="home-about-part">
+            <div class="home-sub-title">${p.label}</div>
+            <textarea class="notes-box" data-home="${p.key}" placeholder="${p.placeholder}">${escapeHtml(home[p.key] || '')}</textarea>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="card doc-card home-about" id="home-why">
+      <h4 style="margin:0 0 4px;">Why I Built This</h4>
+      <textarea class="notes-box" data-home="why" placeholder="What this site is for and why I made it.">${escapeHtml(home.why || '')}</textarea>
+    </div>
+
+    <div class="section-desc" style="margin: 24px 0 12px;">Jump to any page or section below.</div>
     <div class="cover-grid">
       ${pages.map((p) => `
         <div class="card cover-card">
           <a class="cover-page-title" href="#/${p.key}">${escapeHtml(p.label)}</a>
+          <textarea class="notes-box cover-notes" data-card-note="${p.key}" rows="2" placeholder="Notes">${escapeHtml(home.cardNotes[p.key] || '')}</textarea>
           ${p.subsections.length ? `
             <ul class="cover-sublist">
               ${p.subsections.map((s) => `<li><a href="#/${p.key}?anchor=${encodeURIComponent(s.id)}">${escapeHtml(s.label)}</a></li>`).join('')}
@@ -22,6 +50,14 @@ export function renderCover(container) {
       `).join('')}
     </div>
   `;
+
+  // Everything saves as you type.
+  container.querySelectorAll('[data-home]').forEach((el) => {
+    el.addEventListener('input', () => { home[el.dataset.home] = el.value; commit(); });
+  });
+  container.querySelectorAll('[data-card-note]').forEach((el) => {
+    el.addEventListener('input', () => { home.cardNotes[el.dataset.cardNote] = el.value; commit(); });
+  });
 }
 
 function buildManifest(data) {
