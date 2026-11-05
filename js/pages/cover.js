@@ -30,7 +30,7 @@ function buildManifest(data) {
       subsections: data.docs.map((s) => ({ id: s.id, label: s.title })),
     },
     {
-      key: 'roadmap', label: 'Roadmap',
+      key: 'roadmap', label: 'GTM Roadmap',
       subsections: [
         { id: 'roadmap-timeline-section', label: 'Timeline / List / Board' },
         { id: 'roadmap-okr-section', label: 'OKRs' },

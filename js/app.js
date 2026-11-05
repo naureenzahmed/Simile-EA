@@ -10,7 +10,7 @@ import { blankPage } from './pages/blankPage.js';
 const PAGES = {
   home: { label: 'Home', render: renderCover },
   documentation: { label: 'Documentation', render: renderDocumentation },
-  roadmap: { label: 'Roadmap', render: renderRoadmap },
+  roadmap: { label: 'GTM Roadmap', render: renderRoadmap },
   operations: { label: 'Team Management', render: renderTeamManagement },
   recruitment: { label: 'Recruitment', render: renderRecruitment },
   clientMaterials: { label: 'Client Materials', render: renderClientMaterials },

@@ -24,8 +24,8 @@ export function renderRoadmap(container) {
     <div class="goal-banner" id="roadmap-timeline-section">
       <div class="goal-title-row">
         <div>
-          <div class="section-label">Roadmap</div>
-          <div class="goal-big">Road map</div>
+          <div class="section-label">GTM Roadmap</div>
+          <div class="goal-big">GTM Roadmap</div>
         </div>
       </div>
       <div class="goal-days">
