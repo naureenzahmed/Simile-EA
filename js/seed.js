@@ -261,6 +261,26 @@ function seedEvents() {
   }));
 }
 
+export const LEADERS = ['Lainie', 'Eileen', 'Julia', 'Olivia', 'Madison', 'Mihika', 'Matan'];
+export const SCHEDULE_TYPES = [
+  { key: 'customer', label: 'Customer meeting', color: '#ff7a66' },
+  { key: 'onsite', label: 'Onsite', color: '#7fb8e6' },
+  { key: 'conference', label: 'Conference', color: '#e0a95a' },
+  { key: 'office', label: 'In office', color: '#7cc49a' },
+];
+
+function seedLeadershipSchedule() {
+  return [
+    ['Lainie', 'customer', 'Customer QBR', '2026-11-10', '2026-11-10', '10:00'],
+    ['Eileen', 'onsite', 'Client onsite', '2026-11-17', '2026-11-18', ''],
+    ['Julia', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
+    ['Olivia', 'office', 'In office (SF)', '2026-11-09', '2026-11-09', ''],
+    ['Madison', 'customer', 'Prospect intro call', '2026-11-11', '2026-11-11', '14:00'],
+    ['Mihika', 'office', 'In office (NYC)', '2026-11-16', '2026-11-16', ''],
+    ['Matan', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
+  ].map(([person, type, title, start, end, time], i) => ({ id: `sched-${i + 1}`, person, type, title, start, end, time, notes: '' }));
+}
+
 export const CLIENT_FIELDS = [
   { key: 'clientName', label: 'Client Name' },
   { key: 'status', label: 'Status' },
@@ -372,6 +392,7 @@ export function seedData() {
       },
     ],
     events: seedEvents(),
+    leadershipSchedule: seedLeadershipSchedule(),
     slackWebhookUrl: '',
     pageNotes: {
       recruitment: 'This is to bring top-of-funnel talent towards Simile.\n\nA note on events: it’s much more interesting to do events in partnership with others, since it has the same impact with much less effort and time spent. For school partnerships, the goal is to create relationships early, so when there is very strong talent, it gets funneled to us quickly.\n\nTo create a successful funnel for Simile, there need to be multiple long-term relationships put in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for those already in the ecosystem\n• Event attendance, to really understand who we are getting in front of and whether we are getting in front of the right people — whether that is a potential employee of a future client, or our own future employee\n• Event partnerships, as our ICPs converge\n• Companies to track employees at, as these would be recruiting for more senior roles with the same level of intensity and grit as Simile\n• The count from overview leads into interview booked, and the delta between them',

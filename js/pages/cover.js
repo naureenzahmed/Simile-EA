@@ -47,6 +47,10 @@ function buildManifest(data) {
       ],
     },
     {
+      key: 'leadershipSchedule', label: 'Leadership Schedule Management',
+      subsections: [],
+    },
+    {
       key: 'recruitment', label: 'Recruitment',
       subsections: data.recruitment.filter((s) => !s.isIntro).map((s) => ({ id: s.id, label: s.title })),
     },
