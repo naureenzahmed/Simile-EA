@@ -8,6 +8,7 @@ import { renderRecruitment } from './pages/recruitment.js';
 import { blankPage } from './pages/blankPage.js';
 import { renderEvents, EVENTS_TITLE } from './pages/events.js';
 import { renderLeadershipSchedule, SCHEDULE_TITLE } from './pages/leadershipSchedule.js';
+import { renderBoardInvestor, BOARD_TITLE } from './pages/boardInvestor.js';
 
 const PAGES = {
   home: { label: 'Home', render: renderCover },
@@ -15,6 +16,7 @@ const PAGES = {
   roadmap: { label: 'GTM Roadmap', render: renderRoadmap },
   operations: { label: 'Team Management', render: renderTeamManagement },
   leadershipSchedule: { label: SCHEDULE_TITLE, render: renderLeadershipSchedule },
+  boardInvestor: { label: BOARD_TITLE, render: renderBoardInvestor },
   recruitment: { label: 'Recruitment', render: renderRecruitment },
   clientMaterials: { label: 'Client Materials', render: renderClientMaterials },
   events: { label: EVENTS_TITLE, render: renderEvents },

@@ -641,3 +641,13 @@ a.doc-title:hover { text-decoration: underline; }
 .sched-add-form .cell-input { min-width: 150px; width: 170px; padding: 4px 8px; }
 .sched-add-form .btn { padding: 4px 10px; }
 .sched-add-form input[type="color"] { width: 28px; height: 26px; padding: 0; border: 1px solid var(--border); border-radius: 5px; background: none; cursor: pointer; }
+
+/* Board & Investor Support */
+.board-table td.board-wide { white-space: normal; min-width: 240px; }
+.board-table .board-textarea { min-width: 240px; }
+.board-table .board-sm { min-width: 110px; width: 130px; }
+.board-link { display: flex; align-items: center; gap: 4px; }
+.board-link .cell-input { min-width: 170px; }
+.board-open { font-size: 14px; color: var(--accent); text-decoration: none; padding: 2px 4px; border-radius: 4px; }
+.board-open:hover { background: var(--bg-raised-2); }
+.board-open.hidden { visibility: hidden; }

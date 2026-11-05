@@ -1,5 +1,6 @@
 import { getData } from '../store.js';
 import { escapeHtml } from '../utils.js';
+import { BOARD_SECTIONS } from '../seed.js';
 
 export function renderCover(container) {
   const data = getData();
@@ -49,6 +50,10 @@ function buildManifest(data) {
     {
       key: 'leadershipSchedule', label: 'Leadership Schedule Management',
       subsections: [],
+    },
+    {
+      key: 'boardInvestor', label: 'Board & Investor Support',
+      subsections: BOARD_SECTIONS.map((s) => ({ id: s.id, label: s.title })),
     },
     {
       key: 'recruitment', label: 'Recruitment',

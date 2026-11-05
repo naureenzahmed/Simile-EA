@@ -310,6 +310,73 @@ export function seedLeadershipSchedule() {
   ].map(([person, type, title, start, end, time], i) => ({ id: `sched-${i + 1}`, person, type, title, start, end, time, notes: '' }));
 }
 
+// Board & Investor Support: one editable table per section.
+export const BOARD_SECTIONS = [
+  {
+    id: 'board-decks', title: 'Board Decks', note: 'One row per quarter, with the deck and a short summary of milestones and challenges.',
+    addLabel: 'Add quarter',
+    fields: [
+      { key: 'quarter', label: 'Quarter', width: 'sm' },
+      { key: 'link', label: 'Board Deck', type: 'url' },
+      { key: 'milestones', label: 'Major Milestones', type: 'multiline' },
+      { key: 'challenges', label: 'Challenges', type: 'multiline' },
+    ],
+  },
+  {
+    id: 'investor-updates', title: 'Investor Updates', note: 'Link to each update with its highlights, lowlights and next steps.',
+    addLabel: 'Add update',
+    fields: [
+      { key: 'period', label: 'Update', width: 'sm' },
+      { key: 'link', label: 'Link', type: 'url' },
+      { key: 'highlights', label: 'Highlights', type: 'multiline' },
+      { key: 'lowlights', label: 'Lowlights', type: 'multiline' },
+      { key: 'nextSteps', label: 'Next Steps', type: 'multiline' },
+    ],
+  },
+  {
+    id: 'investors', title: 'Investors', note: 'Our VCs and who we work with at each firm.',
+    addLabel: 'Add investor',
+    fields: [
+      { key: 'firm', label: 'Firm Name' },
+      { key: 'link', label: 'Link', type: 'url' },
+      { key: 'industry', label: 'Industry' },
+      { key: 'stage', label: 'Stage', width: 'sm' },
+      { key: 'poc', label: 'PoC' },
+    ],
+  },
+  {
+    id: 'pitch-deck', title: 'Pitch Deck', note: 'The current pitch deck, plus older versions for reference.',
+    addLabel: 'Add version',
+    fields: [
+      { key: 'version', label: 'Version', width: 'sm' },
+      { key: 'link', label: 'Link', type: 'url' },
+      { key: 'updated', label: 'Last Updated', type: 'date' },
+      { key: 'notes', label: 'Notes', type: 'multiline' },
+    ],
+  },
+  {
+    id: 'key-milestones', title: 'Major Milestones', note: 'Links to the latest numbers for revenue, pipeline, headcount and product.',
+    addLabel: 'Add milestone',
+    fields: [
+      { key: 'area', label: 'Milestone', width: 'sm' },
+      { key: 'link', label: 'Link', type: 'url' },
+      { key: 'summary', label: 'Latest Summary', type: 'multiline' },
+      { key: 'updated', label: 'Last Updated', type: 'date' },
+    ],
+  },
+];
+
+function seedBoardInvestor() {
+  const rows = (key, values) => values.map((v, i) => ({ id: `${key}-${i + 1}`, [BOARD_SECTIONS.find((s) => s.id === key).fields[0].key]: v }));
+  return {
+    'board-decks': rows('board-decks', ['Q4 2025', 'Q1 2026', 'Q2 2026', 'Q3 2026']),
+    'investor-updates': rows('investor-updates', ['August 2026', 'September 2026', 'October 2026']),
+    investors: [],
+    'pitch-deck': rows('pitch-deck', ['Current']),
+    'key-milestones': rows('key-milestones', ['Revenue', 'Pipeline', 'Headcount', 'Product Updates']),
+  };
+}
+
 export const CLIENT_FIELDS = [
   { key: 'clientName', label: 'Client Name' },
   { key: 'status', label: 'Status' },
@@ -421,6 +488,7 @@ export function seedData() {
       },
     ],
     events: seedEvents(),
+    boardInvestor: seedBoardInvestor(),
     leadershipSchedule: seedLeadershipSchedule(),
     scheduleVersion: 3,
     scheduleLeaders: [...LEADERS],
