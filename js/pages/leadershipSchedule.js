@@ -59,7 +59,7 @@ export function renderLeadershipSchedule(container) {
 
   container.innerHTML = `
     <div class="toolbar">
-      <div class="page-title" style="margin:0;">${SCHEDULE_TITLE}</div>
+      <h2 class="schedule-part-title">${SCHEDULE_TITLE}</h2>
       <button class="btn btn-primary" id="sched-add">+ Add entry</button>
     </div>
 

@@ -6,8 +6,8 @@ export function renderTeamManagement(container) {
   const data = getData();
 
   container.innerHTML = `
+    <h2 class="schedule-part-title" style="margin-bottom:16px;">Team Management</h2>
     ${notesBoxHtml('operations')}
-    <div class="page-title">Team Management</div>
 
     <div id="ops-milestones">
       <div class="section-label">Key milestones</div>

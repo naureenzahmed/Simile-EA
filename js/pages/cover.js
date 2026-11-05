@@ -40,16 +40,14 @@ function buildManifest(data) {
       ],
     },
     {
-      key: 'operations', label: 'Team Management',
+      key: 'schedule', label: 'Schedule Management',
       subsections: [
+        { id: 'schedule-leadership', label: 'Leadership Schedule Management' },
+        { id: 'schedule-team', label: 'Team Management' },
         { id: 'ops-milestones', label: 'Key milestones' },
         { id: 'ops-availability', label: 'Availability' },
         { id: 'ops-teams', label: 'Team composition' },
       ],
-    },
-    {
-      key: 'leadershipSchedule', label: 'Leadership Schedule Management',
-      subsections: [],
     },
     {
       key: 'boardInvestor', label: 'Board & Investor Support',

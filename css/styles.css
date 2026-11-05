@@ -62,23 +62,6 @@ a { color: inherit; }
   min-width: 0;
 }
 
-.wordmark {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  align-self: center;
-  padding-bottom: 12px;
-  text-decoration: none;
-}
-.wordmark img { height: 32px; width: auto; display: block; }
-.wordmark-text {
-  font-family: 'Fraunces', Georgia, serif;
-  font-size: 24px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  color: var(--accent);
-}
-
 /* Folder tabs: each tab is a file-folder tab. Inactive ones sit behind
    and overlap; the active one comes forward and joins the page below. */
 .nav-tabs { display: flex; align-items: flex-end; margin-bottom: -1px; padding: 4px 0 0 6px; min-width: 0; overflow-x: auto; scrollbar-width: none; }
@@ -651,3 +634,11 @@ a.doc-title:hover { text-decoration: underline; }
 .board-open { font-size: 14px; color: var(--accent); text-decoration: none; padding: 2px 4px; border-radius: 4px; }
 .board-open:hover { background: var(--bg-raised-2); }
 .board-open.hidden { visibility: hidden; }
+
+/* Schedule Management (leadership calendar + team management on one page) */
+.schedule-jump { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 28px; }
+.schedule-jump .btn { text-decoration: none; color: var(--text); }
+.schedule-jump .btn:hover { border-color: var(--accent); color: var(--accent); }
+.schedule-part { scroll-margin-top: 16px; }
+.schedule-part + .schedule-part { margin-top: 40px; padding-top: 28px; border-top: 1px solid var(--border); }
+.schedule-part-title { font-size: 24px; font-weight: 400; letter-spacing: -0.01em; margin: 0; }
