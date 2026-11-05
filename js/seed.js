@@ -262,45 +262,11 @@ function seedRecruitment() {
     {
       id: 'rec-partnerships',
       title: 'Partnership Events',
-      entities: [
-        { name: 'Mecka AI', note: 'Recruit same level of talent' },
-        { name: 'Rootly', note: '' },
-        { name: 'Turbopuffer', note: 'Strong technical talent, able to work under pressure' },
-        { name: 'Nationgraph', note: '' },
-        { name: 'Cambridge', note: 'New avenues of growth and sales skills' },
-        { name: 'Shopify', note: '' },
-        { name: 'Gumloop', note: '' },
-        { name: 'Sanctuary AI', note: '' },
-      ],
+      entities: [],
       metrics: [
         { id: 'm1', label: 'Leads (#)', target: '40 per event', values: {} },
         { id: 'm2', label: 'Interview Booked (%)', target: '37.5%', values: {} },
         { id: 'm3', label: 'Interview Booked (#)', target: '15 per event', values: {} },
-      ],
-    },
-    {
-      id: 'rec-companies',
-      title: 'Companies to Track Employees',
-      note: 'Companies with a similar culture and ambition in the industry. There’s a lot of overlap and the right industry backgrounds. As these companies get significantly larger, employees lose ownership — Simile can offer all the benefits these companies provide, on top of responsibility and ownership.',
-      entities: [
-        { name: 'Sanctuary AI', links: [] },
-        { name: 'Waabi', links: [] },
-        { name: 'Stan', links: [] },
-        { name: 'Gumloop', links: [] },
-        { name: 'Float Financial', links: [] },
-        { name: 'Venn', links: [] },
-        { name: 'Botpress', links: [] },
-        { name: 'Planned', links: [] },
-        { name: 'Deck', links: [] },
-        { name: 'Rootly', links: [] },
-        { name: 'Shopify', links: [] },
-        { name: 'Turbopuffer', links: [] },
-        { name: 'Ramp', links: [] },
-      ],
-      metrics: [
-        { id: 'm1', label: 'Leads (#)', target: 130, values: {} },
-        { id: 'm2', label: 'Interview Booked (%)', target: '15%', values: {} },
-        { id: 'm3', label: 'Interview Booked (#)', target: 20, values: {} },
       ],
     },
     {
@@ -329,7 +295,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 2,
+    recruitmentVersion: 3,
     clientMaterials: [
       {
         id: 'clients',

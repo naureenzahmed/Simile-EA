@@ -24,6 +24,14 @@ function load() {
         stored.recruitmentVersion = 2;
         changed = true;
       }
+      // Recruitment v3: clear Partnership Events, drop Companies to Track Employees.
+      if (stored.recruitment && stored.recruitmentVersion < 3) {
+        const partnerships = stored.recruitment.find((s) => s.id === 'rec-partnerships');
+        if (partnerships) partnerships.entities = [];
+        stored.recruitment = stored.recruitment.filter((s) => s.id !== 'rec-companies');
+        stored.recruitmentVersion = 3;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
