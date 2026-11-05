@@ -52,6 +52,11 @@ export function renderRoadmap(container) {
 
     <div id="roadmap-view"></div>
 
+    <div style="margin-top: 40px;" id="roadmap-clients">
+      <div class="page-title" style="margin-bottom: 12px;">Client Materials</div>
+      <div id="roadmap-clients-section"></div>
+    </div>
+
     <div id="roadmap-okr-section" style="margin-top: 40px;"></div>
 
     <div style="margin-top: 40px;">
@@ -61,11 +66,6 @@ export function renderRoadmap(container) {
 
     <div style="margin-top: 40px;">
       <div id="roadmap-tracked-goals"></div>
-    </div>
-
-    <div style="margin-top: 40px;" id="roadmap-clients">
-      <div class="page-title" style="margin-bottom: 12px;">Client Materials</div>
-      <div id="roadmap-clients-section"></div>
     </div>
   `;
 

@@ -30,10 +30,10 @@ function buildManifest(data) {
       key: 'roadmap', label: 'GTM Roadmap',
       subsections: [
         { id: 'roadmap-timeline-section', label: 'Timeline / List / Board' },
+        { id: 'roadmap-clients', label: 'Client Materials' },
         { id: 'roadmap-okr-section', label: 'OKRs' },
         { id: 'roadmap-calendar-section', label: 'Calendar' },
         { id: 'roadmap-tracked-goals', label: 'Tracked Goals' },
-        { id: 'roadmap-clients', label: 'Client Materials' },
       ],
     },
     {
