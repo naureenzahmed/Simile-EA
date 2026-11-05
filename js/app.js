@@ -55,7 +55,7 @@ function renderHeader(route) {
   header.innerHTML = `
     <div class="header-left">
       <a class="wordmark" href="#/home">
-        <span class="wordmark-text">Simile</span>
+        <img src="assets/simile-logo.png" alt="Simile" />
       </a>
       <nav class="nav-tabs">
         ${Object.entries(PAGES).map(([key, p]) => `

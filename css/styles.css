@@ -69,6 +69,7 @@ a { color: inherit; }
   padding-bottom: 12px;
   text-decoration: none;
 }
+.wordmark img { height: 32px; width: auto; display: block; }
 .wordmark-text {
   font-family: 'Fraunces', Georgia, serif;
   font-size: 24px;
