@@ -1,6 +1,7 @@
 import { getData, commit, findTeam } from '../store.js';
 import { uid, todayISO, addDays, daysBetween, fmtDate, escapeHtml, initials } from '../utils.js';
 import { openTaskSidebar } from '../taskSidebar.js';
+import { mondaysBetween, meetingFor, openWeeklyMeeting } from '../weeklyMeetings.js';
 import { renderOkrSection } from './okr.js';
 import { renderDeadlineCalendar } from './deadlineCalendar.js';
 import { renderTrackedGoals } from './metrics.js';
@@ -97,7 +98,7 @@ export function renderRoadmap(container) {
   else renderBoard(view, data);
 
   renderOkrSection(document.getElementById('roadmap-okr-section'));
-  renderDeadlineCalendar(document.getElementById('roadmap-calendar-section'));
+  renderDeadlineCalendar(document.getElementById('roadmap-calendar-section'), () => renderRoadmap(mountedContainer));
   renderTrackedGoals(document.getElementById('roadmap-tracked-goals'));
   renderClientMaterials(document.getElementById('roadmap-clients-section'));
 }
@@ -153,9 +154,14 @@ function renderTimeline(view, data) {
           <div class="tl-today-line" style="left:${todayLeft}px;"><span class="tl-today-flag">Today</span></div>
         </div>
       </div>
+      ${renderMeetingsRow(timelineStart, totalDays, laneWidth, weekPx, todayLeft)}
       ${data.initiatives.map((init) => renderInitiativeRow(init, data, timelineStart, laneWidth, weekPx, todayLeft)).join('')}
     </div>
   `;
+
+  view.querySelectorAll('[data-meeting-week]').forEach((el) => {
+    el.addEventListener('click', () => openWeeklyMeeting(el.dataset.meetingWeek, () => renderRoadmap(mountedContainer)));
+  });
 
   view.querySelectorAll('[data-task-bar]').forEach((el) => {
     el.addEventListener('click', () => openTaskSidebar(el.dataset.taskBar, () => renderRoadmap(mountedContainer)));
@@ -163,6 +169,27 @@ function renderTimeline(view, data) {
   view.querySelectorAll('[data-add-to-section]').forEach((el) => {
     el.addEventListener('click', () => addTask(el.dataset.addToSection));
   });
+}
+
+// One weekly agenda and meeting per week, on the Monday.
+function renderMeetingsRow(timelineStart, totalDays, laneWidth, weekPx, todayLeft) {
+  const weeks = mondaysBetween(timelineStart, addDays(timelineStart, totalDays - 1));
+  return `
+    <div class="tl-row tl-meetings-row">
+      <div class="tl-label">
+        <div class="tl-init-name"><span class="team-dot" style="background:var(--text);"></span>Weekly Agenda &amp; Meeting</div>
+        <div class="tl-init-sub">Each Monday. Click a week to open it.</div>
+      </div>
+      <div class="tl-lane" style="width:${laneWidth}px; --week-px:${weekPx}px;">
+        <div class="tl-today-line" style="left:${todayLeft}px;"></div>
+        ${weeks.map((w) => {
+          const m = meetingFor(w);
+          const filled = m && (m.notes?.trim() || m.docUrl);
+          return `<button class="tl-meeting ${filled ? 'filled' : ''}" data-meeting-week="${w}" style="left:${daysBetween(timelineStart, w) * DAY_PX}px; width:${5 * DAY_PX - 4}px;" title="Weekly meeting, week of ${fmtDate(w)}">${filled ? '✓ ' : ''}${fmtDate(w)}</button>`;
+        }).join('')}
+      </div>
+    </div>
+  `;
 }
 
 function taskHasConflict(task, allTasks) {

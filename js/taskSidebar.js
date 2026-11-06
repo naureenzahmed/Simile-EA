@@ -1,6 +1,6 @@
 import { getData, commit, findTask, findPerson } from './store.js';
 import { uid, fmtDate, initials, colorForName, escapeHtml } from './utils.js';
-import { notifySlack } from './slackNotify.js';
+import { notifySlack, getSlackWebhookUrl } from './slackNotify.js';
 
 const STATUS_OPTIONS = ['No status', 'Backlog', 'Ready', 'In progress', 'In design', 'Committed', 'Done'];
 
@@ -169,6 +169,8 @@ function render(taskId) {
           </div>
         </div>
 
+        ${renderMeetingSections(task, data)}
+
         <div style="padding-top: 10px;">
           <div class="ts-field-label">Comments</div>
           <div id="ts-comments">
@@ -192,6 +194,86 @@ function render(taskId) {
   `;
 
   wireEvents(task);
+}
+
+const toHref = (v) => (/^https?:\/\//i.test(v) ? v : v ? `https://${v}` : '');
+
+// Granola notes, documentation and action items per person, with buttons to send the action items.
+function renderMeetingSections(task, data) {
+  const docs = task.docs || [];
+  const items = task.actionItems || [];
+  const people = data.people || [];
+  const nameOf = (id) => people.find((p) => p.id === id)?.name || 'No owner';
+  const groups = [...new Set(items.map((i) => i.personId || ''))];
+  const granolaHref = toHref(task.granolaUrl || '');
+  return `
+    <div class="ts-field">
+      <div class="ts-field-label">Granola Notes</div>
+      <div class="board-link">
+        <input type="text" id="ts-granola-url" value="${escapeHtml(task.granolaUrl || '')}" placeholder="Paste the Granola note link" />
+        <a class="board-open ${granolaHref ? '' : 'hidden'}" id="ts-granola-open" href="${escapeHtml(granolaHref)}" target="_blank" rel="noopener" title="Open in Granola">↗</a>
+      </div>
+      <textarea id="ts-granola" class="ts-granola" placeholder="Paste the meeting notes from Granola here.">${escapeHtml(task.granolaNotes || '')}</textarea>
+    </div>
+
+    <div class="ts-field">
+      <div class="ts-field-label">Documentation</div>
+      <div class="ts-docs">
+        ${docs.map((d) => `
+          <div class="ts-doc-row">
+            ${toHref(d.url) ? `<a href="${escapeHtml(toHref(d.url))}" target="_blank" rel="noopener">${escapeHtml(d.title || d.url)} ↗</a>` : `<span>${escapeHtml(d.title)}</span>`}
+            <button class="btn btn-ghost" data-doc-remove="${d.id}" style="margin-left:auto; padding:2px 6px;" title="Remove">✕</button>
+          </div>`).join('') || '<span class="empty-hint" style="padding:0;">No documents yet.</span>'}
+      </div>
+      <div class="ts-inline" style="margin-top:6px;">
+        <input type="text" id="ts-doc-title" placeholder="Name, e.g. Launch brief" />
+        <input type="text" id="ts-doc-url" placeholder="Link" />
+        <button class="btn" id="ts-doc-add" style="flex: 0 0 auto;">Add</button>
+      </div>
+    </div>
+
+    <div class="ts-field">
+      <div class="ts-field-label">Action Items</div>
+      ${groups.map((g) => `
+        <div class="ts-ai-group">
+          <div class="ts-ai-person"><span class="avatar" style="background:${colorForName(nameOf(g))};">${initials(nameOf(g))}</span>${escapeHtml(nameOf(g))}</div>
+          ${items.filter((i) => (i.personId || '') === g).map((i) => `
+            <div class="ts-subtask-row">
+              <input type="checkbox" data-ai-toggle="${i.id}" ${i.done ? 'checked' : ''} aria-label="Done" />
+              <span style="${i.done ? 'text-decoration: line-through; color: var(--text-faint);' : ''}">${escapeHtml(i.text)}</span>
+              <button class="btn btn-ghost" data-ai-remove="${i.id}" style="margin-left:auto; padding:2px 6px;" title="Remove">✕</button>
+            </div>`).join('')}
+        </div>`).join('') || '<span class="empty-hint" style="padding:0;">No action items yet.</span>'}
+      <div class="ts-inline" style="margin-top:8px;">
+        <select id="ts-ai-person" style="flex: 0 0 130px;">
+          ${people.map((p) => `<option value="${p.id}">${escapeHtml(p.name)}</option>`).join('')}
+        </select>
+        <input type="text" id="ts-ai-text" placeholder="Add an action item…" />
+        <button class="btn" id="ts-ai-add" style="flex: 0 0 auto;">Add</button>
+      </div>
+
+      <div class="ts-send">
+        <div class="ts-send-title">Send action items</div>
+        <div class="ts-send-buttons">
+          <button class="btn btn-primary" id="ts-send-slack">Slack</button>
+          <button class="btn" id="ts-send-email">Email</button>
+        </div>
+        <div class="ts-send-status" id="ts-send-status" role="status"></div>
+      </div>
+    </div>
+  `;
+}
+
+// Open action items, grouped by person, as plain text for Slack or email.
+function actionItemsText(task, data) {
+  const open = (task.actionItems || []).filter((i) => !i.done);
+  if (!open.length) return '';
+  const nameOf = (id) => (data.people || []).find((p) => p.id === id)?.name || 'No owner';
+  const groups = [...new Set(open.map((i) => i.personId || ''))];
+  return [
+    `Action items: ${task.title}${task.endDate ? ` (due ${fmtDate(task.endDate)})` : ''}`,
+    ...groups.map((g) => `\n${nameOf(g)}\n${open.filter((i) => (i.personId || '') === g).map((i) => `• ${i.text}`).join('\n')}`),
+  ].join('\n');
 }
 
 function notifyConflictsIfAny(task, conflicts) {
@@ -306,6 +388,71 @@ function wireEvents(task) {
       commit();
       render(task.id);
     });
+  });
+
+  // Granola notes and documentation
+  document.getElementById('ts-granola-url').addEventListener('input', (e) => {
+    task.granolaUrl = e.target.value.trim();
+    commit();
+    const open = document.getElementById('ts-granola-open');
+    open.href = toHref(task.granolaUrl);
+    open.classList.toggle('hidden', !task.granolaUrl);
+  });
+  document.getElementById('ts-granola').addEventListener('input', (e) => { task.granolaNotes = e.target.value; commit(); });
+  const addDoc = () => {
+    const title = document.getElementById('ts-doc-title').value.trim();
+    const url = document.getElementById('ts-doc-url').value.trim();
+    if (!title && !url) return;
+    (task.docs = task.docs || []).push({ id: uid('doc'), title, url });
+    commit();
+    render(task.id);
+  };
+  document.getElementById('ts-doc-add').addEventListener('click', addDoc);
+  document.getElementById('ts-doc-url').addEventListener('keydown', (e) => { if (e.key === 'Enter') addDoc(); });
+  document.querySelectorAll('[data-doc-remove]').forEach((btn) => btn.addEventListener('click', () => {
+    task.docs = task.docs.filter((d) => d.id !== btn.dataset.docRemove);
+    commit();
+    render(task.id);
+  }));
+
+  // Action items per person
+  const addItem = () => {
+    const input = document.getElementById('ts-ai-text');
+    if (!input.value.trim()) return;
+    const personId = document.getElementById('ts-ai-person').value;
+    (task.actionItems = task.actionItems || []).push({ id: uid('ai'), personId, text: input.value.trim(), done: false });
+    commit();
+    render(task.id);
+    const sel = document.getElementById('ts-ai-person');
+    sel.value = personId;
+    document.getElementById('ts-ai-text').focus();
+  };
+  document.getElementById('ts-ai-add').addEventListener('click', addItem);
+  document.getElementById('ts-ai-text').addEventListener('keydown', (e) => { if (e.key === 'Enter') addItem(); });
+  document.querySelectorAll('[data-ai-toggle]').forEach((cb) => cb.addEventListener('change', () => {
+    task.actionItems.find((i) => i.id === cb.dataset.aiToggle).done = cb.checked;
+    commit();
+    render(task.id);
+  }));
+  document.querySelectorAll('[data-ai-remove]').forEach((btn) => btn.addEventListener('click', () => {
+    task.actionItems = task.actionItems.filter((i) => i.id !== btn.dataset.aiRemove);
+    commit();
+    render(task.id);
+  }));
+
+  const status = (msg) => { document.getElementById('ts-send-status').textContent = msg; };
+  document.getElementById('ts-send-slack').addEventListener('click', () => {
+    const text = actionItemsText(task, data);
+    if (!text) return status('There are no open action items to send.');
+    if (!getSlackWebhookUrl()) return status('Slack isn’t connected yet. Click the Slack button at the top of GTM Roadmap and paste your Slack webhook link.');
+    notifySlack(text);
+    status('Sent to your Slack channel.');
+  });
+  document.getElementById('ts-send-email').addEventListener('click', () => {
+    const text = actionItemsText(task, data);
+    if (!text) return status('There are no open action items to send.');
+    window.location.href = `mailto:?subject=${encodeURIComponent(`Action items: ${task.title}`)}&body=${encodeURIComponent(text)}`;
+    status('Opened a draft in your email app.');
   });
 
   document.getElementById('ts-comment-add').addEventListener('click', () => {

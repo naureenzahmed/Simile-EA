@@ -1,5 +1,6 @@
 import { getData } from '../store.js';
 import { todayISO, escapeHtml } from '../utils.js';
+import { openTaskSidebar } from '../taskSidebar.js';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
@@ -12,7 +13,7 @@ const KINDS = {
 
 let monthOffset = 0;
 
-export function renderDeadlineCalendar(container) {
+export function renderDeadlineCalendar(container, onChange) {
   const dueMap = groupByDate(collectItems(getData()));
   const now = new Date();
   const current = addMonths(now.getFullYear(), now.getMonth(), monthOffset);
@@ -36,13 +37,18 @@ export function renderDeadlineCalendar(container) {
         ${gridDays(current).map((day) => `
           <div class="sched-day cal-static ${day.slice(0, 7) !== isoMonth(current) ? 'other-month' : ''} ${day === today ? 'today' : ''}">
             <div class="sched-date">${Number(day.slice(8))}</div>
-            ${(dueMap[day] || []).map((it) => `<span class="sched-pill" style="--c:${KINDS[it.type].color}" title="${escapeHtml(`${KINDS[it.type].label}: ${it.title}`)}">${escapeHtml(it.title)}</span>`).join('')}
+            ${(dueMap[day] || []).map((it) => it.type === 'task'
+              ? `<button class="sched-pill" style="--c:${KINDS.task.color}" data-cal-objective="${it.id}" title="${escapeHtml(`${KINDS.task.label}: ${it.title}. Click to open.`)}">${escapeHtml(it.title)}</button>`
+              : `<span class="sched-pill" style="--c:${KINDS[it.type].color}" title="${escapeHtml(`${KINDS[it.type].label}: ${it.title}`)}">${escapeHtml(it.title)}</span>`).join('')}
           </div>`).join('')}
       </div>
     </div>
   `;
 
-  const go = (n) => { monthOffset = n; renderDeadlineCalendar(container); };
+  const go = (n) => { monthOffset = n; renderDeadlineCalendar(container, onChange); };
+  container.querySelectorAll('[data-cal-objective]').forEach((b) => {
+    b.addEventListener('click', () => openTaskSidebar(b.dataset.calObjective, onChange || (() => renderDeadlineCalendar(container))));
+  });
   container.querySelector('#cal-prev').addEventListener('click', () => go(monthOffset - 1));
   container.querySelector('#cal-next').addEventListener('click', () => go(monthOffset + 1));
   container.querySelector('#cal-today').addEventListener('click', () => go(0));
@@ -65,7 +71,7 @@ function gridDays({ year, month }) {
 function collectItems(data) {
   const items = [];
   data.tasks.forEach((t) => {
-    if (t.endDate) items.push({ date: t.endDate, title: t.title, type: 'task', teamId: t.teamId || null, assigneeIds: t.assigneeId ? [t.assigneeId] : [] });
+    if (t.endDate) items.push({ id: t.id, date: t.endDate, title: t.title, type: 'task', teamId: t.teamId || null, assigneeIds: t.assigneeId ? [t.assigneeId] : [] });
   });
   data.okrs.forEach((okr) => {
     okr.keyResults.forEach((kr) => {

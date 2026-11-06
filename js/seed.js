@@ -1110,6 +1110,7 @@ export function seedData() {
     events: seedEvents(),
     boardInvestor: seedBoardInvestor(),
     coo: seedCoo(),
+    weeklyMeetings: [],
     leadershipSchedule: seedLeadershipSchedule(),
     scheduleVersion: 3,
     copyVersion: 1,
