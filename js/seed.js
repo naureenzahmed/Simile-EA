@@ -116,30 +116,42 @@ function seedMetrics() {
   ];
 }
 
+export const OKR_DEPARTMENTS = [
+  { key: 'deployments', label: 'Deployments' },
+  { key: 'marketing', label: 'Marketing' },
+  { key: 'hr', label: 'HR' },
+  { key: 'evals', label: 'Evals' },
+  { key: 'consumer', label: 'Consumer' },
+  { key: 'ceo', label: 'CEO Office' },
+  { key: 'revops', label: 'Revenue Operations' },
+];
+
+// A starter objective for a department column.
+export function starterOkr(department, days = 30) {
+  return {
+    id: `okr-${department}`, objective: 'Objective 1', teamId: null, department,
+    keyResults: [{ id: `kr-${department}-1`, title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), days), assigneeIds: [] }],
+  };
+}
+
 function seedOkrs() {
   return [
     {
-      id: 'okr-company', objective: 'Sector Objective 1', teamId: null,
-      keyResults: [
-        { id: 'kr-co-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 90), assigneeIds: [] },
-        { id: 'kr-co-2', title: 'Key result 2', current: 0, target: 100, deadline: addDays(todayISO(), 60), assigneeIds: [] },
-      ],
-    },
-    {
-      id: 'okr-1', objective: 'Objective 1', teamId: 'team-a',
+      id: 'okr-1', objective: 'Objective 1', teamId: 'team-a', department: 'deployments',
       keyResults: [
         { id: 'kr-1-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: ['p1', 'p4'] },
         { id: 'kr-1-2', title: 'Key result 2', current: 0, target: 100, deadline: addDays(todayISO(), 45), assigneeIds: ['p2'] },
       ],
     },
     {
-      id: 'okr-2', objective: 'Objective 2', teamId: 'team-b',
+      id: 'okr-2', objective: 'Objective 1', teamId: 'team-b', department: 'marketing',
       keyResults: [{ id: 'kr-2-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: ['p6', 'p8'] }],
     },
     {
-      id: 'okr-3', objective: 'Objective 3', teamId: 'team-c',
+      id: 'okr-3', objective: 'Objective 1', teamId: 'team-c', department: 'hr',
       keyResults: [{ id: 'kr-3-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: ['p10', 'p12'] }],
     },
+    ...['evals', 'consumer', 'ceo', 'revops'].map((d) => starterOkr(d)),
   ];
 }
 

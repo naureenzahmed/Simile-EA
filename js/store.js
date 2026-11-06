@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -243,6 +243,20 @@ function load() {
       if (stored.coo && (stored.cooVersion || 0) < 1) {
         if (!stored.coo.inbox.some((m) => m.category === 'other')) stored.coo.inbox.push(...cooOtherMail());
         stored.cooVersion = 1;
+        changed = true;
+      }
+      // OKR v1: drop the Sector Objective box and group objectives by department.
+      if (stored.okrs && (stored.okrVersion || 0) < 1) {
+        stored.okrs = stored.okrs.filter((o) => o.id !== 'okr-company');
+        const byTeam = { 'team-a': 'deployments', 'team-b': 'marketing', 'team-c': 'hr' };
+        for (const o of stored.okrs) {
+          if (!o.department) o.department = byTeam[o.teamId] || 'deployments';
+          if (/^Objective \d+$/.test(o.objective)) o.objective = 'Objective 1';
+        }
+        for (const d of OKR_DEPARTMENTS) {
+          if (!stored.okrs.some((o) => o.department === d.key)) stored.okrs.push(starterOkr(d.key));
+        }
+        stored.okrVersion = 1;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {

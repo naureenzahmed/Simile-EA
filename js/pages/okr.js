@@ -1,52 +1,42 @@
-import { getData, commit, findTeam, findPerson } from '../store.js';
+import { getData, commit, findPerson } from '../store.js';
 import { uid, clamp, escapeHtml, fmtDate, initials, colorForName } from '../utils.js';
+import { OKR_DEPARTMENTS } from '../seed.js';
 
 export function renderOkrSection(container) {
   const data = getData();
 
-  const groups = [
-    { teamId: null, label: 'Sector Objectives', color: null },
-    ...data.teams.map((t) => ({ teamId: t.id, label: t.name.replace(/^Team\b/, 'Objective'), color: t.color })),
-  ];
-
   container.innerHTML = `
     <div class="toolbar">
       <div class="page-title" style="margin:0;">OKRs</div>
-      <button class="btn btn-primary" id="add-objective-btn">+ Objective</button>
     </div>
-    <div id="okr-groups" class="stack-16"></div>
+    <div class="okr-columns">
+      ${OKR_DEPARTMENTS.map((d) => renderColumn(d, data)).join('')}
+    </div>
   `;
 
-  const root = document.getElementById('okr-groups');
-  root.innerHTML = groups.map((g) => renderGroup(g, data)).join('');
-
-  document.getElementById('add-objective-btn').addEventListener('click', () => {
-    const title = prompt('Objective title', 'New objective');
-    if (!title) return;
-    const teamNames = data.teams.map((t) => t.name).join(' / ');
-    const teamInput = prompt(`Team (${teamNames}), or leave blank for company-wide`, '');
-    const team = data.teams.find((t) => t.name.toLowerCase() === (teamInput || '').trim().toLowerCase());
-    data.okrs.push({ id: uid('okr'), objective: title, teamId: team ? team.id : null, keyResults: [] });
-    commit();
-    renderOkrSection(container);
+  container.querySelectorAll('[data-add-okr]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const department = btn.dataset.addOkr;
+      const count = data.okrs.filter((o) => o.department === department).length;
+      const title = prompt('Objective title', `Objective ${count + 1}`);
+      if (!title) return;
+      data.okrs.push({ id: uid('okr'), objective: title, teamId: null, department, keyResults: [] });
+      commit();
+      renderOkrSection(container);
+    });
   });
 
   wireEvents(container, data);
 }
 
-function renderGroup(group, data) {
-  const okrs = data.okrs.filter((o) => (o.teamId || null) === group.teamId);
-  if (!okrs.length) return '';
-
+// One column per department, with its objective boxes stacked underneath.
+function renderColumn(dept, data) {
+  const okrs = data.okrs.filter((o) => (o.department || 'deployments') === dept.key);
   return `
-    <div>
-      <div class="section-label" style="display:flex; align-items:center; gap:6px;">
-        ${group.color ? `<span class="team-dot" style="background:${group.color};"></span>` : ''}
-        ${escapeHtml(group.label)}
-      </div>
-      <div class="grid-3" style="margin-top:8px;">
-        ${okrs.map((okr) => renderObjectiveCard(okr, data)).join('')}
-      </div>
+    <div class="okr-column">
+      <div class="section-label okr-column-title">${escapeHtml(dept.label)}</div>
+      ${okrs.map((okr) => renderObjectiveCard(okr, data)).join('')}
+      <button class="okr-add" data-add-okr="${dept.key}">+ Add objective</button>
     </div>
   `;
 }
