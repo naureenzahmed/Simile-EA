@@ -1,5 +1,6 @@
 import { getData, commit } from '../store.js';
 import { uid, escapeHtml } from '../utils.js';
+import { notesBoxHtml } from '../notesBox.js';
 import { EVENT_TYPES, EVENT_STATUSES, EVENT_PHASES, EVENT_ROLES, eventChecklist } from '../seed.js';
 
 export const EVENTS_TITLE = 'Events & Offsites';
@@ -8,6 +9,7 @@ export function renderEvents(container) {
   const events = getData().events;
 
   container.innerHTML = `
+    ${notesBoxHtml('events')}
     <div class="toolbar">
       <div class="page-title" style="margin:0;">${EVENTS_TITLE}</div>
       <button class="btn btn-primary" id="add-event-btn">+ Add event</button>

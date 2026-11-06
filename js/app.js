@@ -1,5 +1,6 @@
 import { getData, commit } from './store.js';
 import { startReadOnly, isReadOnly } from './readOnly.js';
+import { startNotesSync } from './notesBox.js';
 import { renderCover } from './pages/cover.js';
 import { renderDocumentation } from './pages/documentation.js';
 import { renderRoadmap } from './pages/roadmap.js';
@@ -22,6 +23,7 @@ const PAGES = {
   recruitment: { label: RECRUITMENT_TITLE, render: renderRecruitment },
 };
 
+const HOUSE_ICON = '<svg class="house-icon" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9.2 10 3.5l7 5.7"/><path d="M5 8v8.5h3.8v-4.6h2.4v4.6H15V8"/></svg>';
 const FOLDER_ICON = '<svg class="folder-icon" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M1.5 3.5A1.5 1.5 0 0 1 3 2h3.2c.4 0 .78.16 1.06.44L8.4 3.6H13A1.5 1.5 0 0 1 14.5 5.1V12.5A1.5 1.5 0 0 1 13 14H3a1.5 1.5 0 0 1-1.5-1.5v-9Z"/></svg>';
 
 // Old page addresses that now live on another page.
@@ -48,6 +50,7 @@ export function rerender() {
   const page = document.getElementById('app-page');
   page.innerHTML = '';
   PAGES[route].render(page);
+  page.prepend(modeBar());
 
   const anchor = currentAnchor();
   if (anchor) {
@@ -59,13 +62,25 @@ export function rerender() {
   }
 }
 
+// Read only / Edit switch, in the top-right corner of every page.
+function modeBar() {
+  const bar = document.createElement('div');
+  bar.className = 'mode-bar';
+  bar.innerHTML = `
+    <span class="mode-badge ${isReadOnly() ? '' : 'editing'}">${isReadOnly() ? 'Read only' : 'Editing'}</span>
+    <button class="btn ${isReadOnly() ? '' : 'btn-primary'} edit-toggle" data-toggle-edit data-ro-keep aria-pressed="${!isReadOnly()}">${isReadOnly() ? 'Edit' : 'Done editing'}</button>
+  `;
+  return bar;
+}
+
 function renderHeader(route) {
   const header = document.getElementById('app-header');
 
   header.innerHTML = `
     <div class="header-left">
       <nav class="nav-tabs" aria-label="Pages">
-        ${Object.entries(PAGES).map(([key, p]) => `
+        <a class="nav-home ${route === 'home' ? 'active' : ''}" href="#/home" aria-label="Home" title="Home" ${route === 'home' ? 'aria-current="page"' : ''}>${HOUSE_ICON}</a>
+        ${Object.entries(PAGES).filter(([key]) => key !== 'home').map(([key, p]) => `
           <a class="nav-tab ${key === route ? 'active' : ''}" data-key="${key}" href="#/${key}" ${key === route ? 'aria-current="page"' : ''}>${FOLDER_ICON}<span>${p.label}</span></a>
         `).join('')}
         <button class="nav-tab nav-more" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="nav-more-menu" hidden>
@@ -74,10 +89,6 @@ function renderHeader(route) {
       </nav>
     </div>
     <div class="nav-more-menu" id="nav-more-menu" role="menu" hidden></div>
-    <div class="header-right">
-      <span class="mode-badge ${isReadOnly() ? '' : 'editing'}">${isReadOnly() ? 'Read only' : 'Editing'}</span>
-      <button class="btn ${isReadOnly() ? '' : 'btn-primary'} edit-toggle" data-toggle-edit aria-pressed="${!isReadOnly()}">${isReadOnly() ? 'Edit' : 'Done editing'}</button>
-    </div>
   `;
 
   const more = header.querySelector('.nav-more');
@@ -122,7 +133,8 @@ function fitTabs() {
 
   more.hidden = false;
   const overlap = 6;
-  const room = nav.clientWidth - more.offsetWidth - 12;
+  const home = nav.querySelector('.nav-home');
+  const room = nav.clientWidth - more.offsetWidth - (home ? home.offsetWidth + 14 : 0) - 12;
   const active = tabs.find((t) => t.classList.contains('active'));
   let used = active ? active.offsetWidth - overlap : 0;
   const hidden = [];
@@ -156,6 +168,7 @@ function escapeAttr(s) {
 window.addEventListener('hashchange', rerender);
 window.addEventListener('DOMContentLoaded', () => {
   if (!location.hash) location.hash = '#/home';
+  startNotesSync();
   startReadOnly(() => {
     // Keep the scroll position when switching modes.
     const y = window.scrollY;

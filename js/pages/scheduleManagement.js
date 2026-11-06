@@ -1,5 +1,6 @@
 import { renderLeadershipSchedule, SCHEDULE_TITLE } from './leadershipSchedule.js';
 import { renderTeamManagement } from './teamManagement.js';
+import { notesBoxHtml } from '../notesBox.js';
 
 export const SCHEDULE_PAGE_TITLE = 'Schedule Management';
 
@@ -11,6 +12,7 @@ const PARTS = [
 // One page with the leadership calendar on top and Team Management below it.
 export function renderScheduleManagement(container) {
   container.innerHTML = `
+    ${notesBoxHtml('schedule')}
     <div class="page-title" style="margin-bottom:12px;">${SCHEDULE_PAGE_TITLE}</div>
     <div class="schedule-jump">
       ${PARTS.map((p) => `<a class="btn" href="#/schedule?anchor=${p.id}" data-jump="${p.id}">${p.label}</a>`).join('')}

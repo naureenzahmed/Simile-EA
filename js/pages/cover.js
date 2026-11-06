@@ -1,5 +1,6 @@
 import { getData, commit } from '../store.js';
 import { isReadOnly } from '../readOnly.js';
+import { notesBoxHtml } from '../notesBox.js';
 import { escapeHtml } from '../utils.js';
 import { BOARD_SECTIONS } from '../seed.js';
 
@@ -11,16 +12,15 @@ const ABOUT_PARTS = [
 
 export function renderCover(container) {
   const data = getData();
-  data.home = data.home || { background: '', experience: '', goals: '', why: '', cardNotes: {} };
-  data.home.cardNotes = data.home.cardNotes || {};
+  data.home = data.home || { background: '', experience: '', goals: '', why: '' };
   const home = data.home;
   const pages = buildManifest(data);
 
   container.innerHTML = `
     <div class="ro-note ${isReadOnly() ? '' : 'editing'}" role="note">
       ${isReadOnly()
-        ? '<strong>This is a read-only file.</strong> You can browse every page, but nothing can be changed. Click <b>Edit</b> at the top right to make changes.'
-        : '<strong>You are editing.</strong> Changes save in this browser only. Click <b>Done editing</b> at the top right to go back to read-only.'}
+        ? '<strong>This is a read-only file.</strong> You can browse every page, but nothing can be changed. Click <b>Edit</b> at the top right of the page to make changes.'
+        : '<strong>You are editing.</strong> Changes save in this browser only. Click <b>Done editing</b> at the top right of the page to go back to read-only.'}
     </div>
     <div class="page-title">Simile EA</div>
 
@@ -46,7 +46,7 @@ export function renderCover(container) {
       ${pages.map((p) => `
         <div class="card cover-card">
           <a class="cover-page-title" href="#/${p.key}">${escapeHtml(p.label)}</a>
-          <textarea class="notes-box cover-notes" data-card-note="${p.key}" rows="2" placeholder="Notes">${escapeHtml(home.cardNotes[p.key] || '')}</textarea>
+          ${notesBoxHtml(p.key, { compact: true })}
           ${p.subsections.length ? `
             <ul class="cover-sublist">
               ${p.subsections.map((s) => `<li><a href="#/${p.key}?anchor=${encodeURIComponent(s.id)}">${escapeHtml(s.label)}</a></li>`).join('')}
@@ -60,9 +60,6 @@ export function renderCover(container) {
   // Everything saves as you type.
   container.querySelectorAll('[data-home]').forEach((el) => {
     el.addEventListener('input', () => { home[el.dataset.home] = el.value; commit(); });
-  });
-  container.querySelectorAll('[data-card-note]').forEach((el) => {
-    el.addEventListener('input', () => { home.cardNotes[el.dataset.cardNote] = el.value; commit(); });
   });
 }
 

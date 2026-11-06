@@ -1,5 +1,6 @@
 import { getData, commit } from '../store.js';
 import { uid, escapeHtml, todayISO, fmtDate, dayLabel } from '../utils.js';
+import { notesBoxHtml } from '../notesBox.js';
 import { COO_INBOX, COO_STAGES, seedCoo } from '../seed.js';
 
 export const COO_TITLE = 'COO Scheduling';
@@ -51,6 +52,7 @@ const range = (s) => [s.start, s.end].filter(Boolean).map(fmtDate).join(' to ');
 export function renderCooScheduling(container) {
   const c = coo();
   container.innerHTML = `
+    ${notesBoxHtml('coo')}
     <div class="page-title" style="margin-bottom:12px;">${COO_TITLE}</div>
     <div class="schedule-jump">
       ${PARTS.map((p) => `<a class="btn" href="#/coo?anchor=${p.id}" data-jump="${p.id}">${p.label}</a>`).join('')}

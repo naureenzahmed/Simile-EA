@@ -1,5 +1,6 @@
 import { getData, commit } from '../store.js';
 import { uid, escapeHtml } from '../utils.js';
+import { notesBoxHtml } from '../notesBox.js';
 import { BOARD_SECTIONS } from '../seed.js';
 
 export const BOARD_TITLE = 'Board & Investor Support';
@@ -10,6 +11,7 @@ export function renderBoardInvestor(container) {
   data.links = data.links || {};
 
   container.innerHTML = `
+    ${notesBoxHtml('boardInvestor')}
     <div class="page-title">${BOARD_TITLE}</div>
     <div class="stack-16">
       ${BOARD_SECTIONS.map((s) => renderSection(s, data[s.id], data.links[s.id] || '')).join('')}

@@ -328,6 +328,23 @@ function load() {
         stored.docsVersion = 2;
         changed = true;
       }
+      // Notes v2: one note per page, shared by the page and its Home card. Team Management's note
+      // becomes the Schedule Management note, and any Home card notes join their page's note.
+      if (stored.pageNotes && (stored.notesVersion || 0) < 2) {
+        const notes = stored.pageNotes;
+        if (!notes.schedule && notes.operations) notes.schedule = notes.operations;
+        delete notes.operations;
+        for (const [key, card] of Object.entries(stored.home?.cardNotes || {})) {
+          const text = (card || '').trim();
+          if (!text) continue;
+          const page = (notes[key] || '').trim();
+          if (!page) notes[key] = text;
+          else if (!page.includes(text)) notes[key] = `${page}\n\n${text}`;
+        }
+        if (stored.home) delete stored.home.cardNotes;
+        stored.notesVersion = 2;
+        changed = true;
+      }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
       if (stored.clientMaterials && (stored.clientVersion || 0) < 1) {
         const clients = stored.clientMaterials.find((s) => s.id === 'clients');

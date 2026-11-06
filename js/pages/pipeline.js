@@ -1,5 +1,6 @@
 import { getData, commit } from '../store.js';
 import { uid, escapeHtml, todayISO } from '../utils.js';
+import { notesBoxHtml } from '../notesBox.js';
 import { PIPELINE_SECTIONS, REVENUE_HISTORY, seedPipeline } from '../seed.js';
 
 export const PIPELINE_TITLE = 'Pipeline & Forecasts';
@@ -18,6 +19,7 @@ export function renderPipeline(container) {
   for (const s of PIPELINE_SECTIONS) p[s.id] = p[s.id] || [];
 
   container.innerHTML = `
+    ${notesBoxHtml('pipeline')}
     <div class="page-title">${PIPELINE_TITLE}</div>
     ${renderRevenue()}
     <div class="stack-16" style="margin-top:28px;">
