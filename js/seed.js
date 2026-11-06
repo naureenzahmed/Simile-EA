@@ -977,6 +977,78 @@ function seedRecruitment() {
   ];
 }
 
+// COO Scheduling: calendar, inbox, inquiries board and sprints.
+export const COO_INBOX = [
+  { key: 'investors', label: 'Investors' },
+  { key: 'clients', label: 'Client Responses' },
+  { key: 'candidates', label: 'Potential Candidates' },
+  { key: 'spam', label: 'Spam' },
+];
+
+export const COO_STAGES = [
+  { key: 'potential', label: 'Potential Issues' },
+  { key: 'needed', label: 'Issues Needed to Be Addressed' },
+  { key: 'solved', label: 'Solved' },
+  { key: 'escalated', label: 'Escalated to Lainie' },
+  { key: 'other', label: 'Other' },
+];
+
+export function seedCoo() {
+  const cal = [
+    ['2026-11-09', '09:00', 'Weekly ops review'],
+    ['2026-11-11', '14:00', 'Board prep with Lainie'],
+    ['2026-11-13', '10:00', 'Hiring sync'],
+    ['2026-11-18', '', 'Investor update due'],
+    ['2026-11-20', '13:00', 'Client check-in: CVS'],
+    ['2026-11-24', '11:00', 'Sprint planning'],
+  ];
+  const mail = [
+    ['investors', 'Index Ventures', 'Scheduling the Q4 board meeting', '2026-11-04', 'Asking for three date options in early December.'],
+    ['investors', 'Greenoaks', 'Follow-up on the October update', '2026-11-03', 'Wants more detail on pipeline growth.'],
+    ['clients', 'CVS', 'Re: Onsite agenda for December', '2026-11-04', 'Confirmed the agenda and added two attendees.'],
+    ['clients', 'Wealthfront', 'Re: Pilot results', '2026-11-02', 'Happy with the results and asking about next steps.'],
+    ['candidates', 'Gem', 'New applicant: Chief of Staff', '2026-11-04', 'Strong ops background, five years at a Series C startup.'],
+    ['candidates', 'Referral', 'Intro: ML engineer from Stanford', '2026-11-01', 'Referred by an advisor. Open to a call next week.'],
+    ['spam', 'Vendor outreach', 'Grow your pipeline 10x this quarter', '2026-11-04', ''],
+    ['spam', 'Event promo', 'Last chance for early-bird tickets', '2026-11-02', ''],
+  ];
+  const inquiries = [
+    ['potential', 'Offsite venue may be overbooked', 'Operations', 'The hotel has flagged a possible double booking for the December offsite.', 'Olivia', '2026-11-14'],
+    ['needed', 'Expense approvals are backed up', 'Finance', 'About 30 expense reports are waiting on approval.', 'Madison', '2026-11-10'],
+    ['needed', 'Laptops for new hires', 'IT', 'Three new hires start on the 17th and need laptops set up.', 'Mihika', '2026-11-12'],
+    ['solved', 'Badge access for the NYC office', 'Facilities', 'New badges were issued to the whole team.', 'Julia', '2026-11-03'],
+    ['escalated', 'Contract terms with Itaú', 'Legal', 'Itaú asked for changes to the data terms that need sign-off.', 'Lainie', '2026-11-15'],
+    ['other', 'Team photo day', 'People', 'Pick a date for new headshots for the website.', 'Eileen', '2026-11-21'],
+  ];
+  const sprint = (id, name, start, end, tasks, goal, metrics, notes, team) => ({
+    id, name, start, end,
+    tasks: tasks.map(([text, done], i) => ({ id: `${id}-t${i + 1}`, text, done })),
+    goal, metrics, notes, team,
+  });
+  return {
+    calendar: cal.map(([date, time, title], i) => ({ id: `coo-cal-${i + 1}`, date, time, title, notes: '' })),
+    inbox: mail.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-${i + 1}`, category, from, subject, date, summary })),
+    inquiries: inquiries.map(([stage, title, department, description, owner, deadline], i) => ({ id: `coo-inq-${i + 1}`, stage, title, department, description, owner, deadline })),
+    currentSprint: sprint('sprint-12', 'Sprint 12', '2026-11-02', '2026-11-13',
+      [['Finalize the Q4 board deck', false], ['Book the venue for the December offsite', true], ['Send the October investor update', true], ['Schedule the CVS onsite', false]],
+      'Walk into the Q4 board meeting with the deck, numbers and offsite plan locked.',
+      'Board deck approved by Lainie. Offsite venue signed. Investor update sent by the 18th.',
+      '', ['Lainie', 'Olivia', 'Madison']),
+    pastSprints: [
+      sprint('sprint-11', 'Sprint 11', '2026-10-19', '2026-10-30',
+        [['Close Series B paperwork', true], ['Set up board deck template', true], ['Plan Q4 hiring', false]],
+        'Wrap up the Series B and set up Q4 planning.',
+        'All closing documents signed. Q4 hiring plan drafted.',
+        'Hiring plan moved to Sprint 12.', ['Lainie', 'Julia']),
+      sprint('sprint-10', 'Sprint 10', '2026-10-05', '2026-10-16',
+        [['Run the NYC customer dinner', true], ['Update investor list', true]],
+        'Strengthen customer and investor relationships ahead of the raise.',
+        'Dinner held with 12 executives. Investor list updated.',
+        '', ['Eileen', 'Matan']),
+    ],
+  };
+}
+
 export function seedData() {
   const year = new Date().getFullYear();
   return {
@@ -1002,6 +1074,7 @@ export function seedData() {
     ],
     events: seedEvents(),
     boardInvestor: seedBoardInvestor(),
+    coo: seedCoo(),
     leadershipSchedule: seedLeadershipSchedule(),
     scheduleVersion: 3,
     copyVersion: 1,

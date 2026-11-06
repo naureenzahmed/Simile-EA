@@ -6,11 +6,13 @@ import { renderRecruitment } from './pages/recruitment.js';
 import { renderEvents, EVENTS_TITLE } from './pages/events.js';
 import { renderScheduleManagement, SCHEDULE_PAGE_TITLE } from './pages/scheduleManagement.js';
 import { renderBoardInvestor, BOARD_TITLE } from './pages/boardInvestor.js';
+import { renderCooScheduling, COO_TITLE } from './pages/cooScheduling.js';
 
 const PAGES = {
   home: { label: 'Home', render: renderCover },
   roadmap: { label: 'GTM Roadmap', render: renderRoadmap },
   schedule: { label: SCHEDULE_PAGE_TITLE, render: renderScheduleManagement },
+  coo: { label: COO_TITLE, render: renderCooScheduling },
   boardInvestor: { label: BOARD_TITLE, render: renderBoardInvestor },
   recruitment: { label: 'Recruitment', render: renderRecruitment },
   events: { label: EVENTS_TITLE, render: renderEvents },

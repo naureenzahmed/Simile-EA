@@ -83,6 +83,16 @@ function buildManifest(data) {
       ],
     },
     {
+      key: 'coo', label: 'COO Scheduling',
+      subsections: [
+        { id: 'coo-calendar', label: 'Calendar' },
+        { id: 'coo-inbox', label: 'Inbox' },
+        { id: 'coo-inquiries', label: 'Inquiries' },
+        { id: 'coo-sprint', label: 'Current Sprint' },
+        { id: 'coo-past', label: 'Past Sprints' },
+      ],
+    },
+    {
       key: 'boardInvestor', label: 'Board & Investor Support',
       subsections: BOARD_SECTIONS.map((s) => ({ id: s.id, label: s.title })),
     },
