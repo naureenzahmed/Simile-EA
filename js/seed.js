@@ -1280,6 +1280,8 @@ export function seedCoo() {
 
 export const ROADMAP_NOTE = "This page supports GTM leadership’s operating rhythm. It brings together all action items, meetings and planning cycles, and it automates agendas, pre-reads, meeting notes and follow-through on action items.\n\nThe page is connected to Granola, email and Slack. Agents pull information from these sources, send back action items and notes, and store everything in Google Drive. Quick links also make this an all-in-one page for the team.\n\nThe page is organized into the following sections:\n\n1. Initiatives overview: progress on our current initiatives.\n2. Client materials: quick access to major client materials.\n3. OKRs: the major objectives for each team reporting to the COO.\n4. Calendar: links to the major plans for a bird’s-eye view of what’s coming up and the timelines for each date.\n5. Tracked goals and metrics: the revenue and major deployment metrics the team is working toward. Together, these represent our end vision for the quarter.\n\nClick any objective, whether in the roadmap or the calendar, to see a summary: description, links, owners and connections. The connections show where the information comes from, where it’s used and where it’s stored.";
 
+export const PIPELINE_NOTE = "This page shows our major revenue metrics.\n\nRevenue graph\nAt the top, the graph shows our revenue progression and current rate of growth.\n\nTarget accounts\nThis section tracks our progress with our target accounts. For each account, you’ll see:\n\n• Company name\n• Point of contact\n• Their title\n• Where we are in the sales process\n• Date last updated\n• A link to their materials in Google Drive\n\nTo qualify as a target account, a company must be in the Fortune 100, already be in contact with us and show strong potential to work with us.\n\nLead list\nThese are potential customers we’re working to engage, qualify and connect with the right buyer. We’ve highlighted the larger accounts we’d most like to engage quickly, along with their progress. Click the table to open HubSpot, where all the details live.\n\nAt a glance\nThis section shows the top 5 to 10 accounts and leads we want to focus on right now, the ones that have progressed the most or are moving fastest. Everything here is connected to HubSpot and updates automatically whenever changes are made there. To edit an account, click it to open it in HubSpot, where all its information lives.";
+
 // Home: About Naureen.
 export const ABOUT_BACKGROUND = "I spent 3 years in venture capital, investing from pre-seed to Series A across North America. My work focused on deal flow and due diligence, and I supported LP reporting and the administrative side of fundraising. In my free time, I hosted a number of large-scale events and smaller event series, including North Star, founder dinners, conference kickoffs and multi-day trips for founders.\n\nAfter graduation, I joined Planned.AI as Growth. My job description was “find problems in the company and solve them, then move to the next thing.” This included redoing the onboarding flow to allow self-serve sign-up, B2C sales, customer success, paid ads and technical recruiting, supporting the company as it scaled from 50 to 90 people. I’m also helping build our brand presence through events and partnerships with startups and community organizations.";
 
@@ -1372,7 +1374,7 @@ export function seedData() {
     consistencyVersion: 1,
     clientVersion: 1,
     docsVersion: 2,
-    notesVersion: 3,
+    notesVersion: 4,
     eventsVersion: 1,
     homeVersion: 4,
     pipelineVersion: 1,
@@ -1387,6 +1389,7 @@ export function seedData() {
       schedule: 'This page shows every team milestone and each teammate’s capacity. It also shows team composition, so when a project changes or the direction shifts, the work can go to a teammate who has room for it. Anyone newly onboarded can see who’s working on what, how much capacity everyone has and who they can go to for support at any time.',
       documentation: 'This page keeps all the processes, SOPs and helpful links in one place, so they’re easy to find for me, anyone working with me and anyone I need to train. I can just send them this page. It also keeps the history and the lists I used for each of my campaigns. I made it to save time for myself and for anyone I work with.',
       roadmap: ROADMAP_NOTE,
+      pipeline: PIPELINE_NOTE,
     },
     tasks: seedTasks(),
   };
