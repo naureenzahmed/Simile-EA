@@ -910,7 +910,7 @@ body.read-only select:disabled { background: transparent; border-color: transpar
 body.read-only select:disabled { appearance: none; -webkit-appearance: none; }
 body.read-only input[type="date"][readonly]::-webkit-calendar-picker-indicator,
 body.read-only input[type="time"][readonly]::-webkit-calendar-picker-indicator { display: none; }
-body.read-only .notes-box[readonly] { background: var(--bg-raised); border-color: var(--border); }
+body.read-only #app-page .notes-box[readonly] { background: var(--bg-raised); border-color: var(--border); }
 body.read-only .ev-date, body.read-only .col-head, body.read-only .kr-title, body.read-only .kr-values, body.read-only .kr-deadline, body.read-only .kr-people, body.read-only .sched-day { cursor: default; }
 body.read-only .coo-card { cursor: pointer; }
 .ro-note { background: color-mix(in srgb, var(--accent) 8%, white); border: 1px solid color-mix(in srgb, var(--accent) 30%, white); border-radius: var(--radius); padding: 10px 14px; font-size: 13px; margin-bottom: 18px; }
@@ -918,3 +918,17 @@ body.read-only .coo-card { cursor: pointer; }
 .table-group + .table-group { margin-top: 18px; }
 .table-group-head { display: flex; align-items: center; justify-content: space-between; margin: 6px 0 4px; }
 .table-group-head h5 { margin: 0; font-size: 13px; font-weight: 700; }
+#rec-tech-stack td input.cell-input[data-table-cell$="|cost"] { min-width: 220px; }
+
+/* Page notes: a fixed-height box with a scrollbar that is always visible on the right */
+.page-notes-wrap .notes-box {
+  height: 150px; min-height: 0; overflow-y: scroll; padding-right: 8px;
+}
+/* Firefox has no ::-webkit-scrollbar, so it gets the standard properties instead. */
+@supports not selector(::-webkit-scrollbar) {
+  .page-notes-wrap .notes-box { scrollbar-width: auto; scrollbar-color: #b8b6b2 var(--bg-raised-2); }
+}
+.page-notes-wrap .notes-box::-webkit-scrollbar { width: 12px; }
+.page-notes-wrap .notes-box::-webkit-scrollbar-track { background: var(--bg-raised-2); border-left: 1px solid var(--border); border-radius: 0 var(--radius) var(--radius) 0; }
+.page-notes-wrap .notes-box::-webkit-scrollbar-thumb { background: #b8b6b2; border-radius: 6px; border: 3px solid var(--bg-raised-2); min-height: 30px; }
+.page-notes-wrap .notes-box::-webkit-scrollbar-thumb:hover { background: var(--accent); }

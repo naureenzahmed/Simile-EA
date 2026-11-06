@@ -279,7 +279,7 @@ function seedDocs() {
 export const TECH_STACK_FIELDS = [
   { key: 'software', label: 'Software' },
   { key: 'description', label: 'Description', multiline: true },
-  { key: 'cost', label: 'Cost', multiline: true },
+  { key: 'cost', label: 'Cost' },
 ];
 
 const TECH_STACK = [
@@ -290,8 +290,11 @@ const TECH_STACK = [
   ['Ashby', 'Ashby is an all-in-one recruiting platform: applicant tracking (ATS), sourcing, CRM, scheduling and hiring analytics. Once the ideal process is set up, email, scheduling and communication tracking are all automated.', 'The Foundations plan (up to 100 employees) is about $400/mo, or about $360/mo billed yearly. The Plus and Enterprise plans for larger teams are custom quotes. Add-ons such as AI Notetaker and Advanced Scheduling cost extra.'],
 ];
 
+// One-line prices for the Tech Stack.
+export const TECH_STACK_COSTS = {"Grokbot": "Grokbot: $30/mo", "Apollo": "Apollo: $49–119/user/mo", "Juicebox": "Juicebox: $99–179/seat/mo", "Claude": "Claude: $20–25/user/mo", "Ashby": "Ashby: about $400/mo"};
+
 export function techStackRows() {
-  return TECH_STACK.map(([software, description, cost], i) => ({ id: `tech-${i + 1}`, software, description, cost }));
+  return TECH_STACK.map(([software, description, cost], i) => ({ id: `tech-${i + 1}`, software, description, cost: TECH_STACK_COSTS[software] || cost }));
 }
 
 // Columns of the Recruitment School Partnerships table.
@@ -334,7 +337,7 @@ export const CONFERENCE_FIELDS = [
 
 const CONFERENCES = [
   ['RAISE Summit 2026', 'Simile', 'Europe', 'Jul 8–9, 2026', 'Carrousel du Louvre, Paris, and online', 'Joon Sung Park, Simile’s CEO and co-founder, is listed as a speaker. The speaker page doesn’t name his session.', 'https://tickets.raisesummit.com/2026/speaker/2388172/joon-sung-park'],
-  ['Disney Accelerator 2026', 'Simile', '', '2026', '', 'A startup program, not a conference. Simile was one of three companies in this year’s five-company group, with FieldAI and Physical Intelligence, that worked on park operations and guest experience.', 'https://www.kentertechhub.com/disney-accel-2026-en/'],
+  ['Disney Accelerator 2026', 'Simile', '', '2026', '', 'Simile is one of the five startup companies selected for the 12th annual Disney Accelerator program in 2026.', 'https://www.kentertechhub.com/disney-accel-2026-en/'],
   ['TEDAI 2023', 'Before Simile (Joon’s research years)', '', '2023', '', 'Joon gave a talk called “A Simulation of Human Reality, Powered by AI” while he was a Stanford PhD student.', 'https://ted-ai-new-website-git-newpage-0611-xy-ai.vercel.app/speakers/joon-sung-park'],
   ['UIST 2023', 'Before Simile (Joon’s research years)', '', '2023', '', 'The Generative Agents paper won a Best Paper Award. UIST is an academic human-computer interaction conference.', ''],
   ['ICLR 2027', 'Deep learning and AI research', 'United States', 'Apr 26–30, 2027', 'Moscone Center, San Francisco, CA', 'One of the top three machine learning conferences.', 'https://www.beri.net/events/iclr-2027'],
@@ -358,7 +361,7 @@ const CONFERENCES = [
 
 // Corrections: missing region, dates and location, and official event sites instead of third-party pages.
 export const CONFERENCE_FIXES = {
-  'Disney Accelerator 2026': { region: 'United States', dates: 'Nov 3, 2026', location: 'Demo Day at Walt Disney Studios, Burbank, CA', link: 'https://thewaltdisneycompany.com/news/accelerator-2026-participants/' },
+  'Disney Accelerator 2026': { details: 'Simile is one of the five startup companies selected for the 12th annual Disney Accelerator program in 2026.', region: 'United States', dates: 'Nov 3, 2026', location: 'Demo Day at Walt Disney Studios, Burbank, CA', link: 'https://thewaltdisneycompany.com/news/accelerator-2026-participants/' },
   'TEDAI 2023': { region: 'United States', dates: 'Oct 17–18, 2023', location: 'San Francisco, CA', link: 'https://tedai-sanfrancisco.ted.com/' },
   'UIST 2023': { region: 'United States', dates: 'Oct 29–Nov 1, 2023', location: 'San Francisco, CA', link: 'https://uist.acm.org/2023/' },
   'ICLR 2027': { link: 'https://iclr.cc/Conferences/2027' },
@@ -1338,7 +1341,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 14,
+    recruitmentVersion: 15,
     clientMaterials: [
       {
         id: 'clients',

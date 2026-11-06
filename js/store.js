@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -238,6 +238,20 @@ function load() {
           }
         }
         stored.recruitmentVersion = 14;
+        changed = true;
+      }
+      // Recruitment v15: one-line Tech Stack prices and the new Disney Accelerator line.
+      if (stored.recruitment && stored.recruitmentVersion < 15) {
+        const tech = stored.recruitment.find((sec) => sec.id === 'rec-tech-stack');
+        if (tech?.table) tech.table.fields = TECH_STACK_FIELDS.map((f) => ({ ...f }));
+        for (const row of tech?.table?.rows || []) {
+          const short = TECH_STACK_COSTS[row.software];
+          if (short && (row.cost || '').length > 60) row.cost = short;
+        }
+        const att = stored.recruitment.find((sec) => sec.id === 'rec-attendance');
+        const disney = att?.table?.rows.find((r) => r.event === 'Disney Accelerator 2026');
+        if (disney) disney.details = CONFERENCE_FIXES['Disney Accelerator 2026'].details;
+        stored.recruitmentVersion = 15;
         changed = true;
       }
       // Copy v1: fix spelling, grammar and tone in the starter text.
