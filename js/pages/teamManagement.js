@@ -1,5 +1,5 @@
 import { getData, commit, findTeam } from '../store.js';
-import { uid, todayISO, fmtDate, relativeDay, initials, escapeHtml } from '../utils.js';
+import { uid, todayISO, fmtDate, relativeDay, initials, escapeHtml, addDays, weekDue, milestoneDate } from '../utils.js';
 
 export function renderTeamManagement(container) {
   const data = getData();
@@ -8,8 +8,8 @@ export function renderTeamManagement(container) {
     <h2 class="schedule-part-title" style="margin-bottom:16px;">Team Management</h2>
 
     <div id="ops-milestones">
-      <div class="section-label">Key Milestones</div>
-      <div class="section-desc">Key dates across every roadmap, in order.</div>
+      <div class="section-label">Key Milestones This Week</div>
+      <div class="section-desc">One milestone per department, all due ${longDay(weekDue())}.</div>
       <div class="card" style="margin-bottom:24px;">
         <div id="milestones-list"></div>
         <button class="btn btn-ghost" id="add-milestone-btn" style="margin-top:8px; padding:4px 8px;">+ Add milestone</button>
@@ -40,28 +40,42 @@ export function renderTeamManagement(container) {
   document.getElementById('add-milestone-btn').addEventListener('click', () => {
     const title = prompt('Milestone title', 'New milestone');
     if (!title) return;
-    const date = prompt('Date (YYYY-MM-DD)', todayISO());
-    if (!date) return;
-    data.milestones.push({ id: uid('ms'), title, date, teamId: null });
+    const names = data.teams.map((t) => t.name).join(', ');
+    const deptName = prompt(`Department (${names})`, data.teams[0]?.name || '');
+    if (deptName === null) return;
+    const team = data.teams.find((t) => t.name.toLowerCase() === deptName.trim().toLowerCase());
+    data.milestones.push({ id: uid('ms'), title, teamId: team?.id || null, weekly: true });
     commit();
     renderTeamManagement(container);
   });
 }
 
+function longDay(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+}
+
+// This week's milestones in department order. Dated one-offs show too if they fall in this week.
 function renderMilestones(data) {
-  const sorted = [...data.milestones].sort((a, b) => a.date.localeCompare(b.date));
+  const due = weekDue();
+  const monday = addDays(due, -4);
+  const sunday = addDays(due, 2);
+  const order = (m) => { const i = data.teams.findIndex((t) => t.id === m.teamId); return i === -1 ? 99 : i; };
+  const thisWeek = data.milestones
+    .filter((m) => { const d = milestoneDate(m); return d && d >= monday && d <= sunday; })
+    .sort((a, b) => order(a) - order(b) || milestoneDate(a).localeCompare(milestoneDate(b)));
   const el = document.getElementById('milestones-list');
-  el.innerHTML = sorted.map((m) => {
+  el.innerHTML = thisWeek.map((m) => {
     const team = findTeam(m.teamId);
+    const date = milestoneDate(m);
     return `
       <div class="milestone-row">
-        <div class="milestone-date">${fmtDate(m.date)}</div>
+        <div class="milestone-date">${fmtDate(date)}</div>
         <div><span class="team-dot" style="background:${team?.color || '#666'}; display:inline-block; margin-right:8px;"></span>${escapeHtml(m.title)}</div>
         <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'No department')}</div>
-        <div class="milestone-rel">${relativeDay(m.date)}</div>
+        <div class="milestone-rel">${relativeDay(date)}</div>
       </div>
     `;
-  }).join('') || '<div class="empty-hint">No milestones yet.</div>';
+  }).join('') || '<div class="empty-hint">No milestones this week.</div>';
 }
 
 function busyPersonIds(data) {

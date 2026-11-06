@@ -67,13 +67,19 @@ function seedTasks() {
   return tasks;
 }
 
-function seedMilestones() {
-  return [
-    { id: 'ms1', date: addDays(todayISO(), -30), title: 'Milestone 1', teamId: 'deployments' },
-    { id: 'ms2', date: addDays(todayISO(), -10), title: 'Milestone 2', teamId: 'marketing' },
-    { id: 'ms3', date: addDays(todayISO(), 20), title: 'Milestone 3', teamId: 'hr' },
-    { id: 'ms4', date: addDays(todayISO(), 60), title: 'Milestone 4', teamId: 'deployments' },
-  ];
+// Key milestones for the week: one per department, all due Friday of the current week.
+export const WEEKLY_MILESTONES = [
+  ['deployments', 'CVS onsite plan signed off'],
+  ['marketing', "Quirk's LA booth materials approved"],
+  ['hr', 'Chief of Staff final-round interviews scheduled'],
+  ['evals', 'Weekly eval report shared with clients'],
+  ['consumer', 'Suntory research findings delivered'],
+  ['ceo', 'Q4 board deck draft sent for review'],
+  ['revops', 'Target Accounts and Lead Lists updated for the pipeline review'],
+];
+
+export function seedMilestones() {
+  return WEEKLY_MILESTONES.map(([teamId, title]) => ({ id: `ms-${teamId}`, title, teamId, weekly: true }));
 }
 
 function seedMonths() {
@@ -1378,6 +1384,7 @@ export function seedData() {
     eventsVersion: 1,
     homeVersion: 4,
     pipelineVersion: 1,
+    milestonesVersion: 1,
     cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),

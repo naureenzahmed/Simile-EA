@@ -54,3 +54,13 @@ export function clamp(n, min, max) {
 export function dayLabel(iso) {
   return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
 }
+
+// Friday of the current week (weeks run Monday to Sunday). Weekly milestones are due then.
+export function weekDue(today = todayISO()) {
+  const d = new Date(today + 'T00:00:00');
+  return addDays(today, 4 - ((d.getDay() + 6) % 7));
+}
+
+export function milestoneDate(m) {
+  return m.weekly ? weekDue() : m.date;
+}

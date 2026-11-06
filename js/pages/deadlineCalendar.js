@@ -1,5 +1,5 @@
 import { getData } from '../store.js';
-import { todayISO, escapeHtml, dayLabel } from '../utils.js';
+import { todayISO, escapeHtml, dayLabel, milestoneDate } from '../utils.js';
 import { openTaskSidebar } from '../taskSidebar.js';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -80,7 +80,8 @@ function collectItems(data) {
     });
   });
   data.milestones.forEach((m) => {
-    if (m.date) items.push({ date: m.date, title: m.title, type: 'milestone', teamId: m.teamId || null, assigneeIds: [] });
+    const date = milestoneDate(m);
+    if (date) items.push({ date, title: m.title, type: 'milestone', teamId: m.teamId || null, assigneeIds: [] });
   });
   return items;
 }

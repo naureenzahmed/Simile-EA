@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, seedMilestones } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -395,6 +395,14 @@ function load() {
         const cur = (stored.pageNotes.pipeline || '').trim();
         stored.pageNotes.pipeline = cur && !cur.startsWith('This page shows our major revenue metrics') ? `${PIPELINE_NOTE}\n\n${cur}` : PIPELINE_NOTE;
         stored.notesVersion = 4;
+        changed = true;
+      }
+      // Milestones v1: Key Milestones become this week's milestones, one per department, all due Friday.
+      // The old starter milestones (Milestone 1 to 4) go; any milestone someone added is kept.
+      if (stored.milestones && (stored.milestonesVersion || 0) < 1) {
+        const custom = stored.milestones.filter((m) => !/^Milestone \d+$/.test(m.title || ''));
+        stored.milestones = [...seedMilestones(), ...custom];
+        stored.milestonesVersion = 1;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.

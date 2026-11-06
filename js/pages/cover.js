@@ -103,7 +103,7 @@ function buildManifest(data) {
       subsections: [
         { id: 'schedule-leadership', label: 'Leadership Schedule Management' },
         { id: 'schedule-team', label: 'Team Management' },
-        { id: 'ops-milestones', label: 'Key Milestones' },
+        { id: 'ops-milestones', label: 'Key Milestones This Week' },
         { id: 'ops-availability', label: 'Availability' },
         { id: 'ops-teams', label: 'Team Composition' },
       ],
