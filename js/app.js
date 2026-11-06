@@ -1,4 +1,5 @@
 import { getData, commit } from './store.js';
+import { startReadOnly, isReadOnly } from './readOnly.js';
 import { renderCover } from './pages/cover.js';
 import { renderDocumentation } from './pages/documentation.js';
 import { renderRoadmap } from './pages/roadmap.js';
@@ -70,6 +71,10 @@ function renderHeader(route) {
         `).join('')}
       </nav>
     </div>
+    <div class="header-right">
+      <span class="mode-badge ${isReadOnly() ? '' : 'editing'}">${isReadOnly() ? 'Read only' : 'Editing'}</span>
+      <button class="btn ${isReadOnly() ? '' : 'btn-primary'} edit-toggle" data-toggle-edit aria-pressed="${!isReadOnly()}">${isReadOnly() ? 'Edit' : 'Done editing'}</button>
+    </div>
   `;
 
 }
@@ -81,5 +86,13 @@ function escapeAttr(s) {
 window.addEventListener('hashchange', rerender);
 window.addEventListener('DOMContentLoaded', () => {
   if (!location.hash) location.hash = '#/home';
+  startReadOnly(() => {
+    // Keep the scroll position when switching modes.
+    const y = window.scrollY;
+    document.getElementById('sidebar-root').innerHTML = '';
+    document.querySelectorAll('.task-sidebar, .sidebar-overlay, .coo-modal-wrap').forEach((el) => el.remove());
+    rerender();
+    window.scrollTo(0, y);
+  });
   rerender();
 });

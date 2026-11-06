@@ -157,6 +157,46 @@ function seedOkrs() {
   ];
 }
 
+// Documentation: how to get access to each tool. Passwords never go here.
+export const TOOL_ACCESS_NOTE = [
+  'How to get access to a tool:',
+  '1. Ask in the #tool-access Slack channel with the tool name and why you need it.',
+  '2. The admin listed below approves it and invites your work email, using Google sign-in where the tool supports it.',
+  '3. Turn on two-factor sign-in the first time you log in.',
+  '4. Keep any passwords in the company password manager. Never put passwords or keys on this page.',
+  '5. When someone changes roles or leaves, the admin removes their access the same day.',
+].join('\n');
+
+const TOOL_ACCESS = [
+  ['Google Workspace', 'Set up by the admin on day one. Sign in with your work email.', 'Chief of Staff', 'Email, calendar, Drive and Docs. Sign-in for most other tools.'],
+  ['Slack', 'Invite sent to your work email on day one.', 'Chief of Staff', 'Team chat, #tool-access requests and roadmap alerts.'],
+  ['HubSpot', 'Request in #tool-access. Seats are limited, so say which team you are on.', 'CEO EA', 'CRM for accounts, deals, sequences and event follow-ups.'],
+  ['Ashby', 'Request in #tool-access. Interviewers get a free interviewer seat.', 'HR', 'Applicant tracking, interview scheduling and scorecards.'],
+  ['Apollo', 'Request in #tool-access. Credits are shared, so check before bulk exports.', 'Chief of Staff', 'Finding contact details for leads and candidates.'],
+  ['Juicebox', 'Request in #tool-access. Recruiting team only.', 'HR', 'Searching for technical candidates across 30+ sources.'],
+  ['Claude', 'Request in #tool-access. Added to the team workspace.', 'CTO EA', 'Writing, research and the skills that connect our tools.'],
+  ['Granola', 'Install from granola.ai and sign in with Google.', 'CTO EA', 'Meeting notes that feed objectives on the GTM Roadmap.'],
+];
+
+function toolAccessGuide() {
+  return {
+    id: 'docs-logins', title: 'Tool Access Guide', note: TOOL_ACCESS_NOTE,
+    fields: TOOL_ACCESS_FIELDS,
+    entries: toolAccessRows(),
+  };
+}
+
+export const TOOL_ACCESS_FIELDS = [
+  { key: 'name', label: 'Tool' },
+  { key: 'loginProcess', label: 'How to Get Access' },
+  { key: 'adminAccess', label: 'Admin (Grants Access)' },
+  { key: 'useCases', label: 'Use Cases' },
+];
+
+export function toolAccessRows() {
+  return TOOL_ACCESS.map(([name, loginProcess, adminAccess, useCases], i) => ({ id: `tool-${i + 1}`, name, loginProcess, adminAccess, useCases }));
+}
+
 // Documentation: templates, SOPs and team onboarding, kept in their own sections at the top.
 export function seedDocLibrary() {
   const doc = (id, title, notes) => ({ id, title, url: '', notes });
@@ -192,16 +232,7 @@ export function seedDocLibrary() {
 function seedDocs() {
   return [
     ...seedDocLibrary(),
-    {
-      id: 'docs-logins', title: 'Software Logins',
-      fields: [
-        { key: 'name', label: 'Software Name' },
-        { key: 'loginProcess', label: 'Login Process' },
-        { key: 'adminAccess', label: 'Admin Access' },
-        { key: 'useCases', label: 'Use Cases' },
-      ],
-      entries: [],
-    },
+    toolAccessGuide(),
     {
       id: 'docs-tofu', title: 'Setup Instructions',
       entries: [
@@ -325,8 +356,44 @@ const CONFERENCES = [
   ['IEEE Digital Twin Conference', 'Simulation and digital twins', 'Europe', 'Sep 7–11, 2026', 'Rende, Italy', 'The 2026 edition was in Rende.', 'https://swc-ieee-2026.github.io/digitaltwin'],
 ];
 
+// Corrections: missing region, dates and location, and official event sites instead of third-party pages.
+export const CONFERENCE_FIXES = {
+  'Disney Accelerator 2026': { region: 'United States', dates: 'Nov 3, 2026', location: 'Demo Day at Walt Disney Studios, Burbank, CA', link: 'https://thewaltdisneycompany.com/news/accelerator-2026-participants/' },
+  'TEDAI 2023': { region: 'United States', dates: 'Oct 17–18, 2023', location: 'San Francisco, CA', link: 'https://tedai-sanfrancisco.ted.com/' },
+  'UIST 2023': { region: 'United States', dates: 'Oct 29–Nov 1, 2023', location: 'San Francisco, CA', link: 'https://uist.acm.org/2023/' },
+  'ICLR 2027': { link: 'https://iclr.cc/Conferences/2027' },
+  'CVPR 2027': { link: 'https://cvpr.thecvf.com/' },
+  'WACV 2027': { link: 'https://wacv.thecvf.com/' },
+  'NeurIPS 2026 (Atlanta)': { link: 'https://neurips.cc/Conferences/2026' },
+  'NeurIPS 2026 (Paris)': { link: 'https://neurips.cc/Conferences/2026' },
+  'NVIDIA GTC 2027': { link: 'https://www.nvidia.com/gtc/' },
+  'I/ITSEC 2026': { link: 'https://www.iitsec.org/' },
+  'AAAI 2027': { link: 'https://aaai.org/conference/aaai/aaai-27/' },
+  'ALL IN 2027': { link: 'https://www.scaleai.ca/' },
+  'ICASSP 2027': { link: 'https://2027.ieeeicassp.org/' },
+  'Winter Simulation Conference 2026': { link: 'https://www.wintersim.org/' },
+  EUROSIM: { event: 'EUROSIM 2026', dates: 'Sep 21–23, 2026', location: 'Grand Hotel Savoia, Genova, Italy', details: 'The 12th congress of the Federation of European Simulation Societies, held with I3M 2026.', link: 'https://www.msc-les.org/eurosim2026/' },
+};
+
+// Event Attendance is split into Simile's past appearances, upcoming events and past events.
+export const CONFERENCE_GROUPS = [
+  { key: 'past', label: 'Simile’s Past Appearances' },
+  { key: 'upcoming', label: 'Upcoming' },
+  { key: 'past-events', label: 'Past Events (Next Edition Not Announced)' },
+];
+const CONFERENCE_GROUP_OF = {
+  'RAISE Summit 2026': 'past', 'Disney Accelerator 2026': 'past', 'TEDAI 2023': 'past', 'UIST 2023': 'past',
+  'Digital Twin Summit (North America)': 'past-events', EUROSIM: 'past-events', 'EUROSIM 2026': 'past-events', 'IEEE Digital Twin Conference': 'past-events',
+};
+export function conferenceGroupOf(event) {
+  return CONFERENCE_GROUP_OF[event] || 'upcoming';
+}
+
 export function conferenceRows() {
-  return CONFERENCES.map(([event, category, region, dates, location, details, link], i) => ({ id: `conf-${i + 1}`, event, category, region, dates, location, details, link }));
+  return CONFERENCES.map(([event, category, region, dates, location, details, link], i) => ({
+    id: `conf-${i + 1}`, event, category, region, dates, location, details, link,
+    ...(CONFERENCE_FIXES[event] || {}), group: conferenceGroupOf(event),
+  }));
 }
 
 // Columns of the Recruitment Partnership Events companies table.
@@ -1094,7 +1161,7 @@ function seedRecruitment() {
       id: 'rec-attendance',
       title: 'Event Attendance',
       note: 'Conferences and events worth attending, plus the ones Simile and Joon have already been part of.',
-      table: { fields: CONFERENCE_FIELDS, rows: conferenceRows() },
+      table: { fields: CONFERENCE_FIELDS, groups: CONFERENCE_GROUPS, rows: conferenceRows() },
       entities: [],
       metrics: [
         { id: 'm1', label: 'Leads (#)', target: 100, values: {} },
@@ -1271,7 +1338,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 13,
+    recruitmentVersion: 14,
     clientMaterials: [
       {
         id: 'clients',
@@ -1290,7 +1357,7 @@ export function seedData() {
     copyVersion: 1,
     consistencyVersion: 1,
     clientVersion: 1,
-    docsVersion: 1,
+    docsVersion: 2,
     notesVersion: 1,
     eventsVersion: 1,
     cooVersion: 2,

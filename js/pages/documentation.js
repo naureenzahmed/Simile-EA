@@ -67,6 +67,7 @@ function renderStructuredSection(s) {
           <button class="btn btn-ghost btn-danger" data-remove-doc-section="${s.id}" style="padding:4px 8px;">Remove section</button>
         </div>
       </div>
+      ${s.note ? `<div class="doc-section-note">${escapeHtml(s.note)}</div>` : ''}
       ${s.entries.length ? `
         <div class="tracker-scroll">
           <table class="list-table doc-fields-table">
@@ -80,7 +81,9 @@ function renderStructuredSection(s) {
               ${s.entries.map((entry) => `
                 <tr>
                   ${s.fields.map((f) => `
-                    <td><input type="text" class="cell-input" data-row-id="${entry.id}" data-section-id="${s.id}" data-field="${f.key}" value="${escapeHtml(entry[f.key] || '')}" /></td>
+                    <td>${f.key === 'name'
+                      ? `<input type="text" class="cell-input" data-row-id="${entry.id}" data-section-id="${s.id}" data-field="${f.key}" value="${escapeHtml(entry[f.key] || '')}" />`
+                      : `<textarea class="cell-input cell-textarea doc-cell" rows="2" data-row-id="${entry.id}" data-section-id="${s.id}" data-field="${f.key}">${escapeHtml(entry[f.key] || '')}</textarea>`}</td>
                   `).join('')}
                   <td><button class="btn btn-ghost" data-remove-doc-row="${s.id}|${entry.id}" style="padding:3px 7px;">✕</button></td>
                 </tr>

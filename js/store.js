@@ -1,4 +1,5 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA } from './seed.js';
+import { isReadOnly } from './readOnly.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -225,6 +226,20 @@ function load() {
         stored.scheduleVersion = 4;
         changed = true;
       }
+      // Recruitment v14: fix rows with missing dates, use official event sites, and split past from upcoming.
+      if (stored.recruitment && stored.recruitmentVersion < 14) {
+        const att = stored.recruitment.find((sec) => sec.id === 'rec-attendance');
+        if (att?.table) {
+          att.table.groups = CONFERENCE_GROUPS.map((g) => ({ ...g }));
+          for (const row of att.table.rows) {
+            const fix = CONFERENCE_FIXES[row.event];
+            if (fix) Object.assign(row, fix);
+            row.group = row.group || conferenceGroupOf(row.event);
+          }
+        }
+        stored.recruitmentVersion = 14;
+        changed = true;
+      }
       // Copy v1: fix spelling, grammar and tone in the starter text.
       if ((stored.copyVersion || 0) < 1) {
         applyCopyFixes(stored);
@@ -285,6 +300,18 @@ function load() {
           }
         }
         stored.eventsVersion = 1;
+        changed = true;
+      }
+      // Docs v2: Software Logins becomes the Tool Access Guide, with the access process and the tools we use.
+      if (stored.docs && (stored.docsVersion || 0) < 2) {
+        const sec = stored.docs.find((d) => d.id === 'docs-logins');
+        if (sec) {
+          if (sec.title === 'Software Logins') sec.title = 'Tool Access Guide';
+          sec.note = sec.note || TOOL_ACCESS_NOTE;
+          sec.fields = TOOL_ACCESS_FIELDS.map((f) => ({ ...f }));
+          if (!sec.entries.length) sec.entries = toolAccessRows();
+        }
+        stored.docsVersion = 2;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
@@ -401,7 +428,9 @@ export function getData() {
   return data;
 }
 
+// Nothing is saved while the site is read-only.
 export function commit() {
+  if (isReadOnly()) return;
   save(data);
 }
 

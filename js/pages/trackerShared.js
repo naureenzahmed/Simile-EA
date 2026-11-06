@@ -59,7 +59,7 @@ function renderSection(s, weeks) {
       <div class="toolbar" style="margin-bottom:6px;">
         <h4 style="margin:0;">${escapeHtml(s.title)}</h4>
         <div style="display:flex; gap:6px;">
-          ${s.table ? `<button class="btn btn-ghost" data-add-table-row="${s.id}" style="padding:4px 8px;">+ Add row</button>` : ''}
+          ${s.table && !s.table.groups ? `<button class="btn btn-ghost" data-add-table-row="${s.id}" style="padding:4px 8px;">+ Add row</button>` : ''}
           <button class="btn btn-ghost" data-add-metric="${s.id}" style="padding:4px 8px;">+ Add metric</button>
           <button class="btn btn-ghost btn-danger" data-remove-section="${s.id}" style="padding:4px 8px;">Remove section</button>
         </div>
@@ -126,7 +126,7 @@ function renderTableSection(s) {
       <div class="toolbar" style="margin-bottom:6px;">
         <h4 style="margin:0;">${escapeHtml(s.title)}</h4>
         <div style="display:flex; gap:6px;">
-          <button class="btn btn-ghost" data-add-table-row="${s.id}" style="padding:4px 8px;">+ Add row</button>
+          ${s.table?.groups ? '' : `<button class="btn btn-ghost" data-add-table-row="${s.id}" style="padding:4px 8px;">+ Add row</button>`}
           <button class="btn btn-ghost btn-danger" data-remove-section="${s.id}" style="padding:4px 8px;">Remove section</button>
         </div>
       </div>
@@ -153,8 +153,26 @@ function tableCell(s, row, f) {
   return `<input type="text" class="cell-input" data-table-cell="${key}" value="${escapeHtml(value)}" />`;
 }
 
+// Tables with groups (like Event Attendance) show one sub-table per group.
 function tableHtml(s) {
-  const { fields, rows } = s.table;
+  const { groups } = s.table;
+  if (!groups) return tableGrid(s, s.table.rows);
+  const keys = groups.map((g) => g.key);
+  return groups.map((g) => {
+    const rows = s.table.rows.filter((r) => (keys.includes(r.group) ? r.group : 'upcoming') === g.key);
+    return `
+      <div class="table-group">
+        <div class="table-group-head">
+          <h5>${escapeHtml(g.label)} <span class="event-phase-count">${rows.length}</span></h5>
+          <button class="btn btn-ghost" data-add-table-row="${s.id}" data-group="${g.key}" style="padding:3px 8px;">+ Add row</button>
+        </div>
+        ${tableGrid(s, rows)}
+      </div>`;
+  }).join('');
+}
+
+function tableGrid(s, rows) {
+  const { fields } = s.table;
   return `
     <div class="tracker-scroll">
       <table class="list-table doc-fields-table">
@@ -253,6 +271,7 @@ function wireEvents(container, data, key, opts, sections) {
       const section = sections.find((s) => s.id === btn.dataset.addTableRow);
       const row = { id: uid('row') };
       section.table.fields.forEach((f) => { row[f.key] = ''; });
+      if (section.table.groups) row.group = btn.dataset.group || 'upcoming';
       section.table.rows.push(row);
       commit();
       renderTrackerPage(container, data, key, opts);

@@ -1,4 +1,5 @@
 import { getData, commit } from '../store.js';
+import { isReadOnly } from '../readOnly.js';
 import { escapeHtml } from '../utils.js';
 import { BOARD_SECTIONS } from '../seed.js';
 
@@ -16,6 +17,11 @@ export function renderCover(container) {
   const pages = buildManifest(data);
 
   container.innerHTML = `
+    <div class="ro-note ${isReadOnly() ? '' : 'editing'}" role="note">
+      ${isReadOnly()
+        ? '<strong>This is a read-only file.</strong> You can browse every page, but nothing can be changed. Click <b>Edit</b> at the top right to make changes.'
+        : '<strong>You are editing.</strong> Changes save in this browser only. Click <b>Done editing</b> at the top right to go back to read-only.'}
+    </div>
     <div class="page-title">Simile EA</div>
 
     <div class="card doc-card home-about" id="home-about">
