@@ -1014,3 +1014,22 @@ body.read-only .coo-card { cursor: pointer; }
 .pf-ast { font-size: 24px; font-weight: 500; color: var(--accent); vertical-align: super; margin-left: 2px; line-height: 0; }
 .pf-estimate { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
 .pf-estimate span { color: var(--accent); font-weight: 600; margin-right: 3px; }
+
+/* Select Account picker on Target Accounts and Lead Lists */
+.pf-head-actions { display: flex; align-items: center; gap: 6px; }
+.pf-select-wrap { position: relative; }
+.pf-select-btn { padding: 5px 12px; }
+.pf-picker {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 25; width: 300px;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(10,10,10,.12); padding: 8px;
+}
+.pf-picker-search { width: 100%; min-width: 0; margin-bottom: 6px; }
+.pf-picker-list { max-height: 260px; overflow-y: auto; display: flex; flex-direction: column; }
+.pf-picker-item { all: unset; box-sizing: border-box; cursor: pointer; display: flex; flex-direction: column; gap: 1px; padding: 7px 8px; border-radius: 4px; }
+.pf-picker-item:hover, .pf-picker-item:focus-visible { background: var(--bg-raised-2); }
+.pf-picker-name { font-size: 13px; font-weight: 600; }
+.pf-picker-from { font-size: 11px; color: var(--text-dim); }
+.pf-picker-new { font-size: 13px; color: var(--accent); }
+.pf-picker-blank { font-size: 12px; color: var(--text-dim); border-top: 1px solid var(--border); border-radius: 0; margin-top: 4px; }
+.card.pf-picker-open { position: relative; z-index: 6; }

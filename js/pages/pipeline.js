@@ -149,7 +149,11 @@ function renderTable(s, rows) {
     <div class="card doc-card" id="${s.id}">
       <div class="toolbar" style="margin-bottom:2px;">
         <h4 style="margin:0;">${escapeHtml(s.title)} <span class="event-phase-count">${rows.length}</span></h4>
-        <button class="btn btn-ghost" data-pf-add="${s.id}" style="padding:4px 8px;">+ ${escapeHtml(s.addLabel)}</button>
+        <div class="pf-head-actions">
+          <div class="pf-select-wrap">
+            <button class="btn btn-primary pf-select-btn" data-pf-select="${s.id}" aria-haspopup="listbox" aria-expanded="false">Add Account</button>
+          </div>
+        </div>
       </div>
       <div class="section-desc">${escapeHtml(s.note)}</div>
       <div class="tracker-scroll">
@@ -160,7 +164,7 @@ function renderTable(s, rows) {
               <tr>
                 ${s.fields.map((f) => `<td>${cell(s, row, f)}</td>`).join('')}
                 <td><button class="btn btn-ghost" data-pf-remove="${s.id}|${row.id}" style="padding:3px 7px;" title="Remove row">✕</button></td>
-              </tr>`).join('') || `<tr><td colspan="${s.fields.length + 1}" class="empty-hint">Nothing here yet. Click "+ ${escapeHtml(s.addLabel)}" to add one.</td></tr>`}
+              </tr>`).join('') || `<tr><td colspan="${s.fields.length + 1}" class="empty-hint">Nothing here yet. Click "Add Account" to add one.</td></tr>`}
           </tbody>
         </table>
       </div>
@@ -170,6 +174,11 @@ function renderTable(s, rows) {
 
 function wireTables(container, p) {
   const rerender = () => renderPipeline(container);
+
+  container.querySelectorAll('[data-pf-select]').forEach((btn) => btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    openAccountPicker(btn, btn.dataset.pfSelect, p, rerender);
+  }));
 
   container.querySelectorAll('[data-pf-add]').forEach((btn) => btn.addEventListener('click', () => {
     const id = btn.dataset.pfAdd;
@@ -208,3 +217,100 @@ function wireTables(container, p) {
     rerender();
   }));
 }
+
+/* ---------- Add Account: pull in an account from elsewhere on the site, or start a new one ---------- */
+const keyOf = (name) => (name || '').trim().toLowerCase();
+
+// Accounts this table doesn't have yet: rows from the other table, plus clients from Client Materials.
+function accountOptions(sectionId, p) {
+  const here = new Set(p[sectionId].map((r) => keyOf(r.company)));
+  const out = [];
+  for (const sec of PIPELINE_SECTIONS) {
+    if (sec.id === sectionId) continue;
+    for (const r of p[sec.id] || []) {
+      if (r.company && !here.has(keyOf(r.company))) out.push({ name: r.company, from: sec.title, row: r, sectionId: sec.id });
+    }
+  }
+  const clients = (getData().clientMaterials || []).find((c) => c.id === 'clients')?.entries || [];
+  for (const c of clients) {
+    const name = c.clientName;
+    if (name && !here.has(keyOf(name)) && !out.some((o) => keyOf(o.name) === keyOf(name))) {
+      out.push({ name, from: 'Client Materials', row: { company: name, poc: c.similePoc || '', buyer: c.clientPoc || '' } });
+    }
+  }
+  return out.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function closePicker() {
+  document.querySelector('.pf-picker')?.remove();
+  document.querySelectorAll('.pf-picker-open').forEach((c) => c.classList.remove('pf-picker-open'));
+  document.querySelectorAll('[data-pf-select][aria-expanded="true"]').forEach((b) => b.setAttribute('aria-expanded', 'false'));
+}
+
+function openAccountPicker(btn, sectionId, p, rerender) {
+  const wasOpen = btn.getAttribute('aria-expanded') === 'true';
+  closePicker();
+  if (wasOpen) return;
+  const section = PIPELINE_SECTIONS.find((sec) => sec.id === sectionId);
+  const options = accountOptions(sectionId, p);
+  btn.setAttribute('aria-expanded', 'true');
+  btn.closest('.card')?.classList.add('pf-picker-open');
+
+  const pop = document.createElement('div');
+  pop.className = 'pf-picker';
+  pop.innerHTML = `
+    <input type="text" class="cell-input pf-picker-search" placeholder="Search accounts" aria-label="Search accounts" />
+    <div class="pf-picker-list" role="listbox"></div>
+  `;
+  btn.parentElement.append(pop);
+  const list = pop.querySelector('.pf-picker-list');
+  const search = pop.querySelector('input');
+
+  const add = (opt, typedName) => {
+    const status = section.fields.find((f) => f.key === 'status').options;
+    const src = opt?.row || {};
+    p[sectionId].push({
+      id: uid('pf'), company: opt ? opt.name : typedName, poc: src.poc || '', buyer: src.buyer || '',
+      status: status.includes(src.status) ? src.status : status[0], updated: todayISO(),
+      materials: src.materials || '', source: src.source || (opt?.from === 'Client Materials' ? 'Referral' : ''),
+    });
+    // A lead that becomes a target account is marked Converted in Lead Lists.
+    if (opt?.sectionId === 'lead-lists' && sectionId === 'target-accounts') { opt.row.status = 'Converted'; opt.row.updated = todayISO(); }
+    commit();
+    closePicker();
+    rerender();
+  };
+
+  const draw = () => {
+    const q = keyOf(search.value);
+    const shown = options.filter((o) => !q || keyOf(o.name).includes(q));
+    const exact = options.some((o) => keyOf(o.name) === q) || p[sectionId].some((r) => keyOf(r.company) === q);
+    list.innerHTML = shown.map((o, i) => `
+      <button type="button" class="pf-picker-item" role="option" data-i="${options.indexOf(o)}">
+        <span class="pf-picker-name">${escapeHtml(o.name)}</span>
+        <span class="pf-picker-from">${escapeHtml(o.from)}${o.row.status ? ` · ${escapeHtml(o.row.status)}` : ''}</span>
+      </button>`).join('')
+      + (q && !exact ? `<button type="button" class="pf-picker-item pf-picker-new" data-new="1">+ Add “${escapeHtml(search.value.trim())}” as a new account</button>` : '')
+      || '<div class="empty-hint">No other accounts to add. Type a name to add a new one.</div>';
+    list.insertAdjacentHTML('beforeend', '<button type="button" class="pf-picker-item pf-picker-blank" data-blank="1">+ Add a blank row</button>');
+    list.querySelector('[data-blank]').addEventListener('click', () => {
+      p[sectionId].push({ id: uid('pf'), updated: todayISO() });
+      commit();
+      closePicker();
+      rerender();
+      document.querySelector(`#${sectionId} tbody tr:last-child [data-pf-cell]`)?.focus();
+    });
+    list.querySelectorAll('[data-i]').forEach((b) => b.addEventListener('click', () => add(options[Number(b.dataset.i)])));
+    list.querySelector('[data-new]')?.addEventListener('click', () => add(null, search.value.trim()));
+  };
+  draw();
+  search.addEventListener('input', draw);
+  search.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') { closePicker(); btn.focus(); }
+    if (e.key === 'Enter') list.querySelector('.pf-picker-item')?.click();
+  });
+  pop.addEventListener('click', (e) => e.stopPropagation());
+  search.focus();
+}
+
+document.addEventListener('click', closePicker);
