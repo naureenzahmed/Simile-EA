@@ -1358,13 +1358,21 @@ export const COO_STAGES = [
   { key: 'other', label: 'Other' },
 ];
 
+// Starting status for each example email, in the same order as the inbox list.
+const MAIL_STATUS_SEED = ['needs', 'progress', 'progress', 'needs', 'needs', 'done', 'done', 'done'];
+
+export function mailStatusFor(id) {
+  const i = Number((/^coo-mail-(\d+)$/.exec(id) || [])[1]) - 1;
+  return MAIL_STATUS_SEED[i] || (id.startsWith('coo-mail-other') ? 'done' : 'needs');
+}
+
 const OTHER_MAIL = [
   ['other', 'Office manager', 'Holiday party RSVP', '2026-11-04', 'Please RSVP by the 20th and note any dietary needs.'],
   ['other', 'Notion', 'Your weekly workspace digest', '2026-11-03', 'Twelve pages were edited this week.'],
 ];
 
 export function cooOtherMail() {
-  return OTHER_MAIL.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-other-${i + 1}`, category, from, subject, date, summary }));
+  return OTHER_MAIL.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-other-${i + 1}`, category, from, subject, date, summary, status: 'done' }));
 }
 
 export function seedCoo() {
@@ -1402,7 +1410,7 @@ export function seedCoo() {
   });
   return {
     calendar: cal.map(([date, time, title], i) => ({ id: `coo-cal-${i + 1}`, date, time, title, notes: '' })),
-    inbox: mail.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-${i + 1}`, category, from, subject, date, summary })),
+    inbox: mail.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-${i + 1}`, category, from, subject, date, summary, status: MAIL_STATUS_SEED[i] || 'needs' })),
     inquiries: inquiries.map(([stage, title, department, description, owner, deadline], i) => ({ id: `coo-inq-${i + 1}`, stage, title, department, description, owner, deadline })),
     currentSprint: sprint('sprint-12', 'Sprint 12', '2026-11-02', '2026-11-13',
       [['Finalize the Q4 board deck', false], ['Book the venue for the December offsite', true], ['Send the October investor update', true], ['Schedule the CVS onsite', false]],
@@ -1528,7 +1536,7 @@ export function seedData() {
     pipelineVersion: 1,
     milestonesVersion: 1,
     peopleVersion: 2,
-    cooVersion: 2,
+    cooVersion: 3,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',

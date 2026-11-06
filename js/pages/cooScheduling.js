@@ -1,6 +1,7 @@
 import { getData, commit } from '../store.js';
 import { uid, escapeHtml, todayISO, fmtDate, dayLabel } from '../utils.js';
 import { notesBoxHtml } from '../notesBox.js';
+import { isReadOnly } from '../readOnly.js';
 import { COO_INBOX, COO_STAGES, seedCoo } from '../seed.js';
 
 export const COO_TITLE = 'COO Scheduling';
@@ -102,6 +103,18 @@ function renderCalendar(c) {
 }
 
 /* ---------- Inbox ---------- */
+// Where each email stands. Click the status to move it along (in edit mode).
+const MAIL_STATUS = [
+  { key: 'needs', label: 'Needs to be addressed' },
+  { key: 'progress', label: 'In progress' },
+  { key: 'done', label: 'Addressed' },
+];
+
+function statusButton(m) {
+  const st = MAIL_STATUS.find((x) => x.key === m.status) || MAIL_STATUS[0];
+  return `<button type="button" class="coo-mail-status st-${st.key}" data-mail-status="${m.id}" data-ro-keep title="Click to change the status (edit mode)">${st.label}</button>`;
+}
+
 function syncedLabel() {
   const mins = Math.max(0, Math.round((Date.now() - view.syncedAt) / 60000));
   return mins < 1 ? 'Synced just now' : `Synced ${mins} min ago`;
@@ -136,12 +149,15 @@ function renderInbox(c) {
             const open = view.openMail === m.id;
             return `
             <div class="coo-msg ${m.read ? '' : 'unread'} ${open ? 'open' : ''}">
-              <button class="coo-msg-row" data-open-mail="${m.id}" aria-expanded="${open}">
-                <span class="coo-avatar">${escapeHtml((m.from || '?').trim()[0].toUpperCase())}</span>
-                <span class="coo-msg-from">${escapeHtml(m.from)}</span>
-                <span class="coo-msg-text"><span class="coo-msg-subject">${escapeHtml(m.subject)}</span>${m.summary ? ` <span class="coo-msg-snippet">· ${escapeHtml(m.summary)}</span>` : ''}</span>
+              <div class="coo-msg-line">
+                <button class="coo-msg-row" data-open-mail="${m.id}" aria-expanded="${open}">
+                  <span class="coo-avatar">${escapeHtml((m.from || '?').trim()[0].toUpperCase())}</span>
+                  <span class="coo-msg-from">${escapeHtml(m.from)}</span>
+                  <span class="coo-msg-text"><span class="coo-msg-subject">${escapeHtml(m.subject)}</span>${m.summary ? ` <span class="coo-msg-snippet">· ${escapeHtml(m.summary)}</span>` : ''}</span>
+                </button>
+                ${statusButton(m)}
                 <span class="coo-msg-date">${dateText(m.date)}</span>
-              </button>
+              </div>
               ${open ? `
                 <div class="coo-msg-detail">
                   <div class="coo-msg-detail-head"><strong>${escapeHtml(m.subject)}</strong><span>${escapeHtml(m.from)} · ${dateText(m.date)}</span></div>
@@ -308,6 +324,14 @@ function wire(container, c) {
     view.openMail = view.openMail === id ? null : id;
     const m = c.inbox.find((x) => x.id === id);
     if (!m.read) { m.read = true; commit(); }
+    rerender();
+  }));
+  container.querySelectorAll('[data-mail-status]').forEach((btn) => btn.addEventListener('click', () => {
+    if (isReadOnly()) return;
+    const m = c.inbox.find((x) => x.id === btn.dataset.mailStatus);
+    const keys = MAIL_STATUS.map((x) => x.key);
+    m.status = keys[(keys.indexOf(m.status || 'needs') + 1) % keys.length];
+    commit();
     rerender();
   }));
   container.querySelectorAll('[data-mail-move]').forEach((sel) => sel.addEventListener('change', () => {
