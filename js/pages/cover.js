@@ -61,7 +61,9 @@ export function renderCover(container) {
   container.querySelectorAll('[data-home]').forEach((el) => {
     // Grow each box to fit its text, so nothing hides behind a scrollbar.
     const fit = () => { el.style.height = 'auto'; el.style.height = `${Math.max(el.scrollHeight + 2, 110)}px`; };
+    fit();
     requestAnimationFrame(fit);
+    document.fonts?.ready.then(fit);
     el.addEventListener('input', () => { home[el.dataset.home] = el.value; commit(); fit(); });
   });
 }
