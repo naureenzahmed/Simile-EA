@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -237,6 +237,12 @@ function load() {
           }
         }
         stored.clientVersion = 1;
+        changed = true;
+      }
+      // COO v1: the inbox gets an Other folder.
+      if (stored.coo && (stored.cooVersion || 0) < 1) {
+        if (!stored.coo.inbox.some((m) => m.category === 'other')) stored.coo.inbox.push(...cooOtherMail());
+        stored.cooVersion = 1;
         changed = true;
       }
       for (const key of Object.keys(fresh)) {

@@ -14,8 +14,8 @@ const PARTS = [
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Not saved: which month the calendar shows.
-const view = { month: todayISO().slice(0, 7) };
+// Not saved: calendar month, open inbox folder and email, and the last sync time.
+const view = { month: todayISO().slice(0, 7), folder: 'investors', openMail: null, syncedAt: Date.now() - 2 * 60000, syncing: false };
 
 function coo() {
   const data = getData();
@@ -99,40 +99,58 @@ function renderCalendar(c) {
 }
 
 /* ---------- Inbox ---------- */
+function syncedLabel() {
+  const mins = Math.max(0, Math.round((Date.now() - view.syncedAt) / 60000));
+  return mins < 1 ? 'Synced just now' : `Synced ${mins} min ago`;
+}
+
 function renderInbox(c) {
+  const folder = view.folder;
+  const mails = c.inbox.filter((m) => m.category === folder).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
+  const unread = (key) => c.inbox.filter((m) => m.category === key && !m.read).length;
   return `
     <div class="toolbar">
       <h2 class="schedule-part-title">Inbox</h2>
-      <button class="btn btn-primary" data-mail-add="investors">+ Add email</button>
     </div>
-    <div class="section-desc">Emails sorted into Investors, Client Responses, Potential Candidates and Spam. Use the Folder menu to move an email.</div>
-    <div class="stack-16">
-      ${COO_INBOX.map((cat) => {
-        const mails = c.inbox.filter((m) => m.category === cat.key).sort((a, b) => (b.date || '').localeCompare(a.date || ''));
-        return `
-        <div class="card doc-card coo-inbox-card" id="coo-inbox-${cat.key}">
-          <div class="toolbar" style="margin-bottom:6px;">
-            <h4 style="margin:0;">${cat.label} <span class="event-phase-count">${mails.length}</span></h4>
-            <button class="btn btn-ghost" data-mail-add="${cat.key}" style="padding:4px 8px;">+ Add</button>
-          </div>
-          <div class="tracker-scroll">
-            <table class="list-table coo-mail-table">
-              <thead><tr><th>From</th><th>Subject</th><th>Received</th><th>Summary</th><th>Folder</th><th></th></tr></thead>
-              <tbody>
-                ${mails.map((m) => `
-                  <tr>
-                    <td><input type="text" class="cell-input" data-mail="${m.id}|from" value="${escapeHtml(m.from)}" /></td>
-                    <td><input type="text" class="cell-input coo-subject" data-mail="${m.id}|subject" value="${escapeHtml(m.subject)}" /></td>
-                    <td><input type="date" class="cell-input" data-mail="${m.id}|date" value="${escapeHtml(m.date)}" /></td>
-                    <td class="coo-wide"><textarea class="cell-input cell-textarea" rows="1" data-mail="${m.id}|summary">${escapeHtml(m.summary)}</textarea></td>
-                    <td><select class="cell-input" data-mail-move="${m.id}">${COO_INBOX.map((o) => `<option value="${o.key}" ${o.key === m.category ? 'selected' : ''}>${o.label}</option>`).join('')}</select></td>
-                    <td><button class="btn btn-ghost" data-mail-remove="${m.id}" style="padding:3px 7px;" title="Remove">✕</button></td>
-                  </tr>`).join('') || `<tr><td colspan="6" class="empty-hint">Nothing here.</td></tr>`}
-              </tbody>
-            </table>
-          </div>
-        </div>`;
-      }).join('')}
+    <div class="card coo-mail">
+      <div class="coo-mail-bar">
+        <span class="coo-mail-status"><span class="coo-dot"></span>Connected to your email · Sorted automatically</span>
+        <span class="coo-mail-sync">
+          <span id="coo-synced">${view.syncing ? 'Syncing…' : syncedLabel()}</span>
+          <button class="btn btn-ghost" id="coo-sync" style="padding:3px 8px;" ${view.syncing ? 'disabled' : ''}>↻ Sync</button>
+        </span>
+      </div>
+      <div class="coo-mail-body">
+        <nav class="coo-folders" aria-label="Folders">
+          ${COO_INBOX.map((f) => `
+            <button class="coo-folder ${f.key === folder ? 'on' : ''}" data-folder="${f.key}">
+              <span>${f.label}</span>
+              <span class="coo-folder-count">${unread(f.key) || ''}</span>
+            </button>`).join('')}
+        </nav>
+        <div class="coo-mail-list">
+          ${mails.map((m) => {
+            const open = view.openMail === m.id;
+            return `
+            <div class="coo-msg ${m.read ? '' : 'unread'} ${open ? 'open' : ''}">
+              <button class="coo-msg-row" data-open-mail="${m.id}" aria-expanded="${open}">
+                <span class="coo-avatar">${escapeHtml((m.from || '?').trim()[0].toUpperCase())}</span>
+                <span class="coo-msg-from">${escapeHtml(m.from)}</span>
+                <span class="coo-msg-text"><span class="coo-msg-subject">${escapeHtml(m.subject)}</span>${m.summary ? ` <span class="coo-msg-snippet">· ${escapeHtml(m.summary)}</span>` : ''}</span>
+                <span class="coo-msg-date">${dateText(m.date)}</span>
+              </button>
+              ${open ? `
+                <div class="coo-msg-detail">
+                  <div class="coo-msg-detail-head"><strong>${escapeHtml(m.subject)}</strong><span>${escapeHtml(m.from)} · ${dateText(m.date)}</span></div>
+                  <p>${escapeHtml(m.summary) || '<span class="empty-hint" style="padding:0;">No preview.</span>'}</p>
+                  <label class="coo-move">Move to
+                    <select class="cell-input" data-mail-move="${m.id}">${COO_INBOX.map((o) => `<option value="${o.key}" ${o.key === m.category ? 'selected' : ''}>${o.label}</option>`).join('')}</select>
+                  </label>
+                </div>` : ''}
+            </div>`;
+          }).join('') || '<div class="empty-hint" style="padding:24px;">No emails in this folder.</div>'}
+        </div>
+      </div>
     </div>
   `;
 }
@@ -277,28 +295,29 @@ function wire(container, c) {
   }));
 
   // Inbox
-  container.querySelectorAll('[data-mail]').forEach((input) => input.addEventListener('input', () => {
-    const [id, field] = input.dataset.mail.split('|');
-    c.inbox.find((m) => m.id === id)[field] = input.value;
-    commit();
+  container.querySelectorAll('[data-folder]').forEach((btn) => btn.addEventListener('click', () => {
+    view.folder = btn.dataset.folder;
+    view.openMail = null;
+    rerender();
+  }));
+  container.querySelectorAll('[data-open-mail]').forEach((row) => row.addEventListener('click', () => {
+    const id = row.dataset.openMail;
+    view.openMail = view.openMail === id ? null : id;
+    const m = c.inbox.find((x) => x.id === id);
+    if (!m.read) { m.read = true; commit(); }
+    rerender();
   }));
   container.querySelectorAll('[data-mail-move]').forEach((sel) => sel.addEventListener('change', () => {
     c.inbox.find((m) => m.id === sel.dataset.mailMove).category = sel.value;
+    view.openMail = null;
     commit();
     rerender();
   }));
-  container.querySelectorAll('[data-mail-remove]').forEach((btn) => btn.addEventListener('click', () => {
-    c.inbox = c.inbox.filter((m) => m.id !== btn.dataset.mailRemove);
-    commit();
+  container.querySelector('#coo-sync').addEventListener('click', () => {
+    view.syncing = true;
     rerender();
-  }));
-  container.querySelectorAll('[data-mail-add]').forEach((btn) => btn.addEventListener('click', () => {
-    const id = uid('mail');
-    c.inbox.push({ id, category: btn.dataset.mailAdd, from: '', subject: '', date: todayISO(), summary: '' });
-    commit();
-    rerender();
-    container.querySelector(`[data-mail="${id}|from"]`)?.focus();
-  }));
+    setTimeout(() => { view.syncing = false; view.syncedAt = Date.now(); rerender(); }, 900);
+  });
 
   // Inquiries: open, add and drag between columns.
   container.querySelectorAll('[data-inq]').forEach((card) => {

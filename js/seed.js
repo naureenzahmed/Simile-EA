@@ -983,6 +983,7 @@ export const COO_INBOX = [
   { key: 'clients', label: 'Client Responses' },
   { key: 'candidates', label: 'Potential Candidates' },
   { key: 'spam', label: 'Spam' },
+  { key: 'other', label: 'Other' },
 ];
 
 export const COO_STAGES = [
@@ -992,6 +993,15 @@ export const COO_STAGES = [
   { key: 'escalated', label: 'Escalated to Lainie' },
   { key: 'other', label: 'Other' },
 ];
+
+const OTHER_MAIL = [
+  ['other', 'Office manager', 'Holiday party RSVP', '2026-11-04', 'Please RSVP by the 20th and note any dietary needs.'],
+  ['other', 'Notion', 'Your weekly workspace digest', '2026-11-03', 'Twelve pages were edited this week.'],
+];
+
+export function cooOtherMail() {
+  return OTHER_MAIL.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-other-${i + 1}`, category, from, subject, date, summary }));
+}
 
 export function seedCoo() {
   const cal = [
@@ -1011,6 +1021,7 @@ export function seedCoo() {
     ['candidates', 'Referral', 'Intro: ML engineer from Stanford', '2026-11-01', 'Referred by an advisor. Open to a call next week.'],
     ['spam', 'Vendor outreach', 'Grow your pipeline 10x this quarter', '2026-11-04', ''],
     ['spam', 'Event promo', 'Last chance for early-bird tickets', '2026-11-02', ''],
+    ...OTHER_MAIL,
   ];
   const inquiries = [
     ['potential', 'Offsite venue may be overbooked', 'Operations', 'The hotel has flagged a possible double booking for the December offsite.', 'Olivia', '2026-11-14'],
