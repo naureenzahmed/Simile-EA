@@ -20,7 +20,7 @@ export function renderTeamManagement(container) {
 
     <div id="ops-availability">
       <div class="section-label">Availability</div>
-      <div class="section-desc">Who has room for more work. Hover over initials to see the name. In edit mode, click someone to move them to the next group.</div>
+      <div class="section-desc">Who has room for more work. Click anyone to see their name, department and what they're working on.</div>
       <div class="card" style="margin-bottom:24px;">
         <div id="availability-summary"></div>
         <div id="people-list"></div>
@@ -29,7 +29,7 @@ export function renderTeamManagement(container) {
 
     <div id="ops-teams">
       <div class="section-label">Team Composition</div>
-      <div class="section-desc">Who is in each department.</div>
+      <div class="section-desc">Who is in each department. Click a name to see what they're working on.</div>
       <div class="grid-3" id="team-grid"></div>
     </div>
   `;
@@ -112,7 +112,7 @@ function renderAvailability(data) {
               ${group.map((p) => {
                 const team = teamOf(p);
                 const label = `${p.name}, ${team.name}`;
-                return `<button type="button" class="bw-avatar" data-bw-person="${p.id}" style="--c:${team.color}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}: ${b.label}">${initials(p.name)}</button>`;
+                return `<button type="button" class="bw-avatar" data-person="${p.id}" style="--c:${team.color}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}: ${b.label}">${initials(p.name)}</button>`;
               }).join('') || '<span class="empty-hint" style="padding:0;">No one.</span>'}
             </div>
           </div>`;
@@ -130,10 +130,10 @@ function renderTeams(data) {
     <div class="card team-card">
       <h4><span class="team-dot" style="background:${color}; display:inline-block; margin-right:6px;"></span>${escapeHtml(name)}${members.length ? ` <span class="event-phase-count">${members.length}</span>` : ''}</h4>
       ${members.map((p) => `
-        <div class="team-member">
+        <button type="button" class="team-member team-member-btn" data-person="${p.id}" title="See what ${escapeHtml(p.name)} is working on">
           <span class="avatar" style="background:${color};">${initials(p.name)}</span>
           ${escapeHtml(p.name)}${p.role ? ` <span class="role">${escapeHtml(p.role)}</span>` : ''}
-        </div>
+        </button>
       `).join('') || '<div class="empty-hint">No one yet.</div>'}
     </div>
   `;
@@ -142,16 +142,112 @@ function renderTeams(data) {
     + data.teams.map((t) => card(t.name, t.color, data.people.filter((p) => p.teamId === t.id))).join('');
 }
 
-// In edit mode, clicking someone moves them to the next bandwidth group.
+// Clicking anyone in Availability or Team Composition opens their details.
 function wirePeople(container) {
-  container.querySelectorAll('[data-bw-person]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      if (isReadOnly()) return;
-      const person = getData().people.find((p) => p.id === btn.dataset.bwPerson);
-      const keys = BANDWIDTH.map((b) => b.key);
-      person.bandwidth = keys[(keys.indexOf(person.bandwidth || 'open') + 1) % keys.length];
-      commit();
-      renderTeamManagement(container);
-    });
+  container.querySelectorAll('[data-person]').forEach((btn) => {
+    btn.addEventListener('click', () => openPersonPanel(container, btn.dataset.person));
   });
+}
+
+const fmtDue = (iso) => (iso ? new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '');
+
+// Everything on the site that names this person as owner.
+function linkedWork(data, p) {
+  const same = (v) => (v || '').trim().toLowerCase() === p.name.toLowerCase();
+  const out = [];
+  for (const t of data.tasks || []) {
+    if (t.assigneeId === p.id && t.status !== 'Done') out.push({ text: t.title, meta: `GTM Roadmap objective · ${t.status}${t.endDate ? ` · due ${fmtDue(t.endDate)}` : ''}` });
+  }
+  for (const q of data.coo?.inquiries || []) {
+    if (same(q.owner) && q.stage !== 'solved') out.push({ text: q.title, meta: `COO inquiry${q.deadline ? ` · due ${fmtDue(q.deadline)}` : ''}` });
+  }
+  for (const e of data.events || []) {
+    for (const items of Object.values(e.checklist || {})) {
+      for (const i of items) if (same(i.owner) && !i.done) out.push({ text: i.text, meta: e.name });
+    }
+  }
+  for (const m of data.milestones || []) {
+    if (p.teamId && m.teamId === p.teamId) out.push({ text: m.title, meta: `Team milestone · due ${fmtDue(milestoneDate(m))}` });
+  }
+  return out;
+}
+
+function openPersonPanel(container, personId) {
+  closePersonPanel();
+  const data = getData();
+  const p = data.people.find((x) => x.id === personId);
+  if (!p) return;
+  p.focus = p.focus || [];
+  const team = teamOf(p);
+  const bw = BANDWIDTH.find((b) => b.key === (p.bandwidth || 'open'));
+  const editing = !isReadOnly();
+  const linked = linkedWork(data, p);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'sidebar-overlay';
+  overlay.id = 'person-overlay';
+  const panel = document.createElement('div');
+  panel.className = 'task-sidebar person-panel';
+  panel.id = 'person-panel';
+  panel.innerHTML = `
+    <div class="ts-header">
+      <strong>Team member</strong>
+      <button class="btn btn-ghost" id="person-close" aria-label="Close">✕</button>
+    </div>
+    <div class="ts-body">
+      <div class="person-hero">
+        <span class="person-hero-avatar" style="background:${team.color}">${initials(p.name)}</span>
+        <div>
+          <div class="person-hero-name">${escapeHtml(p.name)}</div>
+          <div class="person-hero-dept"><span class="team-dot" style="background:${team.color}"></span>${escapeHtml(team.name)}</div>
+        </div>
+      </div>
+      <div class="ts-field">
+        <div class="ts-field-label">Bandwidth</div>
+        ${editing
+          ? `<select id="person-bw">${BANDWIDTH.map((b) => `<option value="${b.key}" ${b.key === bw.key ? 'selected' : ''}>${b.label}</option>`).join('')}</select>`
+          : `<span class="person-bw-pill"><span class="bw-dot bw-${bw.key}"></span>${bw.label}</span>`}
+      </div>
+      <div class="ts-field">
+        <div class="ts-field-label">Working on</div>
+        <ul class="person-list">
+          ${p.focus.map((f, i) => `<li><span>${escapeHtml(f)}</span>${editing ? `<button class="btn btn-ghost" data-focus-remove="${i}" style="padding:2px 6px;" title="Remove">✕</button>` : ''}</li>`).join('') || '<li class="empty-hint" style="padding:0;">Nothing listed.</li>'}
+        </ul>
+        ${editing ? '<input type="text" id="person-focus-add" placeholder="+ Add a task (press Enter)" style="margin-top:6px;" />' : ''}
+      </div>
+      <div class="ts-field" style="border-bottom:none;">
+        <div class="ts-field-label">Owner elsewhere on the site</div>
+        <ul class="person-list person-linked">
+          ${linked.map((l) => `<li><span>${escapeHtml(l.text)}</span><span class="person-linked-meta">${escapeHtml(l.meta)}</span></li>`).join('') || '<li class="empty-hint" style="padding:0;">Not the owner of anything yet.</li>'}
+        </ul>
+      </div>
+    </div>`;
+  document.body.append(overlay, panel);
+
+  const reopen = () => { renderTeamManagement(container); openPersonPanel(container, personId); };
+  overlay.addEventListener('click', closePersonPanel);
+  panel.querySelector('#person-close').addEventListener('click', closePersonPanel);
+  panel.querySelector('#person-close').focus();
+  const onKey = (e) => { if (e.key === 'Escape') closePersonPanel(); };
+  document.addEventListener('keydown', onKey, { once: true });
+
+  panel.querySelector('#person-bw')?.addEventListener('change', (e) => { p.bandwidth = e.target.value; commit(); reopen(); });
+  panel.querySelectorAll('[data-focus-remove]').forEach((b) => b.addEventListener('click', () => {
+    p.focus.splice(Number(b.dataset.focusRemove), 1);
+    commit();
+    reopen();
+  }));
+  panel.querySelector('#person-focus-add')?.addEventListener('keydown', (e) => {
+    const v = e.target.value.trim();
+    if (e.key !== 'Enter' || !v) return;
+    p.focus.push(v);
+    commit();
+    reopen();
+    document.getElementById('person-focus-add')?.focus();
+  });
+}
+
+function closePersonPanel() {
+  document.getElementById('person-overlay')?.remove();
+  document.getElementById('person-panel')?.remove();
 }

@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -411,6 +411,12 @@ function load() {
         for (const p of teamMemberPeople()) if (!have.has(p.name.toLowerCase())) stored.people.push(p);
         for (const p of stored.people) if (!p.bandwidth) p.bandwidth = leaderBandwidth(p.name);
         stored.peopleVersion = 1;
+        changed = true;
+      }
+      // People v2: each person gets a short list of what they're working on.
+      if (stored.people && (stored.peopleVersion || 0) < 2) {
+        for (const p of stored.people) if (!p.focus) p.focus = [...(PERSON_FOCUS[p.name] || [])];
+        stored.peopleVersion = 2;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.

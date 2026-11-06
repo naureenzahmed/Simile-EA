@@ -35,14 +35,122 @@ export const TEAM_MEMBERS = [
   ['Noah Rivera', 'revops', 'over'], ['Chloe Dubois', 'revops', 'open'],
 ];
 
+// What each person is working on right now, shown when you click them in Team Management.
+export const PERSON_FOCUS = {
+  "Lainie": [
+    "Q4 board meeting prep",
+    "Series B investor follow-ups",
+    "Hiring a Chief of Staff"
+  ],
+  "Eileen": [
+    "NYC executive dinner guest list",
+    "Customer check-ins"
+  ],
+  "Julia": [
+    "Renewal calls",
+    "Quirk's LA conference plan"
+  ],
+  "Olivia": [
+    "Customer QBRs",
+    "December offsite venue"
+  ],
+  "Madison": [
+    "Expense approvals",
+    "Prospect intro calls"
+  ],
+  "Mihika": [
+    "Laptops for new hires",
+    "Prospect demos"
+  ],
+  "Matan": [
+    "Customer kickoffs",
+    "Mastercard lead follow-up"
+  ],
+  "Joon": [
+    "Product roadmap review",
+    "Customer QBR prep"
+  ],
+  "Michael": [
+    "Prospect demos",
+    "Marriott intro"
+  ],
+  "Priya Shah": [
+    "Lead the CVS onsite plan",
+    "Fix data access for the Wealthfront pilot",
+    "Deployment checklist v2"
+  ],
+  "Marcus Lee": [
+    "Set up the Suntory deployment",
+    "Weekly deployment status report"
+  ],
+  "Hannah Brooks": [
+    "Shadow the Itaú rollout",
+    "Draft the client QBR deck"
+  ],
+  "Sofia Alvarez": [
+    "Quirk's LA booth materials",
+    "Q4 case study with Gallup"
+  ],
+  "Ben Carter": [
+    "Paid ads refresh",
+    "November newsletter"
+  ],
+  "Grace Kim": [
+    "Chief of Staff interview loop",
+    "Benefits enrollment reminders"
+  ],
+  "Daniel Okafor": [
+    "Onboarding for three new hires",
+    "Update Ashby pipeline stages"
+  ],
+  "Leo Fischer": [
+    "Weekly eval report",
+    "Benchmark refresh for consumer models",
+    "Client eval for Deloitte"
+  ],
+  "Ava Thompson": [
+    "Eval dashboard cleanup",
+    "Review simulation accuracy"
+  ],
+  "Ryan Patel": [
+    "Eval methodology doc",
+    "Spot-check client results"
+  ],
+  "Maya Nguyen": [
+    "Suntory research findings",
+    "Survey design for the Nike lead"
+  ],
+  "Ethan Walsh": [
+    "Consumer panel recruiting",
+    "Insights summary for CVS"
+  ],
+  "Zoe Martin": [
+    "Q4 board deck draft",
+    "CEO travel for December"
+  ],
+  "Isaac Grant": [
+    "November investor update",
+    "NYC customer dinner prep"
+  ],
+  "Noah Rivera": [
+    "Pipeline review prep",
+    "HubSpot cleanup",
+    "Forecast model update"
+  ],
+  "Chloe Dubois": [
+    "Lead list enrichment",
+    "Renewals contract tracker"
+  ]
+};
+
 export function teamMemberPeople() {
-  return TEAM_MEMBERS.map(([name, teamId, bandwidth]) => ({ id: personId(name), name, role: '', teamId, bandwidth }));
+  return TEAM_MEMBERS.map(([name, teamId, bandwidth]) => ({ id: personId(name), name, role: '', teamId, bandwidth, focus: [...(PERSON_FOCUS[name] || [])] }));
 }
 
 // The team: leadership (the Schedule Management names) plus the department members.
 export function seedPeople(names = LEADERS) {
   return [
-    ...names.map((name) => ({ id: personId(name), name, role: '', teamId: null, bandwidth: LEADER_BANDWIDTH[name] || 'open' })),
+    ...names.map((name) => ({ id: personId(name), name, role: '', teamId: null, bandwidth: LEADER_BANDWIDTH[name] || 'open', focus: [...(PERSON_FOCUS[name] || [])] })),
     ...teamMemberPeople(),
   ];
 }
@@ -1417,7 +1525,7 @@ export function seedData() {
     homeVersion: 4,
     pipelineVersion: 1,
     milestonesVersion: 1,
-    peopleVersion: 1,
+    peopleVersion: 2,
     cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
