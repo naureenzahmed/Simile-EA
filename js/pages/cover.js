@@ -59,7 +59,10 @@ export function renderCover(container) {
 
   // Everything saves as you type.
   container.querySelectorAll('[data-home]').forEach((el) => {
-    el.addEventListener('input', () => { home[el.dataset.home] = el.value; commit(); });
+    // Grow each box to fit its text, so nothing hides behind a scrollbar.
+    const fit = () => { el.style.height = 'auto'; el.style.height = `${Math.max(el.scrollHeight + 2, 110)}px`; };
+    requestAnimationFrame(fit);
+    el.addEventListener('input', () => { home[el.dataset.home] = el.value; commit(); fit(); });
   });
 }
 

@@ -1001,3 +1001,4 @@ body.read-only .coo-card { cursor: pointer; }
 .cover-notes::-webkit-scrollbar { width: 10px; }
 .cover-notes::-webkit-scrollbar-track { background: var(--bg-raised-2); border-radius: 0 var(--radius) var(--radius) 0; }
 .cover-notes::-webkit-scrollbar-thumb { background: #b8b6b2; border-radius: 6px; border: 2px solid var(--bg-raised-2); }
+.home-about .notes-box { resize: none; overflow: hidden; line-height: 1.55; }
