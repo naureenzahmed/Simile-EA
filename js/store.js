@@ -205,6 +205,15 @@ function load() {
         stored.recruitmentVersion = 12;
         changed = true;
       }
+      // Recruitment v13: Ashby replaces Gem in the Tech Stack.
+      if (stored.recruitment && stored.recruitmentVersion < 13) {
+        const tech = stored.recruitment.find((sec) => sec.id === 'rec-tech-stack');
+        const ashby = techStackRows().find((r) => r.software === 'Ashby');
+        const gem = tech?.table?.rows.find((r) => (r.software || '').trim().toLowerCase() === 'gem');
+        if (gem && ashby) Object.assign(gem, { software: ashby.software, description: ashby.description, cost: ashby.cost });
+        stored.recruitmentVersion = 13;
+        changed = true;
+      }
       // Copy v1: fix spelling, grammar and tone in the starter text.
       if ((stored.copyVersion || 0) < 1) {
         applyCopyFixes(stored);
@@ -243,6 +252,12 @@ function load() {
       if (stored.coo && (stored.cooVersion || 0) < 1) {
         if (!stored.coo.inbox.some((m) => m.category === 'other')) stored.coo.inbox.push(...cooOtherMail());
         stored.cooVersion = 1;
+        changed = true;
+      }
+      // COO v2: applicant emails come from Ashby, not Gem.
+      if (stored.coo && (stored.cooVersion || 0) < 2) {
+        for (const m of stored.coo.inbox) if (m.from === 'Gem') m.from = 'Ashby';
+        stored.cooVersion = 2;
         changed = true;
       }
       // OKR v1: drop the Sector Objective box and group objectives by department.

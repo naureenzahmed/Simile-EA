@@ -223,7 +223,7 @@ const TECH_STACK = [
   ['Apollo', 'Apollo makes it quick to pull email addresses.', '$49–$119/user/mo billed yearly (Basic is $49, Professional is $79 and Organization is $119), or about $59–$149 billed monthly. There is a free plan. Credits, add-ons and overages can raise the total a lot.'],
   ['Juicebox', 'Juicebox searches LinkedIn, GitHub, Google Scholar and 30 more data sources, so we can reach business-oriented profiles just as easily as deep science ones.', 'About $99–$179/seat/mo billed yearly (Starter is $99, or $119 billed monthly, and Growth is $179). The Agents add-on is $199/agent/mo. Searches are unlimited, but contact and export credits are capped at 500/mo on Starter and 1,500/mo on Growth. Prices changed in July 2026.'],
   ['Claude', 'Claude skills can connect all of these tools and automate the handoff of information between them. They can also send each interviewer a short summary and the right interview questions just before the meeting. Gumloop is an alternative.', '$20–$25/user/mo for most people (Pro is $20 and Team Standard is $25). Max 5x is $100/mo, Max 20x is $200/mo and Team Premium is $125/user/mo.'],
-  ['Gem', 'Gem is an applicant tracking system (ATS). Once the ideal process is set up, email, scheduling and communication tracking are all automated.', 'The most expensive item. Pricing is a custom quote based on company headcount, and the Startups plan is $270/mo. The median buyer pays about $25,700/yr (the SMB average is about $19,800/yr and the enterprise average is about $94,600/yr).'],
+  ['Ashby', 'Ashby is an all-in-one recruiting platform: applicant tracking (ATS), sourcing, CRM, scheduling and hiring analytics. Once the ideal process is set up, email, scheduling and communication tracking are all automated.', 'The Foundations plan (up to 100 employees) is about $400/mo, or about $360/mo billed yearly. The Plus and Enterprise plans for larger teams are custom quotes. Add-ons such as AI Notetaker and Advanced Scheduling cost extra.'],
 ];
 
 export function techStackRows() {
@@ -1031,7 +1031,7 @@ export function seedCoo() {
     ['investors', 'Greenoaks', 'Follow-up on the October update', '2026-11-03', 'Wants more detail on pipeline growth.'],
     ['clients', 'CVS', 'Re: Onsite agenda for December', '2026-11-04', 'Confirmed the agenda and added two attendees.'],
     ['clients', 'Wealthfront', 'Re: Pilot results', '2026-11-02', 'Happy with the results and asking about next steps.'],
-    ['candidates', 'Gem', 'New applicant: Chief of Staff', '2026-11-04', 'Strong ops background, five years at a Series C startup.'],
+    ['candidates', 'Ashby', 'New applicant: Chief of Staff', '2026-11-04', 'Strong ops background, five years at a Series C startup.'],
     ['candidates', 'Referral', 'Intro: ML engineer from Stanford', '2026-11-01', 'Referred by an advisor. Open to a call next week.'],
     ['spam', 'Vendor outreach', 'Grow your pipeline 10x this quarter', '2026-11-04', ''],
     ['spam', 'Event promo', 'Last chance for early-bird tickets', '2026-11-02', ''],
@@ -1088,7 +1088,7 @@ export function seedData() {
     okrs: seedOkrs(),
     docs: seedDocs(),
     recruitment: seedRecruitment(),
-    recruitmentVersion: 12,
+    recruitmentVersion: 13,
     clientMaterials: [
       {
         id: 'clients',
@@ -1105,6 +1105,7 @@ export function seedData() {
     copyVersion: 1,
     consistencyVersion: 1,
     clientVersion: 1,
+    cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',
