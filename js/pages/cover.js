@@ -22,7 +22,7 @@ export function renderCover(container) {
         ? '<strong>This is a read-only file.</strong> You can browse every page, but nothing can be changed. Click <b>Edit</b> at the top right of the page to make changes.'
         : '<strong>You are editing.</strong> Changes save in this browser only. Click <b>Done editing</b> at the top right of the page to go back to read-only.'}
     </div>
-    <div class="page-title">Simile EA</div>
+    <div class="page-title">Executive Assistant to COO at Simile</div>
 
     <div class="card doc-card home-about" id="home-about">
       <h4 style="margin:0 0 4px;">About Naureen</h4>
@@ -57,13 +57,22 @@ export function renderCover(container) {
     </div>
   `;
 
-  // Everything saves as you type.
+  // Everything saves as you type. The three About boxes share one height, tall enough for the
+  // longest of them, so they line up and nothing hides behind a scrollbar.
+  const about = [...container.querySelectorAll('.home-about-part [data-home]')];
+  const why = container.querySelector('#home-why [data-home]');
+  const fit = () => {
+    if (!about[0]?.isConnected) return;
+    [...about, why].forEach((el) => { el.style.height = 'auto'; });
+    const tallest = Math.max(110, ...about.map((el) => el.scrollHeight + 2));
+    about.forEach((el) => { el.style.height = `${tallest}px`; });
+    why.style.height = `${Math.max(110, why.scrollHeight + 2)}px`;
+  };
+  fit();
+  requestAnimationFrame(fit);
+  document.fonts?.ready.then(fit);
+  window.addEventListener('resize', fit);
   container.querySelectorAll('[data-home]').forEach((el) => {
-    // Grow each box to fit its text, so nothing hides behind a scrollbar.
-    const fit = () => { el.style.height = 'auto'; el.style.height = `${Math.max(el.scrollHeight + 2, 110)}px`; };
-    fit();
-    requestAnimationFrame(fit);
-    document.fonts?.ready.then(fit);
     el.addEventListener('input', () => { home[el.dataset.home] = el.value; commit(); fit(); });
   });
 }

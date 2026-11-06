@@ -78,6 +78,7 @@ function renderHeader(route) {
 
   header.innerHTML = `
     <div class="header-left">
+      <a class="wordmark" href="#/home" title="Home"><img src="assets/simile-logo.png" alt="Simile" /></a>
       <nav class="nav-tabs" aria-label="Pages">
         <a class="nav-home ${route === 'home' ? 'active' : ''}" href="#/home" aria-label="Home" title="Home" ${route === 'home' ? 'aria-current="page"' : ''}>${HOUSE_ICON}</a>
         ${Object.entries(PAGES).filter(([key]) => key !== 'home').map(([key, p]) => `

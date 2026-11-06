@@ -214,14 +214,14 @@ export function seedDocLibrary() {
       id: 'docs-client-sops', title: 'Client SOPs',
       entries: [
         doc('sop-client-onboarding', 'Client Onboarding SOP', 'Steps from signed contract to kickoff: welcome email, kickoff call, success plan, owners on both sides and a 30/60/90-day check-in schedule.'),
-        doc('sop-client-setup', 'Client Data and Access Setup SOP', 'Getting data access, security review, user accounts and the first test running, with who owns each step.'),
+        doc('sop-client-setup', 'Client Data and Access Setup SOP', 'Getting data access, the security review, user accounts and the first test running, with an owner for each step.'),
         doc('sop-client-qbr', 'Client QBR SOP', 'How to prepare and run quarterly business reviews: results so far, open issues, renewal and expansion.'),
       ],
     },
     {
       id: 'docs-team-onboarding', title: 'Team Onboarding',
       entries: [
-        doc('onb-deployments', 'Deployment Team Onboarding', 'First two weeks: product training, shadowing live client deployments, tools access and the deployment checklist.'),
+        doc('onb-deployments', 'Deployment Team Onboarding', 'First two weeks: product training, shadowing live client deployments, tool access and the deployment checklist.'),
         doc('onb-consumer', 'Consumer Team Onboarding', 'First two weeks: consumer research use cases, key accounts, research methods and how we report results.'),
         doc('onb-hr', 'HR Team Onboarding', 'First two weeks: hiring process in Ashby, benefits and payroll setup, policies and the new-hire checklist.'),
       ],
@@ -353,7 +353,7 @@ const CONFERENCES = [
   ['ICASSP 2027', 'Speech and signal processing', 'Canada', 'May 16–21, 2027', 'Toronto, ON', 'The main conference for signal processing and speech AI.', 'https://www.opencurious.com/ai-conference-deadlines/icml-2027'],
   ['NeurIPS 2026 (Paris)', 'Deep learning and AI research', 'Europe', 'Dec 9–13, 2026', 'Paris, France', 'The European site of NeurIPS this year.', 'https://aiweekly.co/node/12069'],
   ['Winter Simulation Conference 2026', 'Simulation and digital twins', 'Europe', 'Dec 6–9, 2026', 'Glasgow, UK', 'The top academic simulation conference. It’s usually held in the US, so a European location is unusual.', 'https://www.informs.org/Meetings-Conferences/Community-Conferences-Calendar/(cc_year)/2026/(cc_month)/12'],
-  ['Hannover Messe 2027', 'Simulation and digital twins', 'Europe', 'Apr 5–8, 2027', 'Hannover, Germany', 'The main event for industrial AI and digital twins, with a focus on industrial IoT, digital twin and AI solutions.', 'https://www.hannovermesse.de/en/for-visitors/opening-hours/'],
+  ['Hannover Messe 2027', 'Simulation and digital twins', 'Europe', 'Apr 5–8, 2027', 'Hannover, Germany', 'The main event for industrial AI and digital twins, with a strong focus on industrial IoT.', 'https://www.hannovermesse.de/en/for-visitors/opening-hours/'],
   ['Digital Twins and Applications Europe 2027 (IET)', 'Simulation and digital twins', 'Europe', 'Jun 8–9, 2027', 'Madrid, Spain', 'Covers energy, manufacturing and smart cities. Paper submissions are due Jan 30, 2027.', 'https://digitaltwins.theiet.org/dta-europe-2027'],
   ['EUROSIM', 'Simulation and digital twins', 'Europe', '2026 edition held', 'Genova, Italy', 'The conference of the Federation of European Simulation Societies. The 2026 edition was in Genova.', 'https://easychair.org/cfp/topic?tid=17638670'],
   ['IEEE Digital Twin Conference', 'Simulation and digital twins', 'Europe', 'Sep 7–11, 2026', 'Rende, Italy', 'The 2026 edition was in Rende.', 'https://swc-ieee-2026.github.io/digitaltwin'],
@@ -683,7 +683,7 @@ const POTENTIAL_INVESTORS = [
     "link": "https://thrivecap.com",
     "industry": "AI, robotics, life sciences, fintech",
     "stage": "Seed → Growth",
-    "fund": "Thrive X – growth vehicle",
+    "fund": "Thrive X (growth vehicle)",
     "fundSize": "$9B (of $10B+)",
     "fundClosed": "Feb 2026",
     "check": "$5M to $1B+",
@@ -1206,7 +1206,7 @@ export const COO_INBOX = [
 
 export const COO_STAGES = [
   { key: 'potential', label: 'Potential Issues' },
-  { key: 'needed', label: 'Issues Needed to Be Addressed' },
+  { key: 'needed', label: 'Issues That Need to Be Addressed' },
   { key: 'solved', label: 'Solved' },
   { key: 'escalated', label: 'Escalated to Lainie' },
   { key: 'other', label: 'Other' },
@@ -1281,11 +1281,11 @@ export function seedCoo() {
 // Home: About Naureen.
 export const ABOUT_BACKGROUND = "I spent 3 years in venture capital, investing from pre-seed to Series A across North America. My work focused on deal flow and due diligence, and I supported LP reporting and the administrative side of fundraising. In my free time, I hosted a number of large-scale events and smaller event series, including North Star, founder dinners, conference kickoffs and multi-day trips for founders.\n\nAfter graduation, I joined Planned.AI as Growth. My job description was “find problems in the company and solve them, then move to the next thing.” This included redoing the onboarding flow to allow self-serve sign-up, B2C sales, customer success, paid ads and technical recruiting, supporting the company as it scaled from 50 to 90 people. I’m also helping build our brand presence through events and partnerships with startups and community organizations.";
 
-export const ABOUT_EXPERIENCE = "At Planned, I coordinated Sales, Marketing, Customer Success and Product to open a new revenue line selling directly to event planners rather than to director-level buyers. I contributed as an IC, doing all of these functions for my ICP while coordinating with each department to make sure I was also helping their progress.\n\nDuring my venture capital internships, I planned end-to-end portfolio showcases, LP dinners, annual general meetings and founder dinners. I conducted due diligence on startups from pre-seed to Series A, including investment memos, partner presentations, founder presentations and co-invest coordination.\n\nIn university, I grew McGill Ventures from a seven-person messenger group chat to a 77-person organization with 15 to 18 events a year and five programs, all aimed at connecting students in the startup ecosystem across the country and giving them the best possible resources to grow their companies. I started as an executive assistant to the presidents, coordinating partnerships with venture capital firms and startups on their behalf. I also led the organization of all our events, and within the year I moved up to chief of staff and then president.\n\nI revived and led the Women Founder Project, a 9-week accelerator with 2 weekly workshops and a leadership bootcamp. I recruited 35 industry professionals, including venture capital investors, lawyers, accelerators, founders and operators.";
+export const ABOUT_EXPERIENCE = "At Planned, I coordinated Sales, Marketing, Customer Success and Product to open a new revenue line selling directly to event planners rather than to director-level buyers. I contributed as an IC, doing all of these functions for my ICP while coordinating with each department to make sure I was also supporting their progress.\n\nDuring my venture capital internships, I planned end-to-end portfolio showcases, LP dinners, annual general meetings and founder dinners. I conducted due diligence on startups from pre-seed to Series A, including investment memos, partner presentations, founder presentations and co-invest coordination.\n\nIn university, I grew McGill Ventures from a seven-person messenger group chat to a 77-person organization with 15 to 18 events a year and five programs, all aimed at connecting students in the startup ecosystem across the country and giving them the best possible resources to grow their companies. I started as an executive assistant to the presidents, coordinating partnerships with venture capital firms and startups on their behalf. I also led the organization of all our events, and within the year I moved up to chief of staff and then president.\n\nI revived and led the Women Founder Project, a 9-week accelerator with 2 weekly workshops and a leadership bootcamp. I recruited 35 industry professionals, including venture capital investors, lawyers, accelerators, founders and operators.";
 
-export const ABOUT_GOALS = "I want to spend my time with founders who are solving the hardest problems and with teams that hold the highest bar for quality. I’m optimizing for the steepest learning curve and for real impact through the product I work on.\n\nSimile offers exactly that. Working under a COO like Lainie Yallen, who scaled Hebbia 15x in under two years and now leads sales and customer-facing work in the emerging field of simulation for business decision-making, tells me the caliber of talent Simile attracts. I want to contribute my strengths in coordination, organization and events while learning everything I can from the team, and help build a generational company.\n\nI’m also drawn to Simile because its product will change the way people interact with technology. That change will come from direct use of Simile’s product, and also from the decisions clients make when they use Simile to guide their decision-making.";
+export const ABOUT_GOALS = "I want to spend my time with founders who are solving the hardest problems and with teams that hold the highest bar for quality. I’m optimizing for the steepest learning curve and for real impact through the product I work on.\n\nSimile offers exactly that. The chance to work under a COO like Lainie Yallen, who scaled Hebbia 15x in under two years and now leads sales and customer-facing work in the emerging field of simulation for business decision-making, shows me the caliber of talent Simile attracts. I want to contribute my strengths in coordination, organization and events while learning everything I can from the team, and help build a generational company.\n\nI’m also drawn to Simile because its product will change the way people interact with technology. That change will come from people using Simile’s product directly, and also from the decisions clients make with Simile’s help.";
 
-export const ABOUT_WHY = "This page goes through all the major tasks and responsibilities described in the job description, as well as conversations with people on the team. I want to show how I’m thinking about addressing the role and what systems I would love to put in place within the first week of joining.";
+export const ABOUT_WHY = "This page goes through all the major tasks and responsibilities described in the job description, as well as what I’ve learned from conversations with people on the team. I want to show how I’m approaching the role and what systems I would love to put in place within the first week of joining.";
 
 // Pipeline & Forecasts. Example revenue: $0 at founding (Oct 2025), 5x in the last 5 months, $200M now.
 export const REVENUE_HISTORY = [
@@ -1366,7 +1366,7 @@ export function seedData() {
     pipeline: seedPipeline(),
     leadershipSchedule: seedLeadershipSchedule(),
     scheduleVersion: 4,
-    copyVersion: 1,
+    copyVersion: 2,
     consistencyVersion: 1,
     clientVersion: 1,
     docsVersion: 2,
@@ -1383,7 +1383,7 @@ export function seedData() {
       recruitment: 'After the chat with Sanjeev, there is a need for hiring support. Here are a couple of ideas I can put together in my first days to start a system for recruiting technical talent. Sourcing and scheduling need to be automated and systemized, while the interviews stay personal, with people engaging candidates and giving us a chance to build relationships with them.\n\nThis page is about bringing top-of-funnel talent to Simile.\n\nA note on events: partnering with others on events is much more interesting, since it has the same impact for far less time and effort. With school partnerships, the goal is to build relationships early, so that when very strong talent comes along, it gets funneled to us quickly.\n\nTo build a successful funnel for Simile, we need several long-term relationships in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for people already in the ecosystem\n• Event attendance, to understand who we’re getting in front of and whether they’re the right people, whether that’s a future client or a future employee\n• Event partnerships, as our ICPs converge\n• The total count from leads to interviews booked, and the gap between them',
       schedule: 'This page shows every team milestone and each teammate’s capacity. It also shows team composition, so when a project changes or the direction shifts, the work can go to a teammate who has room for it. Anyone newly onboarded can see who’s working on what, how much capacity everyone has and who they can go to for support at any time.',
       documentation: 'This page keeps all the processes, SOPs and helpful links in one place, so they’re easy to find for me, anyone working with me and anyone I need to train. I can just send them this page. It also keeps the history and the lists I used for each of my campaigns. I made it to save time for myself and for anyone I work with.',
-      roadmap: 'This lets anyone working with me follow my timeline week by week, with exactly when I plan to start and finish each initiative, experiment or task. It gives a clear picture of my progress.\n\nIt also has goals, metrics and objectives that show where things stand and how much more needs to happen to hit the end goals. The monthly calendar of deadlines shows what needs to happen each month and each day, so we can work backwards from the goals.',
+      roadmap: 'This lets anyone working with me follow my timeline week by week, with exactly when I plan to start and finish each initiative, experiment or objective. It gives a clear picture of my progress.\n\nIt also has goals, metrics and objectives that show where things stand and how much more needs to happen to hit the end goals. The monthly calendar of deadlines shows what needs to happen each month and each day, so we can work backwards from the goals.',
     },
     tasks: seedTasks(),
   };

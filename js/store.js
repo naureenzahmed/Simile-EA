@@ -369,6 +369,11 @@ function load() {
         stored.homeVersion = 4;
         changed = true;
       }
+      if ((stored.copyVersion || 0) < 2) {
+        replaceDeep(stored, COPY_FIXES_2);
+        stored.copyVersion = 2;
+        changed = true;
+      }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
       if (stored.clientMaterials && (stored.clientVersion || 0) < 1) {
         const clients = stored.clientMaterials.find((s) => s.id === 'clients');
@@ -473,6 +478,33 @@ export function syncPeople(d) {
     }
   }
   return added;
+}
+
+// Copy v2: grammar and wording fixes, applied wherever the old phrase appears in saved data.
+const COPY_FIXES_2 = {
+  "tools access and the deployment checklist": "tool access and the deployment checklist",
+  "Getting data access, security review, user accounts and the first test running, with who owns each step.": "Getting data access, the security review, user accounts and the first test running, with an owner for each step.",
+  "The main event for industrial AI and digital twins, with a focus on industrial IoT, digital twin and AI solutions.": "The main event for industrial AI and digital twins, with a strong focus on industrial IoT.",
+  "Thrive X – growth vehicle": "Thrive X (growth vehicle)",
+  "start and finish each initiative, experiment or task.": "start and finish each initiative, experiment or objective.",
+  "to make sure I was also helping their progress.": "to make sure I was also supporting their progress.",
+  "Working under a COO like Lainie Yallen, who scaled Hebbia 15x in under two years and now leads sales and customer-facing work in the emerging field of simulation for business decision-making, tells me the caliber of talent Simile attracts.": "The chance to work under a COO like Lainie Yallen, who scaled Hebbia 15x in under two years and now leads sales and customer-facing work in the emerging field of simulation for business decision-making, shows me the caliber of talent Simile attracts.",
+  "That change will come from direct use of Simile’s product, and also from the decisions clients make when they use Simile to guide their decision-making.": "That change will come from people using Simile’s product directly, and also from the decisions clients make with Simile’s help.",
+  "as well as conversations with people on the team. I want to show how I’m thinking about addressing the role": "as well as what I’ve learned from conversations with people on the team. I want to show how I’m approaching the role",
+  "Issues Needed to Be Addressed": "Issues That Need to Be Addressed"
+};
+
+function replaceDeep(value, fixes) {
+  if (typeof value === 'string') {
+    let out = value;
+    for (const [from, to] of Object.entries(fixes)) out = out.split(from).join(to);
+    return out;
+  }
+  if (Array.isArray(value)) return value.map((v) => replaceDeep(v, fixes));
+  if (value && typeof value === 'object') {
+    for (const k of Object.keys(value)) value[k] = replaceDeep(value[k], fixes);
+  }
+  return value;
 }
 
 function save(d) {
