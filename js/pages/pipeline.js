@@ -1,4 +1,5 @@
 import { getData, commit } from '../store.js';
+import { isReadOnly } from '../readOnly.js';
 import { uid, escapeHtml, todayISO } from '../utils.js';
 import { notesBoxHtml } from '../notesBox.js';
 import { PIPELINE_SECTIONS, REVENUE_HISTORY, seedPipeline } from '../seed.js';
@@ -150,7 +151,7 @@ function renderTable(s, rows) {
       <div class="toolbar" style="margin-bottom:2px;">
         <h4 style="margin:0;">${escapeHtml(s.title)} <span class="event-phase-count">${rows.length}</span></h4>
         <div class="pf-head-actions">
-          <button class="btn btn-primary pf-select-btn" data-pf-add="${s.id}">Add Account</button>
+          <button class="btn btn-primary pf-select-btn" data-pf-add="${s.id}" data-ro-keep>Add Account</button>
         </div>
       </div>
       <div class="section-desc">${escapeHtml(s.note)}</div>
@@ -175,6 +176,12 @@ function wireTables(container, p) {
 
   container.querySelectorAll('[data-pf-add]').forEach((btn) => btn.addEventListener('click', () => {
     const id = btn.dataset.pfAdd;
+    // Shown even in read-only mode: clicking it turns on editing first, then adds the row.
+    if (isReadOnly()) {
+      document.querySelector('[data-toggle-edit]')?.click();
+      document.querySelector(`[data-pf-add="${id}"]`)?.click();
+      return;
+    }
     p[id].push({ id: uid('pf'), updated: todayISO() });
     commit();
     rerender();

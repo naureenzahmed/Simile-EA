@@ -50,7 +50,8 @@ export function rerender() {
   const page = document.getElementById('app-page');
   page.innerHTML = '';
   PAGES[route].render(page);
-  page.prepend(modeBar());
+  // The Read only / Edit bar lives outside the page, so it stays when a page redraws itself.
+  document.getElementById('mode-root').replaceChildren(modeBar());
 
   const anchor = currentAnchor();
   if (anchor) {

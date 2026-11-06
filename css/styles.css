@@ -981,7 +981,9 @@ body.read-only .coo-card { cursor: pointer; }
 }
 
 /* Read only / Edit sits in the top-right corner of each page, so the tab bar has the full width. */
-.mode-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin: -8px 0 6px; }
+#mode-root { max-width: 1500px; margin: 0 auto; padding: 14px 24px 0; }
+.mode-bar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; }
+#mode-root + #app-page { padding-top: 6px; }
 @media (max-width: 640px) { .mode-badge { display: inline-block; } }
 
 /* Home is a house icon at the start of the tab bar, not a folder tab. */
