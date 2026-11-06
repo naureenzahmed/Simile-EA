@@ -1,6 +1,6 @@
 import { getData, commit } from '../store.js';
 import { uid, escapeHtml } from '../utils.js';
-import { EVENT_TYPES, EVENT_STATUSES, EVENT_PHASES, eventChecklist } from '../seed.js';
+import { EVENT_TYPES, EVENT_STATUSES, EVENT_PHASES, EVENT_ROLES, eventChecklist } from '../seed.js';
 
 export const EVENTS_TITLE = 'Events & Offsites';
 
@@ -12,7 +12,7 @@ export function renderEvents(container) {
       <div class="page-title" style="margin:0;">${EVENTS_TITLE}</div>
       <button class="btn btn-primary" id="add-event-btn">+ Add event</button>
     </div>
-    <datalist id="event-owners">${(getData().scheduleLeaders || []).map((n) => `<option value="${escapeHtml(n)}"></option>`).join('')}</datalist>
+    <datalist id="event-owners">${[...EVENT_ROLES, ...(getData().scheduleLeaders || [])].map((n) => `<option value="${escapeHtml(n)}"></option>`).join('')}</datalist>
     <div class="stack-16">
       ${renderContents(events)}
       ${events.map(renderEventSection).join('')}
@@ -48,7 +48,12 @@ function renderContents(events) {
                 <td><input type="text" class="cell-input events-name" data-event="${e.id}" data-field="name" value="${escapeHtml(e.name)}" /></td>
                 <td><select class="cell-input" data-event="${e.id}" data-field="type">${options(EVENT_TYPES, e.type)}</select></td>
                 <td class="events-desc"><textarea class="cell-input cell-textarea" rows="2" data-event="${e.id}" data-field="description">${escapeHtml(e.description)}</textarea></td>
-                <td><input type="date" class="cell-input" data-event="${e.id}" data-field="date" value="${escapeHtml(e.date)}" /></td>
+                <td>
+                  <label class="ev-date" title="Change date">
+                    <span data-date-label="${e.id}">${longDate(e.date) || 'Pick a date'}</span>
+                    <input type="date" data-event="${e.id}" data-field="date" value="${escapeHtml(e.date)}" aria-label="Date" />
+                  </label>
+                </td>
                 <td><input type="text" class="cell-input" data-event="${e.id}" data-field="location" value="${escapeHtml(e.location)}" /></td>
                 <td><a class="checklist-link" href="#/events?anchor=${e.id}">Checklist (${doneCount(e)}) →</a></td>
                 <td><select class="cell-input" data-event="${e.id}" data-field="status">${options(EVENT_STATUSES, e.status)}</select></td>
@@ -67,8 +72,14 @@ function doneCount(e) {
   return `${items.filter((i) => i.done).length}/${items.length}`;
 }
 
+// "Thu, Dec 3, 2026"
+export function longDate(iso) {
+  if (!iso) return '';
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+}
+
 function metaLine(e) {
-  return [e.type, e.date, e.location, e.status].filter(Boolean).map(escapeHtml).join(' · ');
+  return [e.type, longDate(e.date), e.location, e.status].filter(Boolean).map(escapeHtml).join(' · ');
 }
 
 // One section per event, with a checklist for each phase.
@@ -140,7 +151,7 @@ function wireEvents(container, events) {
 
   document.getElementById('add-event-btn').addEventListener('click', () => {
     const id = uid('evt');
-    events.push({ id, name: 'New event', type: '', description: '', date: '', location: '', status: 'Idea', checklist: eventChecklist(id) });
+    events.push({ id, name: 'New event', type: 'Other', description: '', date: '', location: '', status: 'Idea', checklist: eventChecklist(id, 'Other') });
     commit();
     rerender();
   });
@@ -149,12 +160,28 @@ function wireEvents(container, events) {
   container.querySelectorAll('[data-event][data-field]').forEach((el) => {
     const save = () => {
       const e = findEvent(events, el.dataset.event);
+      const prevType = e.type;
       e[el.dataset.field] = el.value;
+      // A new type brings its own checklist, as long as nobody has started the old one.
+      if (el.dataset.field === 'type' && prevType !== e.type) {
+        const items = EVENT_PHASES.flatMap((ph) => e.checklist[ph.key] || []);
+        if (items.every((i) => !i.done && !i.owner && !i.notes && !i.link)) {
+          e.checklist = eventChecklist(e.id, e.type);
+          commit();
+          rerender();
+          return;
+        }
+      }
+      if (el.dataset.field === 'date') container.querySelector(`[data-date-label="${e.id}"]`).textContent = longDate(e.date) || 'Pick a date';
       commit();
       container.querySelector(`[data-event-title="${e.id}"]`).textContent = e.name || 'Untitled event';
       container.querySelector(`[data-event-meta="${e.id}"]`).innerHTML = metaLine(e);
     };
     el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', save);
+  });
+
+  container.querySelectorAll('.ev-date input').forEach((input) => {
+    input.closest('.ev-date').addEventListener('click', () => { try { input.showPicker(); } catch { input.focus(); } });
   });
 
   container.querySelectorAll('[data-remove-event]').forEach((btn) => {

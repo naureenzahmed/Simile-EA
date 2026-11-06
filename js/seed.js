@@ -345,41 +345,113 @@ export const EVENT_PHASES = [
   { key: 'after', label: 'After the Event' },
 ];
 
-const EVENT_CHECKLIST = {
-  pre: [
-    'Lead list of target accounts',
-    'Booth presentation and materials',
-    'Booth staffing, scripts and run-of-show',
-  ],
-  during: [
-    'Wi-Fi and connection confirmed with the event organizer',
-    'Lead list on hand',
-    'Calendar open for call bookings',
-    'HubSpot ready to track every conversation',
-  ],
-  after: [
-    'Follow-ups on every conversation',
-    'Marketing recap of our attendance',
-  ],
+// Owners used on event checklists, alongside the team's names.
+export const EVENT_ROLES = ['CEO EA', 'CTO EA', 'Chief of Staff'];
+
+// One checklist per event type. Each item is [text, owner, done].
+const EVENT_CHECKLISTS = {
+  'Executive Customer Dinner': {
+    pre: [
+      ['Guest list with RSVPs tracked', 'CEO EA', true],
+      ['Bio for each guest', 'Chief of Staff', true],
+      ['Private room booked', 'CEO EA', true],
+      ['Menu confirmed with the restaurant', 'CEO EA', false],
+      ['Dietary needs collected from every guest', 'CEO EA', false],
+      ['Seating plan', 'Chief of Staff', false],
+      ['Talking points for the host', 'Chief of Staff', false],
+    ],
+    during: [
+      ['Place cards match the seating plan', 'CEO EA', false],
+      ['Host has talking points and guest bios on hand', 'Chief of Staff', false],
+      ['Notes on each guest conversation for follow-up', 'Chief of Staff', false],
+    ],
+    after: [
+      ['Handwritten thank-you notes sent within 24 hours', 'CEO EA', false],
+      ['Follow-ups logged in HubSpot', 'Chief of Staff', false],
+    ],
+  },
+  'Sales Kickoff': {
+    pre: [
+      ['Agenda', 'Chief of Staff', true],
+      ['Speakers confirmed', 'Chief of Staff', false],
+      ['Awards chosen and ordered', 'CEO EA', false],
+      ['Travel and hotels booked for the whole team', 'CTO EA', false],
+      ['Feedback survey drafted', 'Chief of Staff', false],
+    ],
+    during: [
+      ['Run-of-show and speaker timing', 'Chief of Staff', false],
+      ['Awards presented', 'CEO EA', false],
+    ],
+    after: [
+      ['Feedback survey sent to everyone', 'Chief of Staff', false],
+      ['Survey results shared with leadership', 'Chief of Staff', false],
+      ['Travel expenses reconciled', 'CTO EA', false],
+    ],
+  },
+  'GTM Offsite': {
+    pre: [
+      ['Pre-reads sent a week ahead', 'Chief of Staff', true],
+      ['How each session will run: goal, owner and format', 'Chief of Staff', false],
+      ['Venue, travel and rooms booked', 'CEO EA', true],
+    ],
+    during: [
+      ['Decisions log kept for every session', 'Chief of Staff', false],
+      ['Owner and deadline captured for each decision', 'CTO EA', false],
+    ],
+    after: [
+      ['Slide deck of outcomes sent within 48 hours', 'Chief of Staff', false],
+      ['Decisions added to the GTM Roadmap', 'Chief of Staff', false],
+    ],
+  },
+  'Industry Event': {
+    pre: [
+      ['Lead list of target accounts', 'Chief of Staff', true],
+      ['Booth presentation and materials', 'CEO EA', false],
+      ['Booth staffing, scripts and run-of-show', 'CTO EA', false],
+    ],
+    during: [
+      ['Wi-Fi and connection confirmed with the event organizer', 'CTO EA', false],
+      ['Lead list on hand', 'Chief of Staff', false],
+      ['Calendar open for call bookings', 'CEO EA', false],
+      ['HubSpot ready to track every conversation', 'Chief of Staff', false],
+    ],
+    after: [
+      ['Follow-ups on every conversation', 'Chief of Staff', false],
+      ['Marketing recap of our attendance', 'CEO EA', false],
+    ],
+  },
+  Other: {
+    pre: [['Goals and guest list', 'Chief of Staff', false], ['Venue and logistics booked', 'CEO EA', false]],
+    during: [['Run-of-show', 'Chief of Staff', false]],
+    after: [['Follow-ups and recap', 'Chief of Staff', false]],
+  },
 };
 
-export function eventChecklist(eventId) {
+// The checklist for a new event of this type. Starter events keep their sample owners and done marks.
+export function eventChecklist(eventId, type, { sample = false } = {}) {
+  const lists = EVENT_CHECKLISTS[type] || EVENT_CHECKLISTS.Other;
   const out = {};
   for (const phase of EVENT_PHASES) {
-    out[phase.key] = EVENT_CHECKLIST[phase.key].map((text, i) => ({ id: `${eventId}-${phase.key}-${i + 1}`, text, done: false, link: '', notes: '', owner: '' }));
+    out[phase.key] = (lists[phase.key] || []).map(([text, owner, done], i) => ({
+      id: `${eventId}-${phase.key}-${i + 1}`, text, done: sample && done, link: '', notes: '', owner: sample ? owner : '',
+    }));
   }
   return out;
 }
+
+export const QUIRKS_LA = { name: "The Quirk's Event – Los Angeles", description: "Booth at Quirk's, the market research and consumer insights conference, to meet insights leaders at target accounts and book follow-up calls.", date: '2027-02-24', location: 'Los Angeles, CA', link: 'https://www.quirks.com/events/the-quirks-event-los-angeles-2027' };
 
 function seedEvents() {
   return [
     ['evt-gtm-offsite', 'Q1 GTM Offsite', 'GTM Offsite', 'Two-day offsite for sales, marketing and customer success to agree on 2027 targets, territories and plays.', '2027-01-14', 'Napa, CA', 'Planning'],
     ['evt-sales-kickoff', '2027 Sales Kickoff', 'Sales Kickoff', 'Annual kickoff covering the product roadmap, the new pitch, enablement sessions and awards.', '2027-02-03', 'San Francisco, CA', 'Planning'],
     ['evt-exec-dinner', 'NYC Executive Customer Dinner', 'Executive Customer Dinner', 'Private dinner for about 12 customer and prospect executives to build relationships and hear feedback.', '2026-12-03', 'New York, NY', 'Confirmed'],
-    ['evt-industry', 'Industry Conference (booth)', 'Industry Event', 'Booth at a large industry conference to meet target accounts and book follow-up calls.', '2027-03-10', 'Las Vegas, NV', 'Idea'],
-  ].map(([id, name, type, description, date, location, status]) => ({
-    id, name, type, description, date, location, status, checklist: eventChecklist(id),
-  }));
+    ['evt-industry', QUIRKS_LA.name, 'Industry Event', QUIRKS_LA.description, QUIRKS_LA.date, QUIRKS_LA.location, 'Planning'],
+  ].map(([id, name, type, description, date, location, status]) => {
+    const checklist = eventChecklist(id, type, { sample: true });
+    if (id === 'evt-industry') checklist.pre[0].link = QUIRKS_LA.link;
+    return { id, name, type, description, date, location, status, checklist };
+  });
 }
 
 export const LEADERS = ['Lainie', 'Eileen', 'Julia', 'Olivia', 'Madison', 'Mihika', 'Matan', 'Joon', 'Michael'];
@@ -1220,6 +1292,7 @@ export function seedData() {
     clientVersion: 1,
     docsVersion: 1,
     notesVersion: 1,
+    eventsVersion: 1,
     cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),

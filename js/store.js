@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -267,6 +267,24 @@ function load() {
         const cur = stored.pageNotes.recruitment || '';
         if (!cur.includes('After the chat with Sanjeev')) stored.pageNotes.recruitment = cur ? `${intro}\n\n${cur}` : intro;
         stored.notesVersion = 1;
+        changed = true;
+      }
+      // Events v1: each event type gets its own checklist, and the placeholder conference becomes Quirk's LA.
+      if (stored.events && (stored.eventsVersion || 0) < 1) {
+        const starterIds = ['evt-gtm-offsite', 'evt-sales-kickoff', 'evt-exec-dinner', 'evt-industry'];
+        for (const e of stored.events) {
+          if (e.id === 'evt-industry' && e.name === 'Industry Conference (booth)') {
+            Object.assign(e, { name: QUIRKS_LA.name, description: QUIRKS_LA.description, date: QUIRKS_LA.date, location: QUIRKS_LA.location });
+            if (e.status === 'Idea') e.status = 'Planning';
+          }
+          const items = EVENT_PHASES.flatMap((ph) => e.checklist?.[ph.key] || []);
+          const untouched = items.every((i) => !i.done && !i.owner && !i.notes && !i.link);
+          if (untouched) {
+            e.checklist = eventChecklist(e.id, e.type, { sample: starterIds.includes(e.id) });
+            if (e.id === 'evt-industry') e.checklist.pre[0].link = QUIRKS_LA.link;
+          }
+        }
+        stored.eventsVersion = 1;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
