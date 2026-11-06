@@ -1311,7 +1311,7 @@ export const PIPELINE_SECTIONS = [
   {
     id: 'target-accounts', title: 'Target Accounts', addLabel: 'Add account',
     note: 'Named accounts we are going after. PoC is who owns the account at Simile; Buyer is who signs on their side.',
-    fields: pipelineFields(['Not contacted', 'Contacted', 'Meeting booked', 'Proposal sent', 'Closed won', 'Closed lost']),
+    fields: pipelineFields(['Meeting booked', 'Demo', 'Proposal sent', 'Closed won', 'Closed lost']),
   },
   {
     id: 'lead-lists', title: 'Lead Lists', addLabel: 'Add lead',
@@ -1325,9 +1325,9 @@ export function seedPipeline() {
   return {
     'target-accounts': rows('ta', [
       ['Unilever', 'Julia', 'VP of Consumer Insights', 'Meeting booked', '2026-11-04', 'Outbound'],
-      ['Delta Air Lines', 'Olivia', 'Head of Customer Research', 'Contacted', '2026-11-02', 'Event'],
+      ['Delta Air Lines', 'Olivia', 'Head of Customer Research', 'Demo', '2026-11-02', 'Event'],
       ['Pfizer', 'Madison', 'Director of Market Research', 'Proposal sent', '2026-11-05', 'Referral'],
-      ['Verizon', 'Mihika', 'VP of Customer Experience', 'Not contacted', '2026-10-30', 'Outbound'],
+      ['Verizon', 'Mihika', 'VP of Customer Experience', 'Demo', '2026-10-30', 'Outbound'],
     ]),
     'lead-lists': rows('ll', [
       ['Nike', 'Eileen', 'Senior Manager, Consumer Insights', 'New', '2026-11-05', 'Inbound'],
@@ -1375,6 +1375,7 @@ export function seedData() {
     notesVersion: 3,
     eventsVersion: 1,
     homeVersion: 4,
+    pipelineVersion: 1,
     cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),

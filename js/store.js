@@ -382,6 +382,14 @@ function load() {
         stored.notesVersion = 3;
         changed = true;
       }
+      // Pipeline v1: Target Accounts drops Not contacted and Contacted for a single Demo status.
+      if (stored.pipeline && (stored.pipelineVersion || 0) < 1) {
+        for (const r of stored.pipeline['target-accounts'] || []) {
+          if (r.status === 'Not contacted' || r.status === 'Contacted') r.status = 'Demo';
+        }
+        stored.pipelineVersion = 1;
+        changed = true;
+      }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
       if (stored.clientMaterials && (stored.clientVersion || 0) < 1) {
         const clients = stored.clientMaterials.find((s) => s.id === 'clients');
