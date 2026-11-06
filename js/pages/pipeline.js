@@ -26,8 +26,10 @@ export function renderPipeline(container) {
     <div class="stack-16" style="margin-top:28px;">
       <datalist id="pipeline-people">${(data.people || []).map((x) => `<option value="${escapeHtml(x.name)}"></option>`).join('')}</datalist>
       ${PIPELINE_SECTIONS.map((s) => renderTable(s, p[s.id])).join('')}
+      <div class="card doc-card" id="pipeline-glance"></div>
     </div>
   `;
+  renderGlance(container, p);
   wireChart(container);
   wireTables(container, p);
 }
@@ -200,6 +202,7 @@ function wireTables(container, p) {
         if (dateInput) dateInput.value = row.updated;
       }
       commit();
+      renderGlance(container, p);
       const open = input.parentElement.querySelector('.board-open');
       if (open) {
         open.href = toHref(input.value.trim());
@@ -215,5 +218,67 @@ function wireTables(container, p) {
     p[sid] = p[sid].filter((r) => r.id !== rid);
     commit();
     rerender();
+  }));
+}
+
+/* ---------- At a Glance: the accounts and leads to focus on right now ---------- */
+// One funnel across both tables: leads fill the first part, target accounts the rest.
+const FUNNEL = {
+  'lead-lists': { New: 0.05, Contacted: 0.15, Qualified: 0.3, Converted: 0.4 },
+  'target-accounts': { 'Meeting booked': 0.55, Demo: 0.7, 'Proposal sent': 0.85, 'Closed won': 1 },
+};
+const daysAgo = (iso) => (iso ? Math.max(0, Math.round((new Date(todayISO()) - new Date(iso)) / 86400000)) : 99);
+const ago = (d) => (d === 0 ? 'Today' : d === 1 ? 'Yesterday' : d >= 99 ? 'Not updated' : `${d} days ago`);
+
+function glanceItems(p) {
+  const items = [];
+  for (const sec of PIPELINE_SECTIONS) {
+    for (const r of p[sec.id] || []) {
+      const stage = FUNNEL[sec.id][r.status];
+      if (!r.company || stage === undefined) continue; // skips blank rows, Closed lost and Unqualified
+      if (sec.id === 'lead-lists' && r.status === 'Converted') continue; // already counted as a target account
+      const days = daysAgo(r.updated);
+      const momentum = Math.max(0, 1 - days / 30);
+      items.push({ row: r, sectionId: sec.id, list: sec.id === 'target-accounts' ? 'Target account' : 'Lead', stage, days, fast: days <= 2, score: stage * 0.6 + momentum * 0.4 });
+    }
+  }
+  return items.sort((a, b) => b.score - a.score).slice(0, 10);
+}
+
+function renderGlance(container, p) {
+  const el = container.querySelector('#pipeline-glance');
+  if (!el) return;
+  const items = glanceItems(p);
+  el.innerHTML = `
+    <div class="toolbar" style="margin-bottom:2px;">
+      <h4 style="margin:0;">At a Glance <span class="event-phase-count">${items.length}</span></h4>
+    </div>
+    <div class="section-desc">The accounts and leads that have progressed the most or are moving fastest right now, ranked from both tables. Click one to jump to its row.</div>
+    <ol class="pf-glance">
+      ${items.map((it, i) => `
+        <li>
+          <button type="button" class="pf-glance-row" data-glance="${it.sectionId}|${it.row.id}">
+            <span class="pf-glance-rank">${i + 1}</span>
+            <span class="pf-glance-main">
+              <span class="pf-glance-name">${escapeHtml(it.row.company)}${it.fast ? '<span class="pf-glance-fast">Moving fast</span>' : ''}</span>
+              <span class="pf-glance-meta">${it.list}${it.row.poc ? ` · PoC ${escapeHtml(it.row.poc)}` : ''}${it.row.buyer ? ` · ${escapeHtml(it.row.buyer)}` : ''}</span>
+            </span>
+            <span class="pf-glance-stage">
+              <span class="pf-glance-status">${escapeHtml(it.row.status)}</span>
+              <span class="pf-glance-track" aria-hidden="true"><span style="width:${Math.round(it.stage * 100)}%"></span></span>
+            </span>
+            <span class="pf-glance-when">${ago(it.days)}</span>
+          </button>
+        </li>`).join('') || '<li class="empty-hint">Nothing to show yet. Add accounts or leads above.</li>'}
+    </ol>
+  `;
+  el.querySelectorAll('[data-glance]').forEach((b) => b.addEventListener('click', () => {
+    const [sid, rid] = b.dataset.glance.split('|');
+    const row = container.querySelector(`[data-pf-cell="${sid}|${rid}|company"]`)?.closest('tr');
+    if (!row) return;
+    row.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    row.classList.remove('pf-flash');
+    void row.offsetWidth;
+    row.classList.add('pf-flash');
   }));
 }

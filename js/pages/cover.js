@@ -95,6 +95,7 @@ function buildManifest(data) {
         { id: 'pipeline-revenue', label: 'Revenue' },
         { id: 'target-accounts', label: 'Target Accounts' },
         { id: 'lead-lists', label: 'Lead Lists' },
+        { id: 'pipeline-glance', label: 'At a Glance' },
       ],
     },
     {

@@ -1,5 +1,5 @@
 import { getData, commit, syncPeople } from '../store.js';
-import { uid, escapeHtml, todayISO, addDays, dayLabel } from '../utils.js';
+import { uid, escapeHtml, todayISO, dayLabel } from '../utils.js';
 import { CITIES } from '../seed.js';
 
 
@@ -23,20 +23,6 @@ const view = {
 const lists = () => ({ leaders: getData().scheduleLeaders, types: getData().scheduleTypes });
 const cityShort = (name) => CITIES.find((c) => c.name === name)?.short || (name || '').slice(0, 3).toUpperCase();
 const cityList = (entries) => [...new Set([...CITIES.map((c) => c.name), ...entries.map((e) => e.city).filter(Boolean)])];
-
-// Where each person is this week (Sunday to Saturday), grouped by city.
-function thisWeek(entries) {
-  const today = todayISO();
-  const d = new Date(today + 'T00:00:00');
-  const start = addDays(today, -d.getDay());
-  const end = addDays(start, 6);
-  const byCity = {};
-  for (const e of entries) {
-    if (!e.city || e.start > end || (e.end || e.start) < start) continue;
-    (byCity[e.city] = byCity[e.city] || new Set()).add(e.person);
-  }
-  return { start, end, byCity };
-}
 
 const typeOf = (key) => lists().types.find((t) => t.key === key) || { key, label: key || 'Other', color: '#b8b6b2' };
 
@@ -62,10 +48,6 @@ function gridDays(month) {
   return Array.from({ length: 42 }, (_, i) => iso(new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)));
 }
 
-function fmtShort(iso) {
-  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-}
-
 function fmtTime(t) {
   if (!t) return '';
   const [h, min] = t.split(':').map(Number);
@@ -77,7 +59,6 @@ export function renderLeadershipSchedule(container) {
   const { leaders, types } = lists();
   const visible = entries.filter((e) => !view.hiddenTypes.has(e.type) && !view.hiddenPeople.has(e.person) && !view.hiddenCities.has(e.city || ''));
   const cities = cityList(entries);
-  const week = thisWeek(entries);
   const nextColor = EXTRA_COLORS.find((c) => !types.some((t) => t.color === c)) || EXTRA_COLORS[0];
   const today = todayISO();
   const days = gridDays(view.month);
@@ -129,17 +110,6 @@ export function renderLeadershipSchedule(container) {
       <div class="sched-filter-foot">
         <span>Showing ${visible.length} of ${entries.length} entries. Click a chip to show or hide it.</span>
         <button class="btn btn-ghost" id="sched-show-all" style="padding:3px 8px;">Show all</button>
-      </div>
-    </div>
-
-    <div class="card sched-where">
-      <div class="sched-where-title">Where leadership is this week <span>${fmtShort(week.start)} to ${fmtShort(week.end)}</span></div>
-      <div class="sched-where-grid">
-        ${Object.entries(week.byCity).sort((a, b) => b[1].size - a[1].size).map(([city, people]) => `
-          <div class="sched-where-city">
-            <div class="sched-where-name"><span class="sched-city">${escapeHtml(cityShort(city))}</span>${escapeHtml(city)}</div>
-            <div class="sched-where-people">${[...people].map(escapeHtml).join(', ')}</div>
-          </div>`).join('') || '<div class="empty-hint">No travel or office days logged this week.</div>'}
       </div>
     </div>
 
