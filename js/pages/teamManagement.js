@@ -1,4 +1,6 @@
 import { getData, commit, findTeam } from '../store.js';
+import { BANDWIDTH } from '../seed.js';
+import { isReadOnly } from '../readOnly.js';
 import { uid, todayISO, fmtDate, relativeDay, initials, escapeHtml, addDays, weekDue, milestoneDate } from '../utils.js';
 
 export function renderTeamManagement(container) {
@@ -18,7 +20,7 @@ export function renderTeamManagement(container) {
 
     <div id="ops-availability">
       <div class="section-label">Availability</div>
-      <div class="section-desc">Who is free right now, based on the roadmap objectives they own. Set each person's department here.</div>
+      <div class="section-desc">Who has room for more work. Hover over initials to see the name. In edit mode, click someone to move them to the next group.</div>
       <div class="card" style="margin-bottom:24px;">
         <div id="availability-summary"></div>
         <div id="people-list"></div>
@@ -71,64 +73,55 @@ function renderMilestones(data) {
       <div class="milestone-row">
         <div class="milestone-date">${fmtDate(date)}</div>
         <div><span class="team-dot" style="background:${team?.color || '#666'}; display:inline-block; margin-right:8px;"></span>${escapeHtml(m.title)}</div>
-        <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'No department')}</div>
+        <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'Leadership')}</div>
         <div class="milestone-rel">${relativeDay(date)}</div>
       </div>
     `;
   }).join('') || '<div class="empty-hint">No milestones this week.</div>';
 }
 
-function busyPersonIds(data) {
-  const today = todayISO();
-  const busy = new Set();
-  data.tasks.forEach((t) => {
-    if (t.assigneeId && t.status !== 'Done' && t.startDate <= today && today <= t.endDate) {
-      busy.add(t.assigneeId);
-    }
-  });
-  return busy;
-}
+const LEADERSHIP = { name: 'Leadership', color: '#8f9bb3' };
+const teamOf = (p) => findTeam(p.teamId) || LEADERSHIP;
 
+// Availability: everyone as initials, grouped by bandwidth.
 function renderAvailability(data) {
-  const busy = busyPersonIds(data);
-  const total = data.people.length;
-  const freeCount = total - busy.size;
-  const pct = total ? Math.round((freeCount / total) * 100) : 0;
+  const people = data.people;
+  const by = (key) => people.filter((p) => (p.bandwidth || 'open') === key);
+  const open = by('open').length;
+  const pct = people.length ? Math.round((open / people.length) * 100) : 0;
 
   document.getElementById('availability-summary').innerHTML = `
     <div class="avail-bar-row">
       <div class="avail-big">${pct}%</div>
-      <div style="color: var(--text-dim); font-size:12px;">of the team free right now</div>
-      <div style="margin-left:auto; color: var(--text-dim); font-size:12px;">${freeCount} of ${total} available</div>
+      <div style="color: var(--text-dim); font-size:12px;">of the team has bandwidth</div>
+      <div style="margin-left:auto; color: var(--text-dim); font-size:12px;">${open} of ${people.length} people</div>
     </div>
-    <div class="progress-track" style="margin-bottom:10px;">
-      <div class="progress-fill green" style="width:${pct}%;"></div>
-    </div>
-    <div class="avail-legend">
-      <span><span class="legend-dot" style="background:var(--green);"></span>${freeCount} free</span>
-      <span><span class="legend-dot" style="background:var(--accent);"></span>${busy.size} active</span>
+    <div class="avail-stack" aria-hidden="true">
+      ${BANDWIDTH.map((b) => `<span class="avail-seg bw-${b.key}" style="flex:${by(b.key).length || 0}"></span>`).join('')}
     </div>
   `;
 
-  const list = document.getElementById('people-list');
-  list.innerHTML = data.people.map((p) => {
-    const isBusy = busy.has(p.id);
-    const team = findTeam(p.teamId);
-    return `
-      <div class="person-row">
-        <div class="person-name-cell">
-          <span class="avatar" style="background:${team?.color || '#b8b6b2'};">${initials(p.name)}</span>
-          <div>${escapeHtml(p.name)}${p.role ? `<span class="role">${escapeHtml(p.role)}</span>` : ''}</div>
-        </div>
-        <div><select class="cell-input person-dept" data-person-dept="${p.id}" aria-label="Department for ${escapeHtml(p.name)}">
-          <option value="">No department</option>
-          ${data.teams.map((t) => `<option value="${t.id}" ${t.id === p.teamId ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')}
-        </select></div>
-        <div>${isBusy ? 'Working on an objective' : 'Open to work'}</div>
-        <div><span class="status-badge ${isBusy ? 'progress' : 'done'}">${isBusy ? 'Active' : 'Free'}</span></div>
-      </div>
-    `;
-  }).join('');
+  document.getElementById('people-list').innerHTML = `
+    <div class="bw-groups">
+      ${BANDWIDTH.map((b) => {
+        const group = by(b.key);
+        return `
+          <div class="bw-group">
+            <div class="bw-head"><span class="bw-dot bw-${b.key}"></span>${b.label} <span class="event-phase-count">${group.length}</span></div>
+            <div class="bw-people">
+              ${group.map((p) => {
+                const team = teamOf(p);
+                const label = `${p.name}, ${team.name}`;
+                return `<button type="button" class="bw-avatar" data-bw-person="${p.id}" style="--c:${team.color}" title="${escapeHtml(label)}" aria-label="${escapeHtml(label)}: ${b.label}">${initials(p.name)}</button>`;
+              }).join('') || '<span class="empty-hint" style="padding:0;">No one.</span>'}
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+    <div class="bw-legend">
+      ${[...data.teams, LEADERSHIP].map((t) => `<span><span class="team-dot" style="background:${t.color}"></span>${escapeHtml(t.name)}</span>`).join('')}
+    </div>
+  `;
 }
 
 function renderTeams(data) {
@@ -145,15 +138,18 @@ function renderTeams(data) {
     </div>
   `;
   document.getElementById('team-grid').innerHTML =
-    data.teams.map((t) => card(t.name, t.color, data.people.filter((p) => p.teamId === t.id))).join('')
-    + (unassigned.length ? card('No department yet', '#b8b6b2', unassigned) : '');
+    (unassigned.length ? card('Leadership', LEADERSHIP.color, unassigned) : '')
+    + data.teams.map((t) => card(t.name, t.color, data.people.filter((p) => p.teamId === t.id))).join('');
 }
 
+// In edit mode, clicking someone moves them to the next bandwidth group.
 function wirePeople(container) {
-  container.querySelectorAll('[data-person-dept]').forEach((sel) => {
-    sel.addEventListener('change', () => {
-      const person = getData().people.find((p) => p.id === sel.dataset.personDept);
-      person.teamId = sel.value || null;
+  container.querySelectorAll('[data-bw-person]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      if (isReadOnly()) return;
+      const person = getData().people.find((p) => p.id === btn.dataset.bwPerson);
+      const keys = BANDWIDTH.map((b) => b.key);
+      person.bandwidth = keys[(keys.indexOf(person.bandwidth || 'open') + 1) % keys.length];
       commit();
       renderTeamManagement(container);
     });

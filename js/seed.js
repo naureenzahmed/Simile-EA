@@ -14,9 +14,41 @@ export const TEAMS = [
 // Old Team A/B/C ids, kept so saved data can be moved onto departments.
 export const OLD_TEAM_MAP = { 'team-a': 'deployments', 'team-b': 'marketing', 'team-c': 'hr' };
 
-// The team. Names match the Schedule Management list; departments start unset.
+// Bandwidth for the Availability section: has room, at capacity, or overloaded.
+export const BANDWIDTH = [
+  { key: 'open', label: 'Has bandwidth' },
+  { key: 'full', label: 'Bandwidth full' },
+  { key: 'over', label: 'Needs to be freed up' },
+];
+
+// Leadership: the Schedule Management names, with no department (shown as Leadership).
+const LEADER_BANDWIDTH = { Lainie: 'over', Eileen: 'full', Julia: 'open', Olivia: 'full', Madison: 'open', Mihika: 'over', Matan: 'full', Joon: 'open', Michael: 'full' };
+
+// Made-up team members for each department, with their bandwidth.
+export const TEAM_MEMBERS = [
+  ['Priya Shah', 'deployments', 'over'], ['Marcus Lee', 'deployments', 'full'], ['Hannah Brooks', 'deployments', 'open'],
+  ['Sofia Alvarez', 'marketing', 'full'], ['Ben Carter', 'marketing', 'open'],
+  ['Grace Kim', 'hr', 'open'], ['Daniel Okafor', 'hr', 'full'],
+  ['Leo Fischer', 'evals', 'over'], ['Ava Thompson', 'evals', 'full'], ['Ryan Patel', 'evals', 'open'],
+  ['Maya Nguyen', 'consumer', 'full'], ['Ethan Walsh', 'consumer', 'open'],
+  ['Zoe Martin', 'ceo', 'full'], ['Isaac Grant', 'ceo', 'open'],
+  ['Noah Rivera', 'revops', 'over'], ['Chloe Dubois', 'revops', 'open'],
+];
+
+export function teamMemberPeople() {
+  return TEAM_MEMBERS.map(([name, teamId, bandwidth]) => ({ id: personId(name), name, role: '', teamId, bandwidth }));
+}
+
+// The team: leadership (the Schedule Management names) plus the department members.
 export function seedPeople(names = LEADERS) {
-  return names.map((name) => ({ id: personId(name), name, role: '', teamId: null }));
+  return [
+    ...names.map((name) => ({ id: personId(name), name, role: '', teamId: null, bandwidth: LEADER_BANDWIDTH[name] || 'open' })),
+    ...teamMemberPeople(),
+  ];
+}
+
+export function leaderBandwidth(name) {
+  return LEADER_BANDWIDTH[name] || 'open';
 }
 
 export function personId(name) {
@@ -1385,6 +1417,7 @@ export function seedData() {
     homeVersion: 4,
     pipelineVersion: 1,
     milestonesVersion: 1,
+    peopleVersion: 1,
     cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),

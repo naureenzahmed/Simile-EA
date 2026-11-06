@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, seedMilestones } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -405,6 +405,14 @@ function load() {
         stored.milestonesVersion = 1;
         changed = true;
       }
+      // People v1: add made-up members to every department and give everyone a bandwidth level.
+      if (stored.people && (stored.peopleVersion || 0) < 1) {
+        const have = new Set(stored.people.map((p) => p.name.toLowerCase()));
+        for (const p of teamMemberPeople()) if (!have.has(p.name.toLowerCase())) stored.people.push(p);
+        for (const p of stored.people) if (!p.bandwidth) p.bandwidth = leaderBandwidth(p.name);
+        stored.peopleVersion = 1;
+        changed = true;
+      }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
       if (stored.clientMaterials && (stored.clientVersion || 0) < 1) {
         const clients = stored.clientMaterials.find((s) => s.id === 'clients');
@@ -504,7 +512,7 @@ export function syncPeople(d) {
   let added = false;
   for (const name of d.scheduleLeaders) {
     if (!d.people.some((p) => p.name.toLowerCase() === name.toLowerCase())) {
-      d.people.push({ id: personId(name), name, role: '', teamId: null });
+      d.people.push({ id: personId(name), name, role: '', teamId: null, bandwidth: 'open' });
       added = true;
     }
   }

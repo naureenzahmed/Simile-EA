@@ -28,8 +28,12 @@ export function relativeDay(iso) {
   return `${Math.abs(diff)}d ago`;
 }
 
+// "Priya Shah" → "PS". One-word names use the first and third letters ("Madison" → "MD", "Matan" → "MT")
+// so people who share a first letter still look different.
 export function initials(name) {
-  return name.split(' ').map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+  const words = String(name || '').trim().split(/\s+/).filter(Boolean);
+  if (words.length === 1) return (words[0][0] + (words[0][2] || words[0][1] || '')).toUpperCase();
+  return words.map((w) => w[0]).join('').toUpperCase().slice(0, 2);
 }
 
 const PALETTE = ['#6c8cff', '#ef6f6c', '#57c785', '#f2994a', '#c77dff', '#4dd0e1', '#f4c95d', '#ff8fab'];
