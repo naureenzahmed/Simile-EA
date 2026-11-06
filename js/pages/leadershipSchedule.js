@@ -1,5 +1,5 @@
 import { getData, commit, syncPeople } from '../store.js';
-import { uid, escapeHtml, todayISO, addDays } from '../utils.js';
+import { uid, escapeHtml, todayISO, addDays, dayLabel } from '../utils.js';
 import { CITIES } from '../seed.js';
 
 
@@ -155,6 +155,7 @@ export function renderLeadershipSchedule(container) {
           ${types.map((t) => `<span><span class="sched-swatch" style="background:${t.color}"></span>${escapeHtml(t.label)}</span>`).join('')}
         </div>
       </div>
+      ${visible.some((e) => e.start.slice(0, 7) <= view.month && (e.end || e.start).slice(0, 7) >= view.month) ? '' : '<div class="sched-list-empty">Nothing on the calendar this month.</div>'}
       <div class="sched-grid">
         ${WEEKDAYS.map((d) => `<div class="sched-weekday">${d}</div>`).join('')}
         ${days.map((day) => {
@@ -162,7 +163,7 @@ export function renderLeadershipSchedule(container) {
             .filter((e) => e.start <= day && day <= (e.end || e.start))
             .sort((a, b) => (a.time || '99').localeCompare(b.time || '99') || a.person.localeCompare(b.person));
           return `
-            <div class="sched-day ${day.slice(0, 7) !== view.month ? 'other-month' : ''} ${day === today ? 'today' : ''}" data-day="${day}">
+            <div class="sched-day ${day.slice(0, 7) !== view.month ? 'other-month' : ''} ${day === today ? 'today' : ''} ${items.length ? 'has-items' : ''}" data-day="${day}" data-label="${dayLabel(day)}">
               <div class="sched-date">${Number(day.slice(8))}</div>
               ${items.map((e) => {
                 const t = typeOf(e.type);

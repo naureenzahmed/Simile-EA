@@ -1,5 +1,5 @@
 import { getData, commit } from '../store.js';
-import { uid, escapeHtml, todayISO, fmtDate } from '../utils.js';
+import { uid, escapeHtml, todayISO, fmtDate, dayLabel } from '../utils.js';
 import { COO_INBOX, COO_STAGES, seedCoo } from '../seed.js';
 
 export const COO_TITLE = 'COO Scheduling';
@@ -83,12 +83,13 @@ function renderCalendar(c) {
         </div>
         <span class="section-desc" style="margin:0;">Click a day to add an event, or click an event to edit it.</span>
       </div>
+      ${c.calendar.some((e) => e.date.slice(0, 7) === view.month) ? '' : '<div class="sched-list-empty">Nothing on the calendar this month.</div>'}
       <div class="sched-grid">
         ${WEEKDAYS.map((d) => `<div class="sched-weekday">${d}</div>`).join('')}
         ${gridDays(view.month).map((day) => {
           const items = c.calendar.filter((e) => e.date === day).sort((a, b) => (a.time || '99').localeCompare(b.time || '99'));
           return `
-            <div class="sched-day ${day.slice(0, 7) !== view.month ? 'other-month' : ''} ${day === today ? 'today' : ''}" data-coo-day="${day}">
+            <div class="sched-day ${day.slice(0, 7) !== view.month ? 'other-month' : ''} ${day === today ? 'today' : ''} ${items.length ? 'has-items' : ''}" data-coo-day="${day}" data-label="${dayLabel(day)}">
               <div class="sched-date">${Number(day.slice(8))}</div>
               ${items.map((e) => `<button class="sched-pill" style="--c:var(--accent)" data-coo-event="${e.id}" title="${escapeHtml(e.title)}">${e.time ? `<b>${fmtTime(e.time)}</b> ` : ''}${escapeHtml(e.title || 'Untitled')}</button>`).join('')}
             </div>`;

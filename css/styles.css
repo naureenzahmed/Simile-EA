@@ -932,3 +932,50 @@ body.read-only .coo-card { cursor: pointer; }
 .page-notes-wrap .notes-box::-webkit-scrollbar-track { background: var(--bg-raised-2); border-left: 1px solid var(--border); border-radius: 0 var(--radius) var(--radius) 0; }
 .page-notes-wrap .notes-box::-webkit-scrollbar-thumb { background: #b8b6b2; border-radius: 6px; border: 3px solid var(--bg-raised-2); min-height: 30px; }
 .page-notes-wrap .notes-box::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ---------- Tabs that don't fit go into a "More" menu ---------- */
+.header-left { flex: 1 1 auto; }
+.nav-tabs { flex: 1 1 auto; overflow: hidden; }
+.nav-tab[hidden] { display: none; }
+.nav-more { font: inherit; border: 0; background: none; cursor: pointer; flex-shrink: 0; }
+.nav-more .nav-more-count { color: var(--text-faint); }
+.nav-more .nav-more-caret { font-size: 10px; margin-left: 2px; transition: transform .15s; }
+.nav-more.open { color: var(--text); z-index: 4; }
+.nav-more.open::before { background: var(--folder-hover); }
+.nav-more.open .nav-more-caret { transform: rotate(180deg); }
+.nav-more:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; border-radius: 8px 8px 0 0; }
+.nav-more-menu {
+  position: absolute; top: 100%; margin-top: 4px; min-width: 240px; z-index: 30;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius);
+  box-shadow: 0 10px 30px rgba(10,10,10,.12); padding: 6px; display: flex; flex-direction: column;
+}
+.nav-more-menu[hidden] { display: none; }
+.nav-more-menu a { display: flex; align-items: center; gap: 8px; padding: 9px 10px; border-radius: 4px; font-size: 14px; color: var(--text); text-decoration: none; white-space: nowrap; }
+.nav-more-menu a:hover, .nav-more-menu a:focus-visible { background: var(--bg-raised-2); outline: none; }
+.nav-more-menu .folder-icon { width: 14px; height: 14px; color: var(--text-faint); }
+@media (max-width: 640px) {
+  #app-header { padding: 10px 10px 0; gap: 8px; }
+  .mode-badge { display: none; }
+  .nav-tab { padding: 9px 14px 8px; font-size: 13px; }
+}
+
+/* ---------- Calendars become a list on phones ---------- */
+.sched-list-empty { display: none; }
+@media (max-width: 600px) {
+  .sched-grid { display: block; border: 0; }
+  .sched-weekday, .sched-day.other-month, .sched-day:not(.has-items) { display: none; }
+  .sched-day {
+    position: relative; display: flex; flex-direction: column; gap: 4px;
+    min-height: 0; padding: 10px 2px 10px 96px; border: 0; border-bottom: 1px solid var(--border); cursor: default;
+  }
+  .sched-day:hover { background: none; }
+  .sched-day .sched-date { display: none; }
+  .sched-day::before {
+    content: attr(data-label); position: absolute; left: 2px; top: 14px;
+    font-size: 12px; font-weight: 600; color: var(--text);
+  }
+  .sched-day.today::before { color: var(--accent); }
+  .sched-pill { white-space: normal; font-size: 12.5px; padding: 5px 8px; }
+  .sched-list-empty { display: block; font-size: 13px; color: var(--text-dim); padding: 14px 2px; }
+  .sched-nav { flex-direction: column; align-items: flex-start; }
+}

@@ -1,5 +1,5 @@
 import { getData } from '../store.js';
-import { todayISO, escapeHtml } from '../utils.js';
+import { todayISO, escapeHtml, dayLabel } from '../utils.js';
 import { openTaskSidebar } from '../taskSidebar.js';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -32,10 +32,11 @@ export function renderDeadlineCalendar(container, onChange) {
           ${Object.values(KINDS).map((k) => `<span><span class="sched-swatch" style="background:${k.color}"></span>${k.label}</span>`).join('')}
         </div>
       </div>
+      ${Object.keys(dueMap).some((d) => d.slice(0, 7) === isoMonth(current)) ? '' : '<div class="sched-list-empty">Nothing due this month.</div>'}
       <div class="sched-grid">
         ${WEEKDAYS.map((d) => `<div class="sched-weekday">${d}</div>`).join('')}
         ${gridDays(current).map((day) => `
-          <div class="sched-day cal-static ${day.slice(0, 7) !== isoMonth(current) ? 'other-month' : ''} ${day === today ? 'today' : ''}">
+          <div class="sched-day cal-static ${day.slice(0, 7) !== isoMonth(current) ? 'other-month' : ''} ${day === today ? 'today' : ''} ${(dueMap[day] || []).length ? 'has-items' : ''}" data-label="${dayLabel(day)}">
             <div class="sched-date">${Number(day.slice(8))}</div>
             ${(dueMap[day] || []).map((it) => it.type === 'task'
               ? `<button class="sched-pill" style="--c:${KINDS.task.color}" data-cal-objective="${it.id}" title="${escapeHtml(`${KINDS.task.label}: ${it.title}. Click to open.`)}">${escapeHtml(it.title)}</button>`

@@ -49,3 +49,8 @@ export function escapeHtml(str) {
 export function clamp(n, min, max) {
   return Math.max(min, Math.min(max, n));
 }
+
+// "Thu, Nov 12" for calendar list views on small screens.
+export function dayLabel(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
