@@ -126,11 +126,6 @@ function render(taskId) {
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Timeframe</div>
-          <div style="color: var(--text-dim); font-size: 13px;">${fmtDate(task.startDate)} to ${fmtDate(task.endDate)}</div>
-        </div>
-
-        <div class="ts-field">
           <div class="ts-field-label">Department</div>
           <select id="ts-team">
             ${data.teams.map((t) => `<option value="${t.id}" ${t.id === task.teamId ? 'selected' : ''}>${t.name}</option>`).join('')}
