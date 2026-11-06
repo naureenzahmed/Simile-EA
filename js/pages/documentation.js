@@ -10,7 +10,7 @@ export function renderDocumentation(container) {
     ${notesBoxHtml('documentation')}
     <div class="toolbar">
       <div class="page-title" style="margin:0;">Documentation &amp; SOPs</div>
-      <button class="btn btn-primary" id="add-doc-section-btn">+ Section</button>
+      <button class="btn btn-primary" id="add-doc-section-btn">+ Add section</button>
     </div>
     <div class="inline-add-form" id="add-doc-section-form" style="display:none;">
       <input type="text" id="add-doc-section-input" placeholder="Section title" />

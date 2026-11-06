@@ -2,85 +2,64 @@ import { getData } from '../store.js';
 import { todayISO, escapeHtml } from '../utils.js';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS_SPAN = 19; // current month + 18 more
+
+// Same look as the Schedule Management and COO Scheduling calendars.
+const KINDS = {
+  task: { label: 'Objective due', color: 'var(--accent)' },
+  kr: { label: 'Key result deadline', color: '#7fb8e6' },
+  milestone: { label: 'Milestone', color: '#e0a95a' },
+};
 
 let monthOffset = 0;
 
 export function renderDeadlineCalendar(container) {
-  const data = getData();
-  const allItems = collectItems(data);
-  const dueMap = groupByDate(allItems);
-
+  const dueMap = groupByDate(collectItems(getData()));
   const now = new Date();
-  const anchor = { year: now.getFullYear(), month: now.getMonth() };
-  const current = addMonths(anchor.year, anchor.month, monthOffset);
+  const current = addMonths(now.getFullYear(), now.getMonth(), monthOffset);
+  const today = todayISO();
 
   container.innerHTML = `
-    <div class="cal-header">
-      <button class="btn btn-ghost" id="cal-prev" ${monthOffset <= 0 ? 'disabled' : ''}>‹</button>
-      <div style="display:flex; align-items:center; gap:10px;">
-        <b style="font-size:15px;">${monthLabel(current)}</b>
-        <select id="cal-jump">
-          ${Array.from({ length: MONTHS_SPAN }, (_, i) => {
-            const m = addMonths(anchor.year, anchor.month, i);
-            return `<option value="${i}" ${i === monthOffset ? 'selected' : ''}>${monthLabel(m)}</option>`;
-          }).join('')}
-        </select>
+    <div class="card sched-card">
+      <div class="toolbar sched-nav">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="btn" id="cal-prev" aria-label="Previous month">‹</button>
+          <button class="btn" id="cal-today">Today</button>
+          <button class="btn" id="cal-next" aria-label="Next month">›</button>
+          <h4 style="margin:0 0 0 8px;">${monthLabel(current)}</h4>
+        </div>
+        <div class="sched-legend">
+          ${Object.values(KINDS).map((k) => `<span><span class="sched-swatch" style="background:${k.color}"></span>${k.label}</span>`).join('')}
+        </div>
       </div>
-      <button class="btn btn-ghost" id="cal-next" ${monthOffset >= MONTHS_SPAN - 1 ? 'disabled' : ''}>›</button>
-    </div>
-    <div class="cal-grid">
-      ${WEEKDAYS.map((d) => `<div class="cal-day-head">${d}</div>`).join('')}
-      ${renderDays(current, dueMap)}
-    </div>
-    <div class="cal-legend">
-      <span><span class="legend-dot" style="background:#2563eb;"></span>Task due</span>
-      <span><span class="legend-dot" style="background:#0a0a0a;"></span>Key result deadline</span>
-      <span><span class="legend-dot" style="background:#dc2626;"></span>Milestone</span>
+      <div class="sched-grid">
+        ${WEEKDAYS.map((d) => `<div class="sched-weekday">${d}</div>`).join('')}
+        ${gridDays(current).map((day) => `
+          <div class="sched-day cal-static ${day.slice(0, 7) !== isoMonth(current) ? 'other-month' : ''} ${day === today ? 'today' : ''}">
+            <div class="sched-date">${Number(day.slice(8))}</div>
+            ${(dueMap[day] || []).map((it) => `<span class="sched-pill" style="--c:${KINDS[it.type].color}" title="${escapeHtml(`${KINDS[it.type].label}: ${it.title}`)}">${escapeHtml(it.title)}</span>`).join('')}
+          </div>`).join('')}
+      </div>
     </div>
   `;
 
-  document.getElementById('cal-prev').addEventListener('click', () => {
-    if (monthOffset > 0) { monthOffset -= 1; renderDeadlineCalendar(container); }
-  });
-  document.getElementById('cal-next').addEventListener('click', () => {
-    if (monthOffset < MONTHS_SPAN - 1) { monthOffset += 1; renderDeadlineCalendar(container); }
-  });
-  document.getElementById('cal-jump').addEventListener('change', (e) => {
-    monthOffset = Number(e.target.value);
-    renderDeadlineCalendar(container);
-  });
+  const go = (n) => { monthOffset = n; renderDeadlineCalendar(container); };
+  container.querySelector('#cal-prev').addEventListener('click', () => go(monthOffset - 1));
+  container.querySelector('#cal-next').addEventListener('click', () => go(monthOffset + 1));
+  container.querySelector('#cal-today').addEventListener('click', () => go(0));
 }
 
-function renderDays(current, dueMap) {
-  const { year, month } = current;
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = todayISO();
+function isoMonth({ year, month }) {
+  return `${year}-${String(month + 1).padStart(2, '0')}`;
+}
 
-  let cells = '';
-  for (let i = 0; i < firstDay; i++) cells += `<div class="cal-cell blank"></div>`;
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-    const items = dueMap[iso] || [];
-    const isToday = iso === today;
-    const visible = items.slice(0, 2);
-    const extra = items.length - visible.length;
-    cells += `
-      <div class="cal-cell ${isToday ? 'today' : ''}">
-        <div class="cal-daynum">${day}</div>
-        ${visible.map((it) => `<span class="cal-chip ${it.type}" title="${escapeHtml(it.title)}">${escapeHtml(it.title)}</span>`).join('')}
-        ${extra > 0 ? `<span class="cal-more">+${extra} more</span>` : ''}
-      </div>
-    `;
-  }
-
-  const totalCells = firstDay + daysInMonth;
-  const trailing = (7 - (totalCells % 7)) % 7;
-  for (let i = 0; i < trailing; i++) cells += `<div class="cal-cell blank"></div>`;
-
-  return cells;
+// Six weeks of dates, Sunday first, covering the month.
+function gridDays({ year, month }) {
+  const first = new Date(year, month, 1);
+  const start = new Date(year, month, 1 - first.getDay());
+  return Array.from({ length: 42 }, (_, i) => {
+    const d = new Date(start.getFullYear(), start.getMonth(), start.getDate() + i);
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  });
 }
 
 function collectItems(data) {

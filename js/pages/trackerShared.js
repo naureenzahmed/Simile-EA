@@ -11,7 +11,7 @@ export function renderTrackerPage(container, data, key, opts) {
     ${notesBoxHtml(key)}
     <div class="toolbar">
       <div class="page-title" style="margin:0;">${escapeHtml(opts.title)}</div>
-      <button class="btn btn-primary" id="add-section-btn">+ Section</button>
+      <button class="btn btn-primary" id="add-section-btn">+ Add section</button>
     </div>
     <div class="inline-add-form" id="add-section-form" style="display:none;">
       <input type="text" id="add-section-input" placeholder="Section title" />

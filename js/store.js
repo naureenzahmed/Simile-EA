@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -259,6 +259,36 @@ function load() {
         stored.okrVersion = 1;
         changed = true;
       }
+      // Consistency v1: Team A/B/C become the 7 departments, placeholder people become the real team,
+      // roadmap tasks become objectives, and PoC at Simile becomes Owner.
+      if (stored.teams && (stored.consistencyVersion || 0) < 1) {
+        const team = (id) => OLD_TEAM_MAP[id] || id;
+        stored.teams = TEAMS.map((t) => ({ ...t }));
+        for (const list of [stored.tasks, stored.initiatives, stored.milestones, stored.metrics]) {
+          for (const item of list || []) if (item.teamId) item.teamId = team(item.teamId);
+        }
+        const oldIds = (stored.people || []).map((p) => p.id);
+        stored.people = seedPeople(stored.scheduleLeaders || undefined);
+        const person = (id) => {
+          const i = oldIds.indexOf(id);
+          return i === -1 ? id : stored.people[i % stored.people.length]?.id || null;
+        };
+        for (const t of stored.tasks || []) {
+          if (t.assigneeId) t.assigneeId = person(t.assigneeId);
+          const m = /^Task (\d+)$/.exec(t.title || '');
+          if (m) t.title = `Objective ${m[1]}`;
+          if (t.title === 'New task') t.title = 'New objective';
+          if (t.description === 'Example task description. Replace it with the real scope of work.') t.description = 'Example description. Replace it with the real scope of work.';
+        }
+        for (const o of stored.okrs || []) {
+          for (const kr of o.keyResults || []) kr.assigneeIds = (kr.assigneeIds || []).map(person).filter(Boolean);
+        }
+        const clients = (stored.clientMaterials || []).find((x) => x.id === 'clients');
+        const poc = clients?.fields.find((f) => f.key === 'similePoc');
+        if (poc && poc.label === 'PoC at Simile') poc.label = 'Owner';
+        stored.consistencyVersion = 1;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
@@ -271,6 +301,7 @@ function load() {
       for (const key of Object.keys(fresh.pageNotes)) {
         if (!(key in stored.pageNotes)) { stored.pageNotes[key] = fresh.pageNotes[key]; changed = true; }
       }
+      if (syncPeople(stored)) changed = true;
       if (changed) save(stored);
       return stored;
     }
@@ -280,6 +311,19 @@ function load() {
   const fresh = seedData();
   save(fresh);
   return fresh;
+}
+
+// Everyone on the Schedule Management list is also a person on the roadmap and Team Management.
+export function syncPeople(d) {
+  if (!d.people || !d.scheduleLeaders) return false;
+  let added = false;
+  for (const name of d.scheduleLeaders) {
+    if (!d.people.some((p) => p.name.toLowerCase() === name.toLowerCase())) {
+      d.people.push({ id: personId(name), name, role: '', teamId: null });
+      added = true;
+    }
+  }
+  return added;
 }
 
 function save(d) {

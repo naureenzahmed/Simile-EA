@@ -58,9 +58,9 @@ function render(taskId) {
         <button class="btn btn-ghost" id="ts-close">✕</button>
       </div>
       <div class="ts-body">
-        <input class="ts-title-input" id="ts-title" value="${escapeHtml(task.title)}" placeholder="Task title" />
+        <input class="ts-title-input" id="ts-title" value="${escapeHtml(task.title)}" placeholder="Objective title" />
 
-        ${needsInfo ? `<div class="ts-warning">Add a description and an impact before marking this task complete.</div>` : ''}
+        ${needsInfo ? `<div class="ts-warning">Add a description and an impact before marking this objective complete.</div>` : ''}
         ${conflicts.length ? `
           <div class="ts-conflict">
             <b>Scheduling conflict${conflicts.length > 1 ? 's' : ''}</b>
@@ -72,7 +72,7 @@ function render(taskId) {
 
         <div class="ts-field">
           <div class="ts-field-label">Description · Required</div>
-          <textarea id="ts-description" placeholder="What is this task?">${escapeHtml(task.description)}</textarea>
+          <textarea id="ts-description" placeholder="What is this objective?">${escapeHtml(task.description)}</textarea>
         </div>
 
         <div class="ts-field">
@@ -88,10 +88,10 @@ function render(taskId) {
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Assignee</div>
+          <div class="ts-field-label">Owner</div>
           <select id="ts-assignee">
-            <option value="">Unassigned</option>
-            ${data.people.map((p) => `<option value="${p.id}" ${p.id === task.assigneeId ? 'selected' : ''}>${p.name} (${p.role})</option>`).join('')}
+            <option value="">No owner</option>
+            ${data.people.map((p) => `<option value="${p.id}" ${p.id === task.assigneeId ? 'selected' : ''}>${escapeHtml(p.name)}${p.role ? ` (${escapeHtml(p.role)})` : ''}</option>`).join('')}
           </select>
         </div>
 
@@ -109,7 +109,7 @@ function render(taskId) {
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Section</div>
+          <div class="ts-field-label">Initiative</div>
           <select id="ts-section">
             ${data.initiatives.map((i) => `<option value="${i.id}" ${i.id === task.sectionId ? 'selected' : ''}>${i.name}</option>`).join('')}
           </select>
@@ -126,12 +126,12 @@ function render(taskId) {
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Sprint</div>
-          <div style="color: var(--text-dim); font-size: 13px;">${fmtDate(task.startDate)} – ${fmtDate(task.endDate)} · auto</div>
+          <div class="ts-field-label">Timeframe</div>
+          <div style="color: var(--text-dim); font-size: 13px;">${fmtDate(task.startDate)} to ${fmtDate(task.endDate)}</div>
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Objective</div>
+          <div class="ts-field-label">Department</div>
           <select id="ts-team">
             ${data.teams.map((t) => `<option value="${t.id}" ${t.id === task.teamId ? 'selected' : ''}>${t.name}</option>`).join('')}
           </select>
@@ -151,14 +151,14 @@ function render(taskId) {
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Depending tasks</div>
+          <div class="ts-field-label">Dependent objectives</div>
           <div id="ts-dependents">
             ${dependingTasks.map((t) => `<span class="ts-chip">${escapeHtml(t.title)}</span>`).join('') || '<span class="empty-hint" style="padding:0;">Nothing depends on this yet.</span>'}
           </div>
         </div>
 
         <div class="ts-field">
-          <div class="ts-field-label">Subtasks</div>
+          <div class="ts-field-label">Tasks</div>
           <div id="ts-subtasks">
             ${task.subtasks.map((s) => `
               <div class="ts-subtask-row">
@@ -169,7 +169,7 @@ function render(taskId) {
             `).join('')}
           </div>
           <div class="ts-inline" style="margin-top:6px;">
-            <input type="text" id="ts-subtask-input" placeholder="Add a subtask…" />
+            <input type="text" id="ts-subtask-input" placeholder="Add a task…" />
             <button class="btn" id="ts-subtask-add" style="flex: 0 0 auto;">Add</button>
           </div>
         </div>
@@ -191,7 +191,7 @@ function render(taskId) {
         </div>
       </div>
       <div class="ts-footer">
-        <button class="btn btn-danger" id="ts-delete">Delete task</button>
+        <button class="btn btn-danger" id="ts-delete">Delete objective</button>
       </div>
     </div>
   `;
@@ -201,7 +201,7 @@ function render(taskId) {
 
 function notifyConflictsIfAny(task, conflicts) {
   if (conflicts.length) {
-    notifySlack(`⚠️ Conflict on task "${task.title}": ${conflicts[0]}${conflicts.length > 1 ? ` (+${conflicts.length - 1} more)` : ''}`);
+    notifySlack(`⚠️ Conflict on objective "${task.title}": ${conflicts[0]}${conflicts.length > 1 ? ` (+${conflicts.length - 1} more)` : ''}`);
   }
 }
 
@@ -216,7 +216,7 @@ function wireEvents(task) {
     document.getElementById(id).addEventListener('change', (e) => {
       task[key] = transform(e.target.value);
       commit();
-      notifySlack(`Task "${task.title}" updated: ${label} changed.`);
+      notifySlack(`Objective "${task.title}" updated: ${label} changed.`);
       if (checkConflicts) notifyConflictsIfAny(task, computeConflicts(task, data.tasks));
       if (onCloseCallback) onCloseCallback();
       render(task.id);
@@ -235,12 +235,12 @@ function wireEvents(task) {
   liveField('ts-impact', 'impact');
   liveField('ts-client', 'client');
   field('ts-status', 'status', 'status');
-  field('ts-assignee', 'assigneeId', 'assignee', { transform: (v) => v || null });
+  field('ts-assignee', 'assigneeId', 'owner', { transform: (v) => v || null });
   field('ts-start', 'startDate', 'start date', { checkConflicts: true });
   field('ts-end', 'endDate', 'end date', { checkConflicts: true });
   field('ts-design-deadline', 'designDeadline', 'design deadline');
-  field('ts-section', 'sectionId', 'section');
-  field('ts-team', 'teamId', 'team');
+  field('ts-section', 'sectionId', 'initiative');
+  field('ts-team', 'teamId', 'department');
 
   document.getElementById('ts-complete').addEventListener('click', () => {
     if (!task.description?.trim() || !task.impact?.trim()) {
@@ -249,17 +249,17 @@ function wireEvents(task) {
     }
     task.status = task.status === 'Done' ? 'In progress' : 'Done';
     commit();
-    notifySlack(`Task "${task.title}" marked ${task.status === 'Done' ? 'complete' : 'incomplete'}.`);
+    notifySlack(`Objective "${task.title}" marked ${task.status === 'Done' ? 'complete' : 'incomplete'}.`);
     if (onCloseCallback) onCloseCallback();
     render(task.id);
   });
 
   document.getElementById('ts-delete').addEventListener('click', () => {
-    if (!confirm('Delete this task?')) return;
+    if (!confirm('Delete this objective?')) return;
     const idx = data.tasks.findIndex((t) => t.id === task.id);
     if (idx >= 0) data.tasks.splice(idx, 1);
     commit();
-    notifySlack(`Task "${task.title}" deleted.`);
+    notifySlack(`Objective "${task.title}" deleted.`);
     closeTaskSidebar();
   });
 
@@ -274,15 +274,15 @@ function wireEvents(task) {
   document.getElementById('ts-add-blocker').addEventListener('click', () => {
     const select = document.getElementById('ts-blocker-select');
     const candidates = data.tasks.filter((t) => t.id !== task.id && !task.blockedBy.includes(t.id));
-    if (!candidates.length) { alert('No other tasks to depend on yet.'); return; }
-    select.innerHTML = `<option value="">Choose a task…</option>` + candidates.map((t) => `<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('');
+    if (!candidates.length) { alert('No other objectives to depend on yet.'); return; }
+    select.innerHTML = `<option value="">Choose an objective…</option>` + candidates.map((t) => `<option value="${t.id}">${escapeHtml(t.title)}</option>`).join('');
     select.style.display = 'block';
     select.onchange = () => {
       if (select.value) {
         task.blockedBy.push(select.value);
         commit();
         const newConflicts = computeConflicts(task, data.tasks);
-        notifySlack(`Task "${task.title}" now depends on "${findTask(select.value).title}".`);
+        notifySlack(`Objective "${task.title}" now depends on "${findTask(select.value).title}".`);
         notifyConflictsIfAny(task, newConflicts);
         render(task.id);
       }

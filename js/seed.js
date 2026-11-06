@@ -1,30 +1,32 @@
 import { addDays, todayISO, uid } from './utils.js';
 
+// Departments. These are the "teams" used across the roadmap, OKRs and Team Management.
 export const TEAMS = [
-  { id: 'team-a', name: 'Team A', color: '#ff7a66' },
-  { id: 'team-b', name: 'Team B', color: '#7fb8e6' },
-  { id: 'team-c', name: 'Team C', color: '#e0a95a' },
+  { id: 'deployments', name: 'Deployments', color: '#ff7a66' },
+  { id: 'marketing', name: 'Marketing', color: '#7fb8e6' },
+  { id: 'hr', name: 'HR', color: '#e0a95a' },
+  { id: 'evals', name: 'Evals', color: '#b48ee0' },
+  { id: 'consumer', name: 'Consumer', color: '#5fc4c4' },
+  { id: 'ceo', name: 'CEO Office', color: '#e88fb4' },
+  { id: 'revops', name: 'Revenue Operations', color: '#a3c45f' },
 ];
 
-export const PEOPLE = [
-  { id: 'p1', name: 'Alex', role: 'Engineer', teamId: 'team-a' },
-  { id: 'p2', name: 'Sam', role: 'Engineer', teamId: 'team-a' },
-  { id: 'p3', name: 'Taylor', role: 'Engineer', teamId: 'team-a' },
-  { id: 'p4', name: 'Jordan', role: 'Product Manager', teamId: 'team-a' },
-  { id: 'p5', name: 'Riley', role: 'Designer', teamId: 'team-a' },
-  { id: 'p6', name: 'Casey', role: 'Product Manager', teamId: 'team-b' },
-  { id: 'p7', name: 'Morgan', role: 'Designer', teamId: 'team-b' },
-  { id: 'p8', name: 'Drew', role: 'Engineer', teamId: 'team-b' },
-  { id: 'p9', name: 'Blake', role: 'Engineer', teamId: 'team-b' },
-  { id: 'p10', name: 'Quinn', role: 'Product Manager', teamId: 'team-c' },
-  { id: 'p11', name: 'Sage', role: 'Designer', teamId: 'team-c' },
-  { id: 'p12', name: 'Reese', role: 'Engineer', teamId: 'team-c' },
-];
+// Old Team A/B/C ids, kept so saved data can be moved onto departments.
+export const OLD_TEAM_MAP = { 'team-a': 'deployments', 'team-b': 'marketing', 'team-c': 'hr' };
+
+// The team. Names match the Schedule Management list; departments start unset.
+export function seedPeople(names = LEADERS) {
+  return names.map((name) => ({ id: personId(name), name, role: '', teamId: null }));
+}
+
+export function personId(name) {
+  return `person-${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+}
 
 export const INITIATIVES = [
-  { id: 'init-1', name: 'Initiative 1', teamId: 'team-a', goalLabel: 'Reach target', current: 0, target: 100, unit: '%' },
-  { id: 'init-2', name: 'Initiative 2', teamId: 'team-b', goalLabel: 'Reach target', current: 0, target: 100, unit: '%' },
-  { id: 'init-3', name: 'Initiative 3', teamId: 'team-c', goalLabel: 'Reach target', current: 0, target: 100, unit: '%' },
+  { id: 'init-1', name: 'Initiative 1', teamId: 'deployments', goalLabel: 'Reach target', current: 0, target: 100, unit: '%' },
+  { id: 'init-2', name: 'Initiative 2', teamId: 'marketing', goalLabel: 'Reach target', current: 0, target: 100, unit: '%' },
+  { id: 'init-3', name: 'Initiative 3', teamId: 'hr', goalLabel: 'Reach target', current: 0, target: 100, unit: '%' },
 ];
 
 const TASK_STATUSES = ['Backlog', 'Ready', 'In progress', 'In design', 'Committed', 'Done'];
@@ -36,7 +38,7 @@ function randomInt(min, max) {
 function seedTasks() {
   const tasks = [];
   INITIATIVES.forEach((init) => {
-    const teamPeople = PEOPLE.filter((p) => p.teamId === init.teamId);
+    const teamPeople = seedPeople();
     const count = randomInt(2, 4);
     for (let i = 1; i <= count; i++) {
       const startOffset = randomInt(-21, 45);
@@ -44,8 +46,8 @@ function seedTasks() {
       const assignee = teamPeople.length ? teamPeople[randomInt(0, teamPeople.length - 1)] : null;
       tasks.push({
         id: uid('task'),
-        title: `Task ${i}`,
-        description: 'Example task description. Replace it with the real scope of work.',
+        title: `Objective ${i}`,
+        description: 'Example description. Replace it with the real scope of work.',
         impact: 'Example impact statement.',
         status: TASK_STATUSES[randomInt(0, TASK_STATUSES.length - 1)],
         assigneeId: assignee ? assignee.id : null,
@@ -67,10 +69,10 @@ function seedTasks() {
 
 function seedMilestones() {
   return [
-    { id: 'ms1', date: addDays(todayISO(), -30), title: 'Milestone 1', teamId: 'team-a' },
-    { id: 'ms2', date: addDays(todayISO(), -10), title: 'Milestone 2', teamId: 'team-b' },
-    { id: 'ms3', date: addDays(todayISO(), 20), title: 'Milestone 3', teamId: 'team-c' },
-    { id: 'ms4', date: addDays(todayISO(), 60), title: 'Milestone 4', teamId: 'team-a' },
+    { id: 'ms1', date: addDays(todayISO(), -30), title: 'Milestone 1', teamId: 'deployments' },
+    { id: 'ms2', date: addDays(todayISO(), -10), title: 'Milestone 2', teamId: 'marketing' },
+    { id: 'ms3', date: addDays(todayISO(), 20), title: 'Milestone 3', teamId: 'hr' },
+    { id: 'ms4', date: addDays(todayISO(), 60), title: 'Milestone 4', teamId: 'deployments' },
   ];
 }
 
@@ -110,9 +112,9 @@ function seedWeeks() {
 
 function seedMetrics() {
   return [
-    { id: 'metric-a', name: 'Metric A', teamId: 'team-a', target: 'Target', values: {} },
-    { id: 'metric-b', name: 'Metric B', teamId: 'team-b', target: 'Target', values: {} },
-    { id: 'metric-c', name: 'Metric C', teamId: 'team-c', target: 'Target', values: {} },
+    { id: 'metric-a', name: 'Metric A', teamId: 'deployments', target: 'Target', values: {} },
+    { id: 'metric-b', name: 'Metric B', teamId: 'marketing', target: 'Target', values: {} },
+    { id: 'metric-c', name: 'Metric C', teamId: 'hr', target: 'Target', values: {} },
   ];
 }
 
@@ -137,19 +139,19 @@ export function starterOkr(department, days = 30) {
 function seedOkrs() {
   return [
     {
-      id: 'okr-1', objective: 'Objective 1', teamId: 'team-a', department: 'deployments',
+      id: 'okr-1', objective: 'Objective 1', teamId: 'deployments', department: 'deployments',
       keyResults: [
-        { id: 'kr-1-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: ['p1', 'p4'] },
-        { id: 'kr-1-2', title: 'Key result 2', current: 0, target: 100, deadline: addDays(todayISO(), 45), assigneeIds: ['p2'] },
+        { id: 'kr-1-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: [] },
+        { id: 'kr-1-2', title: 'Key result 2', current: 0, target: 100, deadline: addDays(todayISO(), 45), assigneeIds: [] },
       ],
     },
     {
-      id: 'okr-2', objective: 'Objective 1', teamId: 'team-b', department: 'marketing',
-      keyResults: [{ id: 'kr-2-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: ['p6', 'p8'] }],
+      id: 'okr-2', objective: 'Objective 1', teamId: 'marketing', department: 'marketing',
+      keyResults: [{ id: 'kr-2-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: [] }],
     },
     {
-      id: 'okr-3', objective: 'Objective 1', teamId: 'team-c', department: 'hr',
-      keyResults: [{ id: 'kr-3-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: ['p10', 'p12'] }],
+      id: 'okr-3', objective: 'Objective 1', teamId: 'hr', department: 'hr',
+      keyResults: [{ id: 'kr-3-1', title: 'Key result 1', current: 0, target: 100, deadline: addDays(todayISO(), 30), assigneeIds: [] }],
     },
     ...['evals', 'consumer', 'ceo', 'revops'].map((d) => starterOkr(d)),
   ];
@@ -780,11 +782,11 @@ export const BOARD_SECTIONS = [
     ],
   },
   {
-    id: 'investors', title: 'Investors', note: 'Our current investors, the round each came in on and who we work with at each firm.',
+    id: 'investors', title: 'Investors', note: 'Our current investors, the round each joined and who we work with at each firm.',
     addLabel: 'Add investor',
     fields: [
       { key: 'firm', label: 'Firm Name' },
-      { key: 'stage', label: 'Stage' },
+      { key: 'stage', label: 'Round Joined' },
       { key: 'partner', label: 'Partner' },
       { key: 'partnerEmail', label: 'Partner Email' },
       { key: 'partnerPhone', label: 'Partner Number' },
@@ -800,7 +802,7 @@ export const BOARD_SECTIONS = [
       { key: 'firm', label: 'Firm Name' },
       { key: 'link', label: 'Website', type: 'url' },
       { key: 'industry', label: 'Industry Focus', type: 'multiline' },
-      { key: 'stage', label: 'Stage', width: 'sm' },
+      { key: 'stage', label: 'Investing Stage' },
       { key: 'fund', label: 'Ideal Fund', type: 'multiline' },
       { key: 'fundSize', label: 'Fund Size' },
       { key: 'fundClosed', label: 'Fund Closed', width: 'sm' },
@@ -889,7 +891,7 @@ export const CLIENT_FIELDS = [
   { key: 'status', label: 'Status' },
   { key: 'driveLink', label: 'Link to Drive', type: 'url' },
   { key: 'clientPoc', label: 'PoC at Client' },
-  { key: 'similePoc', label: 'PoC at Simile' },
+  { key: 'similePoc', label: 'Owner' },
   { key: 'industry', label: 'Industry', type: 'select', options: CLIENT_INDUSTRIES },
   { key: 'testRunning', label: 'Test Running' },
   { key: 'onsiteDate', label: 'Onsite Date', type: 'date' },
@@ -1077,7 +1079,7 @@ export function seedData() {
   return {
     companyGoal: { title: 'EoY target', current: 0, target: 100, unit: '%', targetDate: `${year}-12-31` },
     teams: TEAMS,
-    people: PEOPLE,
+    people: seedPeople(),
     initiatives: INITIATIVES,
     milestones: seedMilestones(),
     months: seedMonths(),
@@ -1101,6 +1103,7 @@ export function seedData() {
     leadershipSchedule: seedLeadershipSchedule(),
     scheduleVersion: 3,
     copyVersion: 1,
+    consistencyVersion: 1,
     clientVersion: 1,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),

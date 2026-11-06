@@ -1,6 +1,5 @@
 import { getData, commit, findPerson } from '../store.js';
 import { uid, clamp, escapeHtml, fmtDate, initials, colorForName } from '../utils.js';
-import { OKR_DEPARTMENTS } from '../seed.js';
 
 export function renderOkrSection(container) {
   const data = getData();
@@ -10,7 +9,7 @@ export function renderOkrSection(container) {
       <div class="page-title" style="margin:0;">OKRs</div>
     </div>
     <div class="okr-columns">
-      ${OKR_DEPARTMENTS.map((d) => renderColumn(d, data)).join('')}
+      ${data.teams.map((t) => renderColumn({ key: t.id, label: t.name }, data)).join('')}
     </div>
   `;
 
@@ -74,7 +73,7 @@ function renderKeyResult(okr, kr, data) {
         <span class="kr-deadline" data-edit-deadline="${okr.id}|${kr.id}">${kr.deadline ? `Due ${fmtDate(kr.deadline)}` : 'Set deadline'}</span>
         <span class="kr-people" data-edit-people="${okr.id}|${kr.id}">
           ${assignees.map((p) => `<span class="avatar" style="background:${colorForName(p.name)};" title="${escapeHtml(p.name)}">${initials(p.name)}</span>`).join('')}
-          ${!assignees.length ? '<span class="kr-people-empty">+ Add people</span>' : ''}
+          ${!assignees.length ? '<span class="kr-people-empty">+ Add owners</span>' : ''}
         </span>
       </div>
     </div>
@@ -127,7 +126,7 @@ function wireEvents(container, data) {
       const okr = data.okrs.find((o) => o.id === okrId);
       const kr = okr.keyResults.find((k) => k.id === krId);
       const currentNames = (kr.assigneeIds || []).map((id) => findPerson(id)?.name).filter(Boolean).join(', ');
-      const input = prompt('People working on this (comma-separated names)', currentNames);
+      const input = prompt('Owners (comma-separated names)', currentNames);
       if (input === null) return;
       const names = input.split(',').map((n) => n.trim().toLowerCase()).filter(Boolean);
       kr.assigneeIds = data.people.filter((p) => names.includes(p.name.toLowerCase())).map((p) => p.id);

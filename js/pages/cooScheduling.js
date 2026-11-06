@@ -179,7 +179,7 @@ function renderInquiries(c) {
                 ${q.department ? `<span class="coo-tag">${escapeHtml(q.department)}</span>` : ''}
                 ${q.description ? `<div class="coo-card-desc">${escapeHtml(q.description)}</div>` : ''}
                 <div class="coo-card-meta">
-                  <div><span>Owner</span>${escapeHtml(q.owner || 'Unassigned')}</div>
+                  <div><span>Owner</span>${escapeHtml(q.owner || 'No owner')}</div>
                   <div><span>Deadline</span>${q.deadline ? dateText(q.deadline) : 'None'}</div>
                 </div>
               </div>`).join('')}

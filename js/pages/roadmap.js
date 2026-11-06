@@ -40,8 +40,8 @@ export function renderRoadmap(container) {
         ${['timeline', 'list', 'board'].map((v) => `<button class="view-tab ${v === currentView ? 'active' : ''}" data-view="${v}">${cap(v)}</button>`).join('')}
       </div>
       <div style="display:flex; gap:8px;">
-        <button class="btn btn-ghost" id="slack-settings-btn">🔔 Slack</button>
-        <button class="btn btn-primary" id="add-task-btn">+ Task</button>
+        <button class="btn btn-ghost" id="slack-settings-btn">Slack</button>
+        <button class="btn btn-primary" id="add-task-btn">+ Add objective</button>
       </div>
     </div>
     <div class="inline-add-form" id="slack-settings-form" style="display:none;">
@@ -108,7 +108,7 @@ function addTask(sectionId) {
   const data = getData();
   const task = {
     id: uid('task'),
-    title: 'New task',
+    title: 'New objective',
     description: '',
     impact: '',
     status: 'No status',
@@ -197,7 +197,7 @@ function renderInitiativeRow(init, data, timelineStart, laneWidth, weekPx, today
         <div class="tl-init-name"><span class="team-dot" style="background:${team?.color || '#666'};"></span>${escapeHtml(init.name)}</div>
         <div class="tl-init-sub">${escapeHtml(init.goalLabel)} · ${init.current}${init.unit} / ${init.target}${init.unit}</div>
         <div class="tl-init-progress progress-track"><div class="progress-fill accent" style="width:${Math.min(pct, 100)}%;"></div></div>
-        <button class="tl-add-row" data-add-to-section="${init.id}">+ Add task</button>
+        <button class="tl-add-row" data-add-to-section="${init.id}">+ Add objective</button>
       </div>
       <div class="tl-lane" style="width:${laneWidth}px; --week-px:${weekPx}px;">
         <div class="tl-today-line" style="left:${todayLeft}px;"></div>
@@ -211,12 +211,12 @@ function renderInitiativeRow(init, data, timelineStart, laneWidth, weekPx, today
 
 function renderList(view, data) {
   if (!data.tasks.length) {
-    view.innerHTML = `<div class="card empty-hint">No tasks yet. Click "+ Task" to create one.</div>`;
+    view.innerHTML = `<div class="card empty-hint">No objectives yet. Click "+ Add objective" to create one.</div>`;
     return;
   }
   view.innerHTML = `
     <table class="list-table">
-      <thead><tr><th>Task</th><th>Section</th><th>Assignee</th><th>Status</th><th>Dates</th></tr></thead>
+      <thead><tr><th>Objective</th><th>Initiative</th><th>Owner</th><th>Status</th><th>Dates</th></tr></thead>
       <tbody>
         ${data.tasks.map((t) => {
           const init = data.initiatives.find((i) => i.id === t.sectionId);
@@ -224,10 +224,10 @@ function renderList(view, data) {
           return `
             <tr data-row="${t.id}">
               <td>${escapeHtml(t.title)}</td>
-              <td>${escapeHtml(init?.name || 'No section')}</td>
-              <td>${escapeHtml(person?.name || 'Unassigned')}</td>
+              <td>${escapeHtml(init?.name || 'No initiative')}</td>
+              <td>${escapeHtml(person?.name || 'No owner')}</td>
               <td>${statusBadge(t.status)}</td>
-              <td>${fmtDate(t.startDate)} – ${fmtDate(t.endDate)}</td>
+              <td>${fmtDate(t.startDate)} to ${fmtDate(t.endDate)}</td>
             </tr>
           `;
         }).join('')}
@@ -265,7 +265,7 @@ function renderBoard(view, data) {
                   </div>
                 </div>
               `;
-            }).join('') || `<div class="empty-hint">No tasks.</div>`}
+            }).join('') || `<div class="empty-hint">No objectives.</div>`}
           </div>
         `;
       }).join('')}

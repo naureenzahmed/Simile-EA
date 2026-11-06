@@ -1,4 +1,4 @@
-import { getData, commit } from '../store.js';
+import { getData, commit, syncPeople } from '../store.js';
 import { uid, escapeHtml, todayISO } from '../utils.js';
 
 
@@ -166,6 +166,7 @@ function wire(container, entries) {
     if (!name) return input.focus();
     if (leaders.some((p) => p.toLowerCase() === name.toLowerCase())) { input.select(); return; }
     leaders.push(name);
+    syncPeople(getData());
     commit();
     view.adding = null;
     rerender();

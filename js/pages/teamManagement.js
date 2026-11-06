@@ -20,7 +20,7 @@ export function renderTeamManagement(container) {
 
     <div id="ops-availability">
       <div class="section-label">Availability</div>
-      <div class="section-desc">Engineers and designers who are free right now.</div>
+      <div class="section-desc">Who is free right now, based on the roadmap objectives they own. Set each person's department here.</div>
       <div class="card" style="margin-bottom:24px;">
         <div id="availability-summary"></div>
         <div id="people-list"></div>
@@ -29,7 +29,7 @@ export function renderTeamManagement(container) {
 
     <div id="ops-teams">
       <div class="section-label">Team Composition</div>
-      <div class="section-desc">Who's on each team, grouped by role.</div>
+      <div class="section-desc">Who is in each department.</div>
       <div class="grid-3" id="team-grid"></div>
     </div>
   `;
@@ -37,13 +37,14 @@ export function renderTeamManagement(container) {
   renderMilestones(data);
   renderAvailability(data);
   renderTeams(data);
+  wirePeople(container);
 
   document.getElementById('add-milestone-btn').addEventListener('click', () => {
     const title = prompt('Milestone title', 'New milestone');
     if (!title) return;
     const date = prompt('Date (YYYY-MM-DD)', todayISO());
     if (!date) return;
-    data.milestones.push({ id: uid('ms'), title, date, teamId: data.teams[0]?.id });
+    data.milestones.push({ id: uid('ms'), title, date, teamId: null });
     commit();
     renderTeamManagement(container);
   });
@@ -58,7 +59,7 @@ function renderMilestones(data) {
       <div class="milestone-row">
         <div class="milestone-date">${fmtDate(m.date)}</div>
         <div><span class="team-dot" style="background:${team?.color || '#666'}; display:inline-block; margin-right:8px;"></span>${escapeHtml(m.title)}</div>
-        <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'No team')}</div>
+        <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'No department')}</div>
         <div class="milestone-rel">${relativeDay(m.date)}</div>
       </div>
     `;
@@ -104,11 +105,14 @@ function renderAvailability(data) {
     return `
       <div class="person-row">
         <div class="person-name-cell">
-          <span class="avatar" style="background:${team?.color || '#666'};">${initials(p.name)}</span>
-          <div>${escapeHtml(p.name)}<span class="role">${escapeHtml(p.role)}</span></div>
+          <span class="avatar" style="background:${team?.color || '#b8b6b2'};">${initials(p.name)}</span>
+          <div>${escapeHtml(p.name)}${p.role ? `<span class="role">${escapeHtml(p.role)}</span>` : ''}</div>
         </div>
-        <div style="color: var(--text-dim);">${escapeHtml(team?.name || 'No team')}</div>
-        <div>${isBusy ? 'Working on a task' : 'Open to work'}</div>
+        <div><select class="cell-input person-dept" data-person-dept="${p.id}" aria-label="Department for ${escapeHtml(p.name)}">
+          <option value="">No department</option>
+          ${data.teams.map((t) => `<option value="${t.id}" ${t.id === p.teamId ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')}
+        </select></div>
+        <div>${isBusy ? 'Working on an objective' : 'Open to work'}</div>
         <div><span class="status-badge ${isBusy ? 'progress' : 'done'}">${isBusy ? 'Active' : 'Free'}</span></div>
       </div>
     `;
@@ -116,24 +120,30 @@ function renderAvailability(data) {
 }
 
 function renderTeams(data) {
-  document.getElementById('team-grid').innerHTML = data.teams.map((team) => {
-    const members = data.people.filter((p) => p.teamId === team.id);
-    const byRole = {};
-    members.forEach((m) => { (byRole[m.role] = byRole[m.role] || []).push(m); });
+  const unassigned = data.people.filter((p) => !p.teamId || !findTeam(p.teamId));
+  const card = (name, color, members) => `
+    <div class="card team-card">
+      <h4><span class="team-dot" style="background:${color}; display:inline-block; margin-right:6px;"></span>${escapeHtml(name)}${members.length ? ` <span class="event-phase-count">${members.length}</span>` : ''}</h4>
+      ${members.map((p) => `
+        <div class="team-member">
+          <span class="avatar" style="background:${color};">${initials(p.name)}</span>
+          ${escapeHtml(p.name)}${p.role ? ` <span class="role">${escapeHtml(p.role)}</span>` : ''}
+        </div>
+      `).join('') || '<div class="empty-hint">No one yet.</div>'}
+    </div>
+  `;
+  document.getElementById('team-grid').innerHTML =
+    data.teams.map((t) => card(t.name, t.color, data.people.filter((p) => p.teamId === t.id))).join('')
+    + (unassigned.length ? card('No department yet', '#b8b6b2', unassigned) : '');
+}
 
-    return `
-      <div class="card team-card">
-        <h4><span class="team-dot" style="background:${team.color}; display:inline-block; margin-right:6px;"></span>${escapeHtml(team.name)}</h4>
-        ${Object.entries(byRole).map(([role, people]) => `
-          <div class="team-role-label">${escapeHtml(role)}${people.length > 1 ? ` · ${people.length}` : ''}</div>
-          ${people.map((p) => `
-            <div class="team-member">
-              <span class="avatar" style="background:${team.color};">${initials(p.name)}</span>
-              ${escapeHtml(p.name)}
-            </div>
-          `).join('')}
-        `).join('') || '<div class="empty-hint">No members yet.</div>'}
-      </div>
-    `;
-  }).join('');
+function wirePeople(container) {
+  container.querySelectorAll('[data-person-dept]').forEach((sel) => {
+    sel.addEventListener('change', () => {
+      const person = getData().people.find((p) => p.id === sel.dataset.personDept);
+      person.teamId = sel.value || null;
+      commit();
+      renderTeamManagement(container);
+    });
+  });
 }

@@ -329,7 +329,7 @@ table.list-table tr:hover td { background: var(--bg-raised); cursor: pointer; }
 .legend-dot { width: 7px; height: 7px; border-radius: 50%; }
 
 .person-row {
-  display: grid; grid-template-columns: 1fr 110px 120px 90px;
+  display: grid; grid-template-columns: 1fr 190px 170px 70px; gap: 10px;
   align-items: center; padding: 8px 4px; border-bottom: 1px solid var(--border); font-size: 13px;
 }
 .person-row:last-child { border-bottom: none; }
@@ -787,3 +787,8 @@ a.doc-title:hover { text-decoration: underline; }
 .okr-add { all: unset; cursor: pointer; font-size: 12px; color: var(--text-dim); padding: 4px 2px; }
 .okr-add:hover { color: var(--accent); }
 .okr-add:focus-visible { outline: 2px solid var(--accent); border-radius: 3px; }
+.person-dept { min-width: 0; width: 100%; }
+.sched-day.cal-static { cursor: default; }
+.sched-day.cal-static:hover { background: inherit; }
+.sched-day.cal-static.other-month:hover { background: var(--bg-raised-2); }
+span.sched-pill { cursor: default; }
