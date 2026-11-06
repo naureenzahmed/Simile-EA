@@ -1285,6 +1285,8 @@ export const ABOUT_EXPERIENCE = "At Planned, I coordinated Sales, Marketing, Cus
 
 export const ABOUT_GOALS = "I want to spend my time with founders who are solving the hardest problems and with teams that hold the highest bar for quality. I’m optimizing for the steepest learning curve and for real impact through the product I work on.\n\nSimile offers exactly that. Working under a COO like Lainie Yallen, who scaled Hebbia 15x in under two years and now leads sales and customer-facing work in the emerging field of simulation for business decision-making, tells me the caliber of talent Simile attracts. I want to contribute my strengths in coordination, organization and events while learning everything I can from the team, and help build a generational company.\n\nI’m also drawn to Simile because its product will change the way people interact with technology. That change will come from direct use of Simile’s product, and also from the decisions clients make when they use Simile to guide their decision-making.";
 
+export const ABOUT_WHY = "This page goes through all the major tasks and responsibilities described in the job description, as well as conversations with people on the team. I want to show how I’m thinking about addressing the role and what systems I would love to put in place within the first week of joining.";
+
 // Pipeline & Forecasts. Example revenue: $0 at founding (Oct 2025), 5x in the last 5 months, $200M now.
 export const REVENUE_HISTORY = [
   ['2025-10', 0], ['2025-11', 0.6e6], ['2025-12', 1.8e6], ['2026-01', 3.8e6], ['2026-02', 7.2e6],
@@ -1370,13 +1372,13 @@ export function seedData() {
     docsVersion: 2,
     notesVersion: 2,
     eventsVersion: 1,
-    homeVersion: 3,
+    homeVersion: 4,
     cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',
     // Home page: About Naureen, Why I Built This and a note for each page card.
-    home: { background: ABOUT_BACKGROUND, experience: ABOUT_EXPERIENCE, goals: ABOUT_GOALS, why: '' },
+    home: { background: ABOUT_BACKGROUND, experience: ABOUT_EXPERIENCE, goals: ABOUT_GOALS, why: ABOUT_WHY },
     pageNotes: {
       recruitment: 'After the chat with Sanjeev, there is a need for hiring support. Here are a couple of ideas I can put together in my first days to start a system for recruiting technical talent. Sourcing and scheduling need to be automated and systemized, while the interviews stay personal, with people engaging candidates and giving us a chance to build relationships with them.\n\nThis page is about bringing top-of-funnel talent to Simile.\n\nA note on events: partnering with others on events is much more interesting, since it has the same impact for far less time and effort. With school partnerships, the goal is to build relationships early, so that when very strong talent comes along, it gets funneled to us quickly.\n\nTo build a successful funnel for Simile, we need several long-term relationships in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for people already in the ecosystem\n• Event attendance, to understand who we’re getting in front of and whether they’re the right people, whether that’s a future client or a future employee\n• Event partnerships, as our ICPs converge\n• The total count from leads to interviews booked, and the gap between them',
       schedule: 'This page shows every team milestone and each teammate’s capacity. It also shows team composition, so when a project changes or the direction shifts, the work can go to a teammate who has room for it. Anyone newly onboarded can see who’s working on what, how much capacity everyone has and who they can go to for support at any time.',
