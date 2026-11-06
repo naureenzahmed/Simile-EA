@@ -796,7 +796,7 @@ export const BOARD_SECTIONS = [
   },
   {
     id: 'potential-investors', title: 'Potential Investors',
-    note: 'Growth-stage firms with an AI or deep tech focus that could lead or join our next round. Existing investors are marked in the Relationship column.',
+    note: 'Growth-stage firms with an AI or deep tech focus that could lead or join our next round. Firms that already invest in us are listed under Investors instead.',
     addLabel: 'Add firm',
     fields: [
       { key: 'firm', label: 'Firm Name' },
@@ -818,6 +818,7 @@ export const BOARD_SECTIONS = [
   },
   {
     id: 'pitch-deck', title: 'Pitch Deck', note: 'The current pitch deck, plus older versions for reference.',
+    topLink: 'Drive link to past decks',
     addLabel: 'Add version',
     fields: [
       { key: 'version', label: 'Version', width: 'sm' },
@@ -854,8 +855,17 @@ export function currentInvestorRows() {
   return CURRENT_INVESTORS.map(([firm, stage], i) => ({ id: `investors-${i + 1}`, firm, stage }));
 }
 
+const firmKey = (name) => (name || '').toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z0-9]/g, '');
+
+// Firms that already invest in us, so they stay off the Potential Investors list.
+export function isCurrentInvestor(firm, current = CURRENT_INVESTORS.map(([f]) => f)) {
+  return current.some((f) => firmKey(f) === firmKey(firm));
+}
+
 export function potentialInvestorRows() {
-  return POTENTIAL_INVESTORS.map((r, i) => ({ id: `potential-investors-${i + 1}`, ...r }));
+  return POTENTIAL_INVESTORS
+    .map((r, i) => ({ id: `potential-investors-${i + 1}`, ...r }))
+    .filter((r) => !isCurrentInvestor(r.firm));
 }
 
 function seedBoardInvestor() {

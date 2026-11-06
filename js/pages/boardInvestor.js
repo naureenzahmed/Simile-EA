@@ -7,11 +7,12 @@ export const BOARD_TITLE = 'Board & Investor Support';
 export function renderBoardInvestor(container) {
   const data = getData().boardInvestor;
   for (const s of BOARD_SECTIONS) data[s.id] = data[s.id] || [];
+  data.links = data.links || {};
 
   container.innerHTML = `
     <div class="page-title">${BOARD_TITLE}</div>
     <div class="stack-16">
-      ${BOARD_SECTIONS.map((s) => renderSection(s, data[s.id])).join('')}
+      ${BOARD_SECTIONS.map((s) => renderSection(s, data[s.id], data.links[s.id] || '')).join('')}
     </div>
   `;
 
@@ -35,13 +36,33 @@ function cell(s, row, f) {
   return `<input type="${f.type === 'date' ? 'date' : 'text'}" class="cell-input ${f.width === 'sm' ? 'board-sm' : ''}" data-board-cell="${key}" value="${escapeHtml(value)}" />`;
 }
 
-function renderSection(s, rows) {
+const toHref = (v) => (/^https?:\/\//i.test(v) ? v : v ? `https://${v}` : '');
+
+// A link shown at the top of a section, such as the Drive folder of past pitch decks.
+function topLinkHtml(s, url) {
+  if (!s.topLink) return '';
+  const href = toHref(url);
+  return `
+    <div class="board-top-link">
+      ${href
+        ? `<a href="${escapeHtml(href)}" target="_blank" rel="noopener">${escapeHtml(s.topLink)} ↗</a>`
+        : `<span class="board-top-link-empty">${escapeHtml(s.topLink)}</span>`}
+      <button class="btn btn-ghost" data-link-edit="${s.id}" style="padding:2px 8px;">${href ? 'Edit link' : '+ Add link'}</button>
+      <span class="board-top-link-form hidden" data-link-form="${s.id}">
+        <input type="url" class="cell-input" data-link-input="${s.id}" value="${escapeHtml(url)}" placeholder="Paste the Google Drive link" />
+        <button class="btn btn-primary" data-link-save="${s.id}" style="padding:3px 10px;">Save</button>
+      </span>
+    </div>`;
+}
+
+function renderSection(s, rows, link) {
   return `
     <div class="card doc-card" id="${s.id}">
       <div class="toolbar" style="margin-bottom:2px;">
         <h4 style="margin:0;">${escapeHtml(s.title)}</h4>
         <button class="btn btn-ghost" data-board-add="${s.id}" style="padding:4px 8px;">+ ${escapeHtml(s.addLabel)}</button>
       </div>
+      ${topLinkHtml(s, link)}
       <div class="section-desc">${escapeHtml(s.note)}</div>
       <div class="tracker-scroll">
         <table class="list-table doc-fields-table board-table">
@@ -64,6 +85,24 @@ function renderSection(s, rows) {
 
 function wire(container, data) {
   const rerender = () => renderBoardInvestor(container);
+
+  container.querySelectorAll('[data-link-edit]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const form = container.querySelector(`[data-link-form="${btn.dataset.linkEdit}"]`);
+      form.classList.toggle('hidden');
+      form.querySelector('input').focus();
+    });
+  });
+  const saveLink = (id) => {
+    data.links[id] = container.querySelector(`[data-link-input="${id}"]`).value.trim();
+    commit();
+    rerender();
+  };
+  container.querySelectorAll('[data-link-save]').forEach((btn) => btn.addEventListener('click', () => saveLink(btn.dataset.linkSave)));
+  container.querySelectorAll('[data-link-input]').forEach((input) => input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') saveLink(input.dataset.linkInput);
+    if (e.key === 'Escape') rerender();
+  }));
 
   container.querySelectorAll('[data-board-add]').forEach((btn) => {
     btn.addEventListener('click', () => {

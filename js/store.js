@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -233,6 +233,14 @@ function load() {
         const filled = current.filter((r) => Object.entries(r).some(([k, v]) => k !== 'id' && v));
         stored.boardInvestor.investors = filled.length ? current : currentInvestorRows();
         stored.boardVersion = 2;
+        changed = true;
+      }
+      // Board v3: firms that already invest in us come off the Potential Investors list.
+      if (stored.boardInvestor && (stored.boardVersion || 0) < 3) {
+        const current = (stored.boardInvestor.investors || []).map((r) => r.firm).filter(Boolean);
+        const potential = stored.boardInvestor['potential-investors'] || [];
+        stored.boardInvestor['potential-investors'] = potential.filter((r) => !isCurrentInvestor(r.firm, current));
+        stored.boardVersion = 3;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.

@@ -792,3 +792,12 @@ a.doc-title:hover { text-decoration: underline; }
 .sched-day.cal-static:hover { background: inherit; }
 .sched-day.cal-static.other-month:hover { background: var(--bg-raised-2); }
 span.sched-pill { cursor: default; }
+
+/* Link at the top of a Board & Investor section (Pitch Deck: past decks on Drive). */
+.board-top-link { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 4px 0 6px; font-size: 13px; }
+.board-top-link a { color: var(--accent); font-weight: 600; text-decoration: none; }
+.board-top-link a:hover { text-decoration: underline; }
+.board-top-link-empty { font-weight: 600; color: var(--text-dim); }
+.board-top-link-form { display: inline-flex; align-items: center; gap: 6px; }
+.board-top-link-form.hidden { display: none; }
+.board-top-link-form .cell-input { min-width: 280px; }
