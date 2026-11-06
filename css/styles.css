@@ -1011,3 +1011,6 @@ body.read-only .coo-card { cursor: pointer; }
   .wordmark img { height: 20px; }
   .header-left { gap: 8px; }
 }
+.pf-ast { font-size: 24px; font-weight: 500; color: var(--accent); vertical-align: super; margin-left: 2px; line-height: 0; }
+.pf-estimate { font-size: 11px; color: var(--text-faint); margin-top: 6px; }
+.pf-estimate span { color: var(--accent); font-weight: 600; margin-right: 3px; }

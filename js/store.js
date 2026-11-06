@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -372,6 +372,14 @@ function load() {
       if ((stored.copyVersion || 0) < 2) {
         replaceDeep(stored, COPY_FIXES_2);
         stored.copyVersion = 2;
+        changed = true;
+      }
+      // Notes v3: new GTM Roadmap note. It replaces the old starter note; anything else written there is kept below it.
+      if (stored.pageNotes && (stored.notesVersion || 0) < 3) {
+        const cur = (stored.pageNotes.roadmap || '').trim();
+        const starter = cur.startsWith('This lets anyone working with me follow my timeline');
+        stored.pageNotes.roadmap = !cur || starter ? ROADMAP_NOTE : `${ROADMAP_NOTE}\n\n${cur}`;
+        stored.notesVersion = 3;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.

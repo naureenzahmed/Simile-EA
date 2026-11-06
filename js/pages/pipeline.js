@@ -51,11 +51,11 @@ function renderRevenue() {
       <div class="pf-head">
         <div>
           <div class="section-label" style="margin:0;">Revenue run-rate by month</div>
-          <div class="pf-hero">${money(last.revenue)}</div>
+          <div class="pf-hero">${money(last.revenue)}<sup class="pf-ast" aria-hidden="true">*</sup></div>
           <div class="pf-sub">Annualized revenue run-rate as of ${monthName(last.month, true)}</div>
+          <div class="pf-estimate"><span aria-hidden="true">*</span>Estimate for illustration only. Not a real figure.</div>
         </div>
         <div class="pf-facts">
-          <div><span class="pf-fact-num">14</span><span>months since founding</span></div>
           <div><span class="pf-fact-num">${Math.round(last.revenue / growthFrom.revenue)}x</span><span>growth in the last 5 months</span></div>
         </div>
       </div>
@@ -74,7 +74,7 @@ function renderRevenue() {
           <circle class="pf-dot" cx="${x(0)}" cy="${y(0)}" r="5" />
           <text class="pf-note" x="${x(0) + 10}" y="${y(0) - 12}">Founded, $0</text>
           <circle class="pf-dot" cx="${x(n - 1)}" cy="${y(last.revenue)}" r="5" />
-          <text class="pf-end" x="${x(n - 1) + 10}" y="${y(last.revenue) + 4}">${money(last.revenue)}</text>
+          <text class="pf-end" x="${x(n - 1) + 10}" y="${y(last.revenue) + 4}">${money(last.revenue)}*</text>
           <line class="pf-cross" id="pf-cross" y1="${PAD.t}" y2="${H - PAD.b}" x1="0" x2="0" />
           <circle class="pf-dot pf-hover-dot" id="pf-hover-dot" r="5" cx="-10" cy="-10" />
           <rect class="pf-hit" id="pf-hit" x="${PAD.l}" y="${PAD.t}" width="${W - PAD.l - PAD.r}" height="${H - PAD.t - PAD.b}" />
@@ -88,7 +88,7 @@ function renderRevenue() {
           <tbody>${pts.map((d, i) => `<tr><td>${monthName(d.month, true)}</td><td>Month ${i + 1}</td><td>${money(d.revenue)}</td></tr>`).join('')}</tbody>
         </table>
       </details>
-      <div class="pf-footnote">Example numbers for planning. Replace them with real figures before sharing.</div>
+      <div class="pf-footnote">Example numbers for demonstration.</div>
     </div>
   `;
 }
