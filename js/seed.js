@@ -157,8 +157,41 @@ function seedOkrs() {
   ];
 }
 
+// Documentation: templates, SOPs and team onboarding, kept in their own sections at the top.
+export function seedDocLibrary() {
+  const doc = (id, title, notes) => ({ id, title, url: '', notes });
+  return [
+    {
+      id: 'docs-templates', title: 'Templates',
+      entries: [
+        doc('tpl-investor-newsletter', 'Investor Newsletter Template', 'Monthly. Sections: highlights, lowlights, key metrics (revenue, pipeline, headcount), asks and next steps.'),
+        doc('tpl-board-deck', 'Board Deck Template', 'Quarterly. Sections: summary, financials, pipeline and forecast, product updates, hiring, risks and decisions needed.'),
+        doc('tpl-sales-deck-enterprise', 'Sales Deck Template: Enterprise', 'For enterprise buyers. Problem, how Simile works, customer proof, pilot plan, pricing and next steps.'),
+        doc('tpl-sales-deck-consumer', 'Sales Deck Template: Consumer & Retail', 'Same structure as the enterprise deck, with consumer research use cases and retail case studies.'),
+      ],
+    },
+    {
+      id: 'docs-client-sops', title: 'Client SOPs',
+      entries: [
+        doc('sop-client-onboarding', 'Client Onboarding SOP', 'Steps from signed contract to kickoff: welcome email, kickoff call, success plan, owners on both sides and a 30/60/90-day check-in schedule.'),
+        doc('sop-client-setup', 'Client Data and Access Setup SOP', 'Getting data access, security review, user accounts and the first test running, with who owns each step.'),
+        doc('sop-client-qbr', 'Client QBR SOP', 'How to prepare and run quarterly business reviews: results so far, open issues, renewal and expansion.'),
+      ],
+    },
+    {
+      id: 'docs-team-onboarding', title: 'Team Onboarding',
+      entries: [
+        doc('onb-deployments', 'Deployment Team Onboarding', 'First two weeks: product training, shadowing live client deployments, tools access and the deployment checklist.'),
+        doc('onb-consumer', 'Consumer Team Onboarding', 'First two weeks: consumer research use cases, key accounts, research methods and how we report results.'),
+        doc('onb-hr', 'HR Team Onboarding', 'First two weeks: hiring process in Ashby, benefits and payroll setup, policies and the new-hire checklist.'),
+      ],
+    },
+  ];
+}
+
 function seedDocs() {
   return [
+    ...seedDocLibrary(),
     {
       id: 'docs-logins', title: 'Software Logins',
       fields: [
@@ -357,45 +390,64 @@ export const SCHEDULE_TYPES = [
   { key: 'office', label: 'In office', color: '#7cc49a' },
 ];
 
+const SCHEDULE_CITIES = ['New York', 'Chicago', 'London', 'San Francisco', 'San Francisco', 'New York', 'Toronto', 'Boston', 'London', 'San Francisco',
+  'New York', 'Toronto', 'San Francisco', 'New York', 'Chicago', 'New York', 'San Francisco', 'Boston', 'London', 'Chicago',
+  'London', 'San Francisco', 'New York', 'Toronto', 'Toronto', 'Boston', 'Chicago', 'New York', 'San Francisco', 'London',
+  'Toronto', 'San Francisco', 'Chicago', 'Boston', 'Toronto', 'New York'];
+
+// Cities the leadership team works from, with the short code shown on the calendar.
+export const CITIES = [
+  { name: 'San Francisco', short: 'SF' },
+  { name: 'New York', short: 'NYC' },
+  { name: 'Boston', short: 'BOS' },
+  { name: 'Chicago', short: 'CHI' },
+  { name: 'Toronto', short: 'TOR' },
+  { name: 'London', short: 'LDN' },
+];
+
+export function scheduleCityFor(index) {
+  return SCHEDULE_CITIES[index] || '';
+}
+
 export function seedLeadershipSchedule() {
   return [
     ['Lainie', 'customer', 'Customer QBR', '2026-11-10', '2026-11-10', '10:00'],
     ['Eileen', 'onsite', 'Client onsite', '2026-11-17', '2026-11-18', ''],
     ['Julia', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
-    ['Olivia', 'office', 'In office (SF)', '2026-11-09', '2026-11-09', ''],
+    ['Olivia', 'office', 'In office', '2026-11-09', '2026-11-09', ''],
     ['Madison', 'customer', 'Prospect intro call', '2026-11-11', '2026-11-11', '14:00'],
-    ['Mihika', 'office', 'In office (NYC)', '2026-11-16', '2026-11-16', ''],
+    ['Mihika', 'office', 'In office', '2026-11-16', '2026-11-16', ''],
     ['Matan', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
     ['Lainie', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
     ['Lainie', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
-    ['Lainie', 'office', 'In office (SF)', '2026-11-16', '2026-11-16', ''],
+    ['Lainie', 'office', 'In office', '2026-11-16', '2026-11-16', ''],
     ['Eileen', 'customer', 'Customer check-in', '2026-11-05', '2026-11-05', '11:00'],
     ['Eileen', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
-    ['Eileen', 'office', 'In office (SF)', '2026-11-10', '2026-11-10', ''],
+    ['Eileen', 'office', 'In office', '2026-11-10', '2026-11-10', ''],
     ['Julia', 'customer', 'Renewal call', '2026-11-17', '2026-11-17', '13:00'],
     ['Julia', 'onsite', 'Client onsite', '2026-12-01', '2026-12-02', ''],
-    ['Julia', 'office', 'In office (NYC)', '2026-11-23', '2026-11-23', ''],
+    ['Julia', 'office', 'In office', '2026-11-23', '2026-11-23', ''],
     ['Olivia', 'customer', 'Customer QBR', '2026-11-12', '2026-11-12', '15:00'],
     ['Olivia', 'onsite', 'Client onsite', '2026-11-24', '2026-11-25', ''],
     ['Olivia', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
     ['Madison', 'onsite', 'Client onsite', '2026-11-18', '2026-11-19', ''],
     ['Madison', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
-    ['Madison', 'office', 'In office (SF)', '2026-11-03', '2026-11-03', ''],
+    ['Madison', 'office', 'In office', '2026-11-03', '2026-11-03', ''],
     ['Mihika', 'customer', 'Prospect demo', '2026-11-09', '2026-11-09', '09:30'],
     ['Mihika', 'onsite', 'Client onsite', '2026-11-30', '2026-12-01', ''],
     ['Mihika', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
     ['Matan', 'customer', 'Customer kickoff', '2026-11-23', '2026-11-23', '16:00'],
     ['Matan', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
-    ['Matan', 'office', 'In office (NYC)', '2026-11-11', '2026-11-11', ''],
+    ['Matan', 'office', 'In office', '2026-11-11', '2026-11-11', ''],
     ['Joon', 'customer', 'Customer QBR', '2026-11-18', '2026-11-18', '10:30'],
     ['Joon', 'onsite', 'Client onsite', '2026-12-07', '2026-12-08', ''],
     ['Joon', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
-    ['Joon', 'office', 'In office (SF)', '2026-11-24', '2026-11-24', ''],
+    ['Joon', 'office', 'In office', '2026-11-24', '2026-11-24', ''],
     ['Michael', 'customer', 'Prospect demo', '2026-11-24', '2026-11-24', '11:00'],
     ['Michael', 'onsite', 'Client onsite', '2026-11-10', '2026-11-11', ''],
     ['Michael', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
-    ['Michael', 'office', 'In office (NYC)', '2026-11-04', '2026-11-04', ''],
-  ].map(([person, type, title, start, end, time], i) => ({ id: `sched-${i + 1}`, person, type, title, start, end, time, notes: '' }));
+    ['Michael', 'office', 'In office', '2026-11-04', '2026-11-04', ''],
+  ].map(([person, type, title, start, end, time], i) => ({ id: `sched-${i + 1}`, person, type, title, start, end, time, city: SCHEDULE_CITIES[i], notes: '' }));
 }
 
 const POTENTIAL_INVESTORS = [
@@ -1084,6 +1136,55 @@ export function seedCoo() {
   };
 }
 
+// Pipeline & Forecasts. Example revenue: $0 at founding (Oct 2025), 5x in the last 5 months, $200M now.
+export const REVENUE_HISTORY = [
+  ['2025-10', 0], ['2025-11', 0.6e6], ['2025-12', 1.8e6], ['2026-01', 3.8e6], ['2026-02', 7.2e6],
+  ['2026-03', 12.5e6], ['2026-04', 19.5e6], ['2026-05', 28.5e6], ['2026-06', 40e6],
+  ['2026-07', 55.2e6], ['2026-08', 76.1e6], ['2026-09', 105.1e6], ['2026-10', 145e6], ['2026-11', 200e6],
+].map(([month, revenue]) => ({ month, revenue }));
+
+const LEAD_SOURCES = ['Inbound', 'Outbound', 'Event', 'Referral', 'Partner', 'Investor intro'];
+const pipelineFields = (statuses) => [
+  { key: 'company', label: 'Company Name' },
+  { key: 'poc', label: 'PoC' },
+  { key: 'buyer', label: 'Buyer' },
+  { key: 'status', label: 'Status', type: 'select', options: statuses },
+  { key: 'updated', label: 'Last Updated', type: 'date' },
+  { key: 'materials', label: 'Link to Materials', type: 'url' },
+  { key: 'source', label: 'Lead Source', type: 'select', options: LEAD_SOURCES },
+];
+
+export const PIPELINE_SECTIONS = [
+  {
+    id: 'target-accounts', title: 'Target Accounts', addLabel: 'Add account',
+    note: 'Named accounts we are going after. PoC is who owns the account at Simile; Buyer is who signs on their side.',
+    fields: pipelineFields(['Not contacted', 'Contacted', 'Meeting booked', 'Proposal sent', 'Closed won', 'Closed lost']),
+  },
+  {
+    id: 'lead-lists', title: 'Lead Lists', addLabel: 'Add lead',
+    note: 'New leads to qualify. Move strong ones to Target Accounts.',
+    fields: pipelineFields(['New', 'Contacted', 'Qualified', 'Unqualified', 'Converted']),
+  },
+];
+
+export function seedPipeline() {
+  const rows = (prefix, list) => list.map(([company, poc, buyer, status, updated, source], i) => ({ id: `${prefix}-${i + 1}`, company, poc, buyer, status, updated, materials: '', source }));
+  return {
+    'target-accounts': rows('ta', [
+      ['Unilever', 'Julia', 'VP of Consumer Insights', 'Meeting booked', '2026-11-04', 'Outbound'],
+      ['Delta Air Lines', 'Olivia', 'Head of Customer Research', 'Contacted', '2026-11-02', 'Event'],
+      ['Pfizer', 'Madison', 'Director of Market Research', 'Proposal sent', '2026-11-05', 'Referral'],
+      ['Verizon', 'Mihika', 'VP of Customer Experience', 'Not contacted', '2026-10-30', 'Outbound'],
+    ]),
+    'lead-lists': rows('ll', [
+      ['Nike', 'Eileen', 'Senior Manager, Consumer Insights', 'New', '2026-11-05', 'Inbound'],
+      ['Mastercard', 'Matan', 'Head of Research', 'Contacted', '2026-11-03', 'Event'],
+      ['Spotify', 'Joon', 'Director of User Research', 'Qualified', '2026-11-04', 'Inbound'],
+      ['Marriott', 'Michael', 'VP of Guest Insights', 'New', '2026-11-01', 'Investor intro'],
+    ]),
+  };
+}
+
 export function seedData() {
   const year = new Date().getFullYear();
   return {
@@ -1111,11 +1212,14 @@ export function seedData() {
     boardInvestor: seedBoardInvestor(),
     coo: seedCoo(),
     weeklyMeetings: [],
+    pipeline: seedPipeline(),
     leadershipSchedule: seedLeadershipSchedule(),
-    scheduleVersion: 3,
+    scheduleVersion: 4,
     copyVersion: 1,
     consistencyVersion: 1,
     clientVersion: 1,
+    docsVersion: 1,
+    notesVersion: 1,
     cooVersion: 2,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
@@ -1123,7 +1227,7 @@ export function seedData() {
     // Home page: About Naureen, Why I Built This and a note for each page card.
     home: { background: '', experience: '', goals: '', why: '', cardNotes: {} },
     pageNotes: {
-      recruitment: 'This page is about bringing top-of-funnel talent to Simile.\n\nA note on events: partnering with others on events is much more interesting, since it has the same impact for far less time and effort. With school partnerships, the goal is to build relationships early, so that when very strong talent comes along, it gets funneled to us quickly.\n\nTo build a successful funnel for Simile, we need several long-term relationships in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for people already in the ecosystem\n• Event attendance, to understand who we’re getting in front of and whether they’re the right people, whether that’s a future client or a future employee\n• Event partnerships, as our ICPs converge\n• The total count from leads to interviews booked, and the gap between them',
+      recruitment: 'After the chat with Sanjeev, there is a need for hiring support. Here are a couple of ideas I can put together in my first days to start a system for recruiting technical talent. Sourcing and scheduling need to be automated and systemized, while the interviews stay personal, with people engaging candidates and giving us a chance to build relationships with them.\n\nThis page is about bringing top-of-funnel talent to Simile.\n\nA note on events: partnering with others on events is much more interesting, since it has the same impact for far less time and effort. With school partnerships, the goal is to build relationships early, so that when very strong talent comes along, it gets funneled to us quickly.\n\nTo build a successful funnel for Simile, we need several long-term relationships in place. That’s why we’re looking at:\n\n• School partnerships for newcomers\n• Event sponsorships for people already in the ecosystem\n• Event attendance, to understand who we’re getting in front of and whether they’re the right people, whether that’s a future client or a future employee\n• Event partnerships, as our ICPs converge\n• The total count from leads to interviews booked, and the gap between them',
       operations: 'This page shows every team milestone and each teammate’s capacity. It also shows team composition, so when a project changes or the direction shifts, the work can go to a teammate who has room for it. Anyone newly onboarded can see who’s working on what, how much capacity everyone has and who they can go to for support at any time.',
       documentation: 'This page keeps all the processes, SOPs and helpful links in one place, so they’re easy to find for me, anyone working with me and anyone I need to train. I can just send them this page. It also keeps the history and the lists I used for each of my campaigns. I made it to save time for myself and for anyone I work with.',
       roadmap: 'This lets anyone working with me follow my timeline week by week, with exactly when I plan to start and finish each initiative, experiment or task. It gives a clear picture of my progress.\n\nIt also has goals, metrics and objectives that show where things stand and how much more needs to happen to hit the end goals. The monthly calendar of deadlines shows what needs to happen each month and each day, so we can work backwards from the goals.',

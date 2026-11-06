@@ -834,3 +834,55 @@ span.sched-pill { cursor: default; }
 .ts-send-buttons { display: flex; gap: 8px; }
 .ts-send-buttons .btn { flex: 1; justify-content: center; }
 .ts-send-status { font-size: 12px; color: var(--text-dim); margin-top: 8px; min-height: 1em; }
+
+/* ---------- Pipeline & Forecasts ---------- */
+.pf-revenue { padding: 18px 20px 14px; }
+.pf-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 20px; flex-wrap: wrap; margin-bottom: 8px; }
+.pf-hero { font-size: 48px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.05; margin-top: 6px; }
+.pf-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+.pf-facts { display: flex; gap: 24px; }
+.pf-facts > div { display: flex; flex-direction: column; font-size: 12px; color: var(--text-dim); }
+.pf-fact-num { font-size: 22px; font-weight: 600; color: var(--text); }
+.pf-chart-wrap { position: relative; }
+.pf-chart { width: 100%; height: auto; display: block; overflow: visible; }
+.pf-grid { stroke: var(--border); stroke-width: 1; }
+.pf-axis { font-size: 11px; fill: var(--text-dim); }
+.pf-axis-month { fill: var(--text-faint); font-size: 10px; }
+.pf-area { fill: var(--accent); opacity: .1; }
+.pf-line { fill: none; stroke: var(--accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.pf-dot { fill: var(--accent); stroke: var(--bg-raised); stroke-width: 2; }
+.pf-band { fill: var(--text); opacity: .04; }
+.pf-band-label { font-size: 11px; font-weight: 600; fill: var(--text); }
+.pf-note { font-size: 11px; fill: var(--text-dim); }
+.pf-end { font-size: 12px; font-weight: 600; fill: var(--text); }
+.pf-cross { stroke: var(--text-faint); stroke-width: 1; opacity: 0; }
+.pf-hover-dot { opacity: 0; }
+.pf-chart.hovering .pf-cross, .pf-chart.hovering .pf-hover-dot { opacity: 1; }
+.pf-hit { fill: transparent; cursor: crosshair; }
+.pf-tip {
+  position: absolute; transform: translate(-50%, calc(-100% - 12px)); pointer-events: none; opacity: 0;
+  background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 6px 20px rgba(10,10,10,.1);
+  padding: 8px 10px; font-size: 12px; display: flex; flex-direction: column; gap: 2px; min-width: 130px; transition: opacity .1s;
+}
+.pf-tip.on { opacity: 1; }
+.pf-tip span { color: var(--text-dim); }
+.pf-tip b { font-size: 15px; }
+.pf-table { margin-top: 10px; font-size: 12px; }
+.pf-table summary { cursor: pointer; color: var(--text-dim); }
+.pf-table table { margin-top: 8px; max-width: 420px; }
+.pf-footnote { font-size: 11px; color: var(--text-faint); margin-top: 8px; }
+.pf-table-grid td:first-child .cell-input { min-width: 170px; }
+.pf-table-grid td:nth-child(3) .cell-input { min-width: 230px; }
+.pf-table-grid select.cell-input { min-width: 150px; }
+
+/* Leadership cities */
+.sched-city { display: inline-block; font-size: 9.5px; font-weight: 700; letter-spacing: .03em; color: var(--text-dim); background: var(--bg); border: 1px solid var(--border); border-radius: 3px; padding: 0 3px; margin-right: 4px; vertical-align: 1px; }
+.sched-chip .sched-city { margin-right: 2px; }
+.sched-where { margin-bottom: 16px; }
+.sched-where-title { font-size: 13px; font-weight: 700; margin-bottom: 10px; }
+.sched-where-title span { font-weight: 400; color: var(--text-dim); margin-left: 6px; font-size: 12px; }
+.sched-where-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+.sched-where-city { background: var(--bg-raised-2); border-radius: var(--radius); padding: 8px 10px; }
+.sched-where-name { font-size: 13px; font-weight: 600; display: flex; align-items: center; }
+.sched-where-people { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+.doc-jump { margin: 4px 0 18px; }

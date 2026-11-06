@@ -17,8 +17,15 @@ export function renderDocumentation(container) {
       <button class="btn btn-primary" id="add-doc-section-confirm">Add</button>
       <button class="btn btn-ghost" id="add-doc-section-cancel">Cancel</button>
     </div>
+    <div class="schedule-jump doc-jump">
+      ${sections.map((sec) => `<a class="btn" href="#/documentation?anchor=${sec.id}" data-doc-jump="${sec.id}">${escapeHtml(sec.title)} <span class="event-phase-count">${sec.entries.length}</span></a>`).join('')}
+    </div>
     <div id="doc-sections" class="stack-16"></div>
   `;
+  container.querySelectorAll('[data-doc-jump]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById(a.dataset.docJump)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
 
   document.getElementById('doc-sections').innerHTML = sections.map(renderSection).join('');
 

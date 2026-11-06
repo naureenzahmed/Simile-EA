@@ -1,5 +1,6 @@
 import { getData, commit, syncPeople } from '../store.js';
-import { uid, escapeHtml, todayISO } from '../utils.js';
+import { uid, escapeHtml, todayISO, addDays } from '../utils.js';
+import { CITIES } from '../seed.js';
 
 
 export const SCHEDULE_TITLE = 'Leadership Schedule Management';
@@ -15,10 +16,28 @@ const view = {
   month: todayISO().slice(0, 7), // "YYYY-MM"
   hiddenTypes: new Set(),
   hiddenPeople: new Set(),
+  hiddenCities: new Set(),
   adding: null, // 'person' | 'type' while an add form is open
 };
 
 const lists = () => ({ leaders: getData().scheduleLeaders, types: getData().scheduleTypes });
+const cityShort = (name) => CITIES.find((c) => c.name === name)?.short || (name || '').slice(0, 3).toUpperCase();
+const cityList = (entries) => [...new Set([...CITIES.map((c) => c.name), ...entries.map((e) => e.city).filter(Boolean)])];
+
+// Where each person is this week (Sunday to Saturday), grouped by city.
+function thisWeek(entries) {
+  const today = todayISO();
+  const d = new Date(today + 'T00:00:00');
+  const start = addDays(today, -d.getDay());
+  const end = addDays(start, 6);
+  const byCity = {};
+  for (const e of entries) {
+    if (!e.city || e.start > end || (e.end || e.start) < start) continue;
+    (byCity[e.city] = byCity[e.city] || new Set()).add(e.person);
+  }
+  return { start, end, byCity };
+}
+
 const typeOf = (key) => lists().types.find((t) => t.key === key) || { key, label: key || 'Other', color: '#b8b6b2' };
 
 function iso(d) {
@@ -43,6 +62,10 @@ function gridDays(month) {
   return Array.from({ length: 42 }, (_, i) => iso(new Date(start.getFullYear(), start.getMonth(), start.getDate() + i)));
 }
 
+function fmtShort(iso) {
+  return new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 function fmtTime(t) {
   if (!t) return '';
   const [h, min] = t.split(':').map(Number);
@@ -52,7 +75,9 @@ function fmtTime(t) {
 export function renderLeadershipSchedule(container) {
   const entries = getData().leadershipSchedule;
   const { leaders, types } = lists();
-  const visible = entries.filter((e) => !view.hiddenTypes.has(e.type) && !view.hiddenPeople.has(e.person));
+  const visible = entries.filter((e) => !view.hiddenTypes.has(e.type) && !view.hiddenPeople.has(e.person) && !view.hiddenCities.has(e.city || ''));
+  const cities = cityList(entries);
+  const week = thisWeek(entries);
   const nextColor = EXTRA_COLORS.find((c) => !types.some((t) => t.color === c)) || EXTRA_COLORS[0];
   const today = todayISO();
   const days = gridDays(view.month);
@@ -95,9 +120,26 @@ export function renderLeadershipSchedule(container) {
           ` : '<button class="sched-chip sched-chip-add" id="sched-add-person">+ Add person</button>'}
         </div>
       </div>
+      <div class="sched-filter-row">
+        <div class="sched-filter-label">City</div>
+        <div class="sched-chips">
+          ${cities.map((c) => `<button class="sched-chip ${view.hiddenCities.has(c) ? '' : 'on'}" data-filter-city="${escapeHtml(c)}"><span class="sched-city">${escapeHtml(cityShort(c))}</span>${escapeHtml(c)}</button>`).join('')}
+        </div>
+      </div>
       <div class="sched-filter-foot">
         <span>Showing ${visible.length} of ${entries.length} entries. Click a chip to show or hide it.</span>
         <button class="btn btn-ghost" id="sched-show-all" style="padding:3px 8px;">Show all</button>
+      </div>
+    </div>
+
+    <div class="card sched-where">
+      <div class="sched-where-title">Where leadership is this week <span>${fmtShort(week.start)} to ${fmtShort(week.end)}</span></div>
+      <div class="sched-where-grid">
+        ${Object.entries(week.byCity).sort((a, b) => b[1].size - a[1].size).map(([city, people]) => `
+          <div class="sched-where-city">
+            <div class="sched-where-name"><span class="sched-city">${escapeHtml(cityShort(city))}</span>${escapeHtml(city)}</div>
+            <div class="sched-where-people">${[...people].map(escapeHtml).join(', ')}</div>
+          </div>`).join('') || '<div class="empty-hint">No travel or office days logged this week.</div>'}
       </div>
     </div>
 
@@ -125,7 +167,7 @@ export function renderLeadershipSchedule(container) {
               ${items.map((e) => {
                 const t = typeOf(e.type);
                 const label = `${e.person}${e.title ? ' · ' + e.title : ''}`;
-                return `<button class="sched-pill" style="--c:${t.color}" data-entry="${e.id}" title="${escapeHtml(`${t.label}: ${label}${e.time ? ' at ' + fmtTime(e.time) : ''}`)}">${e.time ? `<b>${fmtTime(e.time)}</b> ` : ''}${escapeHtml(label)}</button>`;
+                return `<button class="sched-pill" style="--c:${t.color}" data-entry="${e.id}" title="${escapeHtml(`${t.label}: ${label}${e.time ? ' at ' + fmtTime(e.time) : ''}${e.city ? ' in ' + e.city : ''}`)}">${e.city ? `<span class="sched-city">${escapeHtml(cityShort(e.city))}</span>` : ''}${e.time ? `<b>${fmtTime(e.time)}</b> ` : ''}${escapeHtml(label)}</button>`;
               }).join('')}
             </div>
           `;
@@ -144,9 +186,11 @@ function wire(container, entries) {
 
   container.querySelectorAll('[data-filter-type]').forEach((b) => b.addEventListener('click', () => toggle(view.hiddenTypes, b.dataset.filterType)));
   container.querySelectorAll('[data-filter-person]').forEach((b) => b.addEventListener('click', () => toggle(view.hiddenPeople, b.dataset.filterPerson)));
+  container.querySelectorAll('[data-filter-city]').forEach((b) => b.addEventListener('click', () => toggle(view.hiddenCities, b.dataset.filterCity)));
   container.querySelector('#sched-show-all').addEventListener('click', () => {
     view.hiddenTypes.clear();
     view.hiddenPeople.clear();
+    view.hiddenCities.clear();
     rerender();
   });
 
@@ -206,7 +250,7 @@ function wire(container, entries) {
 function openPanel(container, entries, entry, day) {
   closePanel();
   const { leaders, types } = lists();
-  const e = entry || { person: leaders[0] || '', type: types[0]?.key || '', title: '', start: day, end: day, time: '', notes: '' };
+  const e = entry || { person: leaders[0] || '', type: types[0]?.key || '', title: '', start: day, end: day, time: '', city: '', notes: '' };
 
   const overlay = document.createElement('div');
   overlay.className = 'sidebar-overlay';
@@ -235,6 +279,10 @@ function openPanel(container, entries, entry, day) {
           <span style="color:var(--text-dim);">to</span>
           <input type="date" id="sp-end" value="${e.end || e.start}" />
         </div>
+      </div>
+      <div class="ts-field"><div class="ts-field-label">City</div>
+        <input type="text" id="sp-city" list="sched-cities" value="${escapeHtml(e.city || '')}" placeholder="e.g. New York" />
+        <datalist id="sched-cities">${CITIES.map((c) => `<option value="${c.name}"></option>`).join('')}</datalist>
       </div>
       <div class="ts-field"><div class="ts-field-label">Time (optional)</div>
         <input type="time" id="sp-time" value="${e.time || ''}" class="sched-time" />
@@ -268,6 +316,7 @@ function openPanel(container, entries, entry, day) {
       title: panel.querySelector('#sp-title').value.trim(),
       start, end,
       time: panel.querySelector('#sp-time').value,
+      city: panel.querySelector('#sp-city').value.trim(),
       notes: panel.querySelector('#sp-notes').value,
     };
     if (entry) Object.assign(entry, values);

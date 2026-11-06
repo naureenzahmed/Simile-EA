@@ -73,6 +73,14 @@ function buildManifest(data) {
       ],
     },
     {
+      key: 'pipeline', label: 'Pipeline & Forecasts',
+      subsections: [
+        { id: 'pipeline-revenue', label: 'Revenue' },
+        { id: 'target-accounts', label: 'Target Accounts' },
+        { id: 'lead-lists', label: 'Lead Lists' },
+      ],
+    },
+    {
       key: 'schedule', label: 'Schedule Management',
       subsections: [
         { id: 'schedule-leadership', label: 'Leadership Schedule Management' },
@@ -97,16 +105,16 @@ function buildManifest(data) {
       subsections: BOARD_SECTIONS.map((s) => ({ id: s.id, label: s.title })),
     },
     {
-      key: 'recruitment', label: 'Recruitment',
-      subsections: data.recruitment.filter((s) => !s.isIntro).map((s) => ({ id: s.id, label: s.title })),
-    },
-    {
       key: 'events', label: 'Events & Offsites',
       subsections: [{ id: 'events-contents', label: 'Table of Contents' }, ...data.events.map((e) => ({ id: e.id, label: e.name || 'Untitled event' }))],
     },
     {
       key: 'documentation', label: 'Documentation',
       subsections: data.docs.map((s) => ({ id: s.id, label: s.title })),
+    },
+    {
+      key: 'recruitment', label: 'Special Project: Talent Pipeline',
+      subsections: data.recruitment.filter((s) => !s.isIntro).map((s) => ({ id: s.id, label: s.title })),
     },
   ];
 }

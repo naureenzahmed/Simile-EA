@@ -1,4 +1,4 @@
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -214,6 +214,17 @@ function load() {
         stored.recruitmentVersion = 13;
         changed = true;
       }
+      // Schedule v4: each entry gets a city, so the calendar shows where leadership is.
+      if (stored.leadershipSchedule && (stored.scheduleVersion || 0) < 4) {
+        for (const e of stored.leadershipSchedule) {
+          const m = /^sched-(\d+)$/.exec(e.id);
+          if (!e.city && m) e.city = scheduleCityFor(Number(m[1]) - 1);
+          const office = /^In office \((SF|NYC)\)$/.exec(e.title || '');
+          if (office) { e.title = 'In office'; e.city = e.city || (office[1] === 'SF' ? 'San Francisco' : 'New York'); }
+        }
+        stored.scheduleVersion = 4;
+        changed = true;
+      }
       // Copy v1: fix spelling, grammar and tone in the starter text.
       if ((stored.copyVersion || 0) < 1) {
         applyCopyFixes(stored);
@@ -241,6 +252,21 @@ function load() {
         const potential = stored.boardInvestor['potential-investors'] || [];
         stored.boardInvestor['potential-investors'] = potential.filter((r) => !isCurrentInvestor(r.firm, current));
         stored.boardVersion = 3;
+        changed = true;
+      }
+      // Docs v1: add Templates, Client SOPs and Team Onboarding at the top of Documentation.
+      if (stored.docs && (stored.docsVersion || 0) < 1) {
+        const missing = seedDocLibrary().filter((sec) => !stored.docs.some((d) => d.id === sec.id));
+        stored.docs.unshift(...missing);
+        stored.docsVersion = 1;
+        changed = true;
+      }
+      // Notes v1: the talent pipeline note opens with why this project exists.
+      if (stored.pageNotes && (stored.notesVersion || 0) < 1) {
+        const intro = 'After the chat with Sanjeev, there is a need for hiring support. Here are a couple of ideas I can put together in my first days to start a system for recruiting technical talent. Sourcing and scheduling need to be automated and systemized, while the interviews stay personal, with people engaging candidates and giving us a chance to build relationships with them.';
+        const cur = stored.pageNotes.recruitment || '';
+        if (!cur.includes('After the chat with Sanjeev')) stored.pageNotes.recruitment = cur ? `${intro}\n\n${cur}` : intro;
+        stored.notesVersion = 1;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
