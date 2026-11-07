@@ -377,6 +377,12 @@ function load() {
         stored.homeVersion = 5;
         changed = true;
       }
+      // Home v6: two new sentences at the end of the McGill Ventures paragraph.
+      if (stored.home && (stored.homeVersion || 0) < 6) {
+        stored.home.experience = ABOUT_EXPERIENCE;
+        stored.homeVersion = 6;
+        changed = true;
+      }
       if ((stored.copyVersion || 0) < 2) {
         replaceDeep(stored, COPY_FIXES_2);
         stored.copyVersion = 2;
