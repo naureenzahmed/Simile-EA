@@ -181,7 +181,7 @@ function renderInquiries(c) {
   return `
     <div class="toolbar">
       <h2 class="schedule-part-title">Inquiries</h2>
-      <button class="btn btn-primary" data-inq-add="potential">+ Add inquiry</button>
+      <button class="btn btn-primary" data-inq-add="needed">+ Add inquiry</button>
     </div>
     <div class="section-desc">Drag a card to move it to another column. Click a card to open it.</div>
     <div class="coo-board">

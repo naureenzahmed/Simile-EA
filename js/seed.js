@@ -1350,11 +1350,11 @@ export const COO_INBOX = [
   { key: 'other', label: 'Other' },
 ];
 
+// Inquiry columns, matching the COO Scheduling notes. (Potential issues were folded into Needs attention.)
 export const COO_STAGES = [
-  { key: 'potential', label: 'Potential Issues' },
-  { key: 'needed', label: 'Issues That Need to Be Addressed' },
+  { key: 'needed', label: 'Needs Attention' },
   { key: 'solved', label: 'Solved' },
-  { key: 'escalated', label: 'Escalated to Lainie' },
+  { key: 'escalated', label: 'Escalated' },
   { key: 'other', label: 'Other' },
 ];
 
@@ -1410,7 +1410,7 @@ export function seedCoo() {
     ...OTHER_MAIL,
   ];
   const inquiries = [
-    ['potential', 'Offsite venue may be overbooked', 'Operations', 'The hotel has flagged a possible double booking for the December offsite.', 'Olivia', '2026-11-14'],
+    ['needed', 'Offsite venue may be overbooked', 'Operations', 'The hotel has flagged a possible double booking for the December offsite.', 'Olivia', '2026-11-14'],
     ['needed', 'Expense approvals are backed up', 'Finance', 'About 30 expense reports are waiting on approval.', 'Madison', '2026-11-10'],
     ['needed', 'Laptops for new hires', 'IT', 'Three new hires start on the 17th and need laptops set up.', 'Mihika', '2026-11-12'],
     ['solved', 'Badge access for the NYC office', 'Facilities', 'New badges were issued to the whole team.', 'Julia', '2026-11-03'],
@@ -1451,6 +1451,8 @@ export const ROADMAP_NOTE = "This page supports GTM leadership’s operating rhy
 export const PIPELINE_NOTE = "This page shows our major revenue metrics.\n\nRevenue graph\nAt the top, the graph shows our revenue progression and current rate of growth.\n\nTarget accounts\nThis section tracks our progress with our target accounts. For each account, you’ll see:\n\n• Company name\n• Point of contact\n• Their title\n• Where we are in the sales process\n• Date last updated\n• A link to their materials in Google Drive\n\nTo qualify as a target account, a company must be in the Fortune 100, already be in contact with us and show strong potential to work with us.\n\nLead list\nThese are potential customers we’re working to engage, qualify and connect with the right buyer. We’ve highlighted the larger accounts we’d most like to engage quickly, along with their progress. Click the table to open HubSpot, where all the details live.\n\nAt a glance\nThis section shows the top 5 to 10 accounts and leads we want to focus on right now, the ones that have progressed the most or are moving fastest. Everything here is connected to HubSpot and updates automatically whenever changes are made there. To edit an account, click it to open it in HubSpot, where all its information lives.";
 
 export const SCHEDULE_NOTE = "This page shows the schedules of the leadership and team members I’ll be working with. At the top, the Leadership Schedule Management and Team Management buttons take you straight to each section.\n\nLeadership Schedule Management\nThis section shows each leader’s meetings, who I’ll be working with and which city they’re in. The calendar shows where leaders will be this week, what they’re working on and their major milestones.\n\nI’ll coordinate this with the other EAs and the Chief of Staff so we stay on top of any changes and everyone has a bird’s-eye view of what each team member is doing.\n\nClick any item in the agenda to see more details: who is involved, the purpose of the trip or meeting, the dates, the city and any notes.\n\nTeam Management\nThis section highlights the key milestones for the week. The information is pulled automatically from the GTM Roadmap, so at a glance you can see exactly what we’re working toward this week.\n\nTeam bandwidth\nAt the bottom of the page, you can see each team member’s bandwidth and where they sit in the organization. Click a name or initial to see their full name, department and some of the tasks they’re working on.";
+
+export const COO_NOTE = "Since I’ll be working closely with our COO, Lainie Yallen, this page is fully dedicated to supporting her.\n\nCalendar\nThe calendar shows Lainie’s schedule by month, week and day, along with everything she needs to get done. Click any item for more details.\n\nEmail\nIncoming emails are sorted by keyword into folders: investors, time-sensitive, potential candidates, spam and other. These folders can be adjusted as needed. I’ll go through these emails, escalate what needs her attention and handle what I can on my own. You can also check the status of each email to see how it’s been addressed.\n\nInquiries\nThis section tracks inquiries and issues that come up for leadership. They’re sorted into categories so we can spot problems early:\n\n• Needs attention\n• Solved\n• Escalated\n• Other\n\nThe categories can be adjusted as needed.\n\nAll inquiries live in HubSpot, and this page pulls from it directly. Team members can submit inquiries through Slack, and they go straight into HubSpot, so everything stays in sync. As work progresses, you can drag items between categories to show what’s done and what’s still open. Click any item to see a detailed description of the issue and who it involves.\n\nSprints\nThe current sprint shows the tasks to complete, the goal for the end of the sprint and who is responsible for each task. Past sprints are collapsed, and you can click to see the same details. Any unfinished task from a past sprint automatically moves to the next week unless marked otherwise.\n\nAt the bottom of the section, a visual overview shows sprint progress at a glance.\n\nOverall\nThis page keeps me focused on the exact goals of the people I work with, so I can track them and help us hit them.";
 
 // Home: About Naureen.
 export const ABOUT_BACKGROUND = "I spent 3 years in venture capital, investing from pre-seed to Series A across North America. My work focused on deal flow and due diligence, and I supported LP reporting and the administrative side of fundraising. In my free time, I hosted a number of large-scale events and smaller event series, including North Star, founder dinners, conference kickoffs and multi-day trips for founders.\n\nAfter graduation, I joined Planned.AI as Growth. My job description was “find problems in the company and solve them, then move to the next thing.” This included redoing the onboarding flow to allow self-serve sign-up, B2C sales, customer success, paid ads and technical recruiting, supporting the company as it scaled from 50 to 90 people. I’m also helping build our brand presence through events and partnerships with startups and community organizations.";
@@ -1544,13 +1546,13 @@ export function seedData() {
     consistencyVersion: 1,
     clientVersion: 1,
     docsVersion: 2,
-    notesVersion: 5,
+    notesVersion: 6,
     eventsVersion: 1,
     homeVersion: 4,
     pipelineVersion: 1,
     milestonesVersion: 1,
     peopleVersion: 2,
-    cooVersion: 5,
+    cooVersion: 6,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',
@@ -1562,6 +1564,7 @@ export function seedData() {
       documentation: 'This page keeps all the processes, SOPs and helpful links in one place, so they’re easy to find for me, anyone working with me and anyone I need to train. I can just send them this page. It also keeps the history and the lists I used for each of my campaigns. I made it to save time for myself and for anyone I work with.',
       roadmap: ROADMAP_NOTE,
       pipeline: PIPELINE_NOTE,
+      coo: COO_NOTE,
     },
     tasks: seedTasks(),
   };
