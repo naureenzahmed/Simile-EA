@@ -22,6 +22,7 @@ export function renderTeamManagement(container) {
       <div class="section-label">Availability</div>
       <div class="section-desc">Who has room for more work. Click anyone to see their name, department and what they're working on.</div>
       <div class="card" style="margin-bottom:24px;">
+        <div class="avail-note" role="note">This would be adjusted to the team structure, but also cognizant of each individual's situation. It would only be used in the case of special projects, for understanding who is working on what and how to delegate the work.</div>
         <div id="availability-summary"></div>
         <div id="people-list"></div>
       </div>

@@ -369,6 +369,14 @@ function load() {
         stored.homeVersion = 4;
         changed = true;
       }
+      // Home v5: new wording for the three About Naureen boxes.
+      if (stored.home && (stored.homeVersion || 0) < 5) {
+        stored.home.background = ABOUT_BACKGROUND;
+        stored.home.experience = ABOUT_EXPERIENCE;
+        stored.home.goals = ABOUT_GOALS;
+        stored.homeVersion = 5;
+        changed = true;
+      }
       if ((stored.copyVersion || 0) < 2) {
         replaceDeep(stored, COPY_FIXES_2);
         stored.copyVersion = 2;
