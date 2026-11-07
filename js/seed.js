@@ -757,8 +757,8 @@ const POTENTIAL_INVESTORS = [
     "check": "Up to ~$50M+ at growth",
     "partner": "Shardul Shah",
     "role": "Partner; led Simile's $100M Series A",
-    "linkedin": "https://www.linkedin.com/search/results/people/?keywords=Shardul%20Shah%20Index%20Ventures",
-    "linkedinStatus": "Search link (open and confirm the profile)",
+    "linkedin": "https://www.linkedin.com/in/shardul-shah-3589062/",
+    "linkedinStatus": "Verified",
     "why": "Led Simile's Series A and joined the Series B.",
     "relationship": "Existing investor",
     "source": "https://www.everythingstartups.com/vc-funds/index-ventures"
@@ -1166,9 +1166,12 @@ export const BOARD_SECTIONS = [
       { key: 'firm', label: 'Firm Name' },
       { key: 'stage', label: 'Round Joined' },
       { key: 'partner', label: 'Partner' },
+      { key: 'partnerLinkedin', label: 'Partner LinkedIn', type: 'url' },
       { key: 'partnerEmail', label: 'Partner Email' },
       { key: 'partnerPhone', label: 'Partner Number' },
       { key: 'boardMember', label: 'Board Member' },
+      { key: 'observer', label: 'Board Observer' },
+      { key: 'observerLinkedin', label: 'Observer LinkedIn', type: 'url' },
       { key: 'terms', label: 'Terms Summary', type: 'multiline' },
     ],
   },
@@ -1209,8 +1212,17 @@ const CURRENT_INVESTORS = [
   ['Itaú Ventures', 'Series B extension'],
 ];
 
+// Who we work with at each firm, where we know it.
+export const INVESTOR_PARTNERS = {
+  'Index Ventures': {
+    partner: 'Shardul Shah', partnerLinkedin: 'https://www.linkedin.com/in/shardul-shah-3589062/', boardMember: 'Shardul Shah',
+    observer: 'Mark Xu', observerLinkedin: 'https://www.linkedin.com/in/marklxu/',
+  },
+  'Bain Capital Ventures (BCV)': { partner: 'Aaref Hilaly', partnerLinkedin: 'https://www.linkedin.com/in/aarefhilaly/' },
+};
+
 export function currentInvestorRows() {
-  return CURRENT_INVESTORS.map(([firm, stage], i) => ({ id: `investors-${i + 1}`, firm, stage }));
+  return CURRENT_INVESTORS.map(([firm, stage], i) => ({ id: `investors-${i + 1}`, firm, stage, ...(INVESTOR_PARTNERS[firm] || {}) }));
 }
 
 const firmKey = (name) => (name || '').toLowerCase().replace(/\(.*?\)/g, '').replace(/[^a-z0-9]/g, '');
@@ -1239,15 +1251,15 @@ export const CLEARANCE = [
 
 // [title, clearance, people with access]
 const DATA_ROOM = [
-  ['Overview deck', 'all', ['Lainie', 'Joon', 'Shardul Shah', 'Aaref Hilaly', 'Mike Volpi']],
-  ['Financial model', 'lead', ['Lainie', 'Joon', 'Shardul Shah', 'Aaref Hilaly']],
-  ['Cap table', 'lead', ['Lainie', 'Joon', 'Shardul Shah']],
-  ['Revenue report', 'all', ['Lainie', 'Noah Rivera', 'Shardul Shah', 'Aaref Hilaly', 'Mike Volpi']],
-  ['Customer contracts', 'lead', ['Lainie', 'Priya Shah', 'Shardul Shah']],
-  ['Product roadmap', 'all', ['Joon', 'Lainie', 'Shardul Shah', 'Aaref Hilaly']],
-  ['Board minutes', 'board', ['Lainie', 'Joon', 'Shardul Shah']],
-  ['Legal docs', 'lead', ['Lainie', 'Zoe Martin', 'Shardul Shah']],
-  ['Hiring plan', 'all', ['Lainie', 'Grace Kim', 'Shardul Shah', 'Aaref Hilaly']],
+  ['Overview deck', 'all', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Financial model', 'lead', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
+  ['Cap table', 'lead', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu']],
+  ['Revenue report', 'all', ['Lainie', 'Noah Rivera', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Customer contracts', 'lead', ['Lainie', 'Priya Shah', 'Shardul Shah', 'Mark Xu']],
+  ['Product roadmap', 'all', ['Joon', 'Lainie', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
+  ['Board minutes', 'board', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu']],
+  ['Legal docs', 'lead', ['Lainie', 'Zoe Martin', 'Shardul Shah', 'Mark Xu']],
+  ['Hiring plan', 'all', ['Lainie', 'Grace Kim', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
 ];
 
 export function dataRoomRows() {

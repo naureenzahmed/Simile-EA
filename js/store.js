@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, POTENTIAL_POCS, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
+import { seedData, POTENTIAL_POCS, INVESTOR_PARTNERS, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -509,6 +509,28 @@ function load() {
       if (stored.boardInvestor && (stored.boardVersion || 0) < 6) {
         (stored.boardInvestor['potential-investors'] || []).forEach((r, i) => { if (!r.poc && POTENTIAL_POCS[i]) r.poc = POTENTIAL_POCS[i]; });
         stored.boardVersion = 6;
+        changed = true;
+      }
+      // Board v7: our partners at current investors, with their LinkedIn. At Index Ventures that's Shardul Shah
+      // (also on the board) with Mark Xu as his board observer, and at BCV it's Aaref Hilaly. Mark Xu joins
+      // Shardul Shah on the data room documents. Cells someone already filled in are left alone.
+      if (stored.boardInvestor && (stored.boardVersion || 0) < 7) {
+        const index = INVESTOR_PARTNERS['Index Ventures'];
+        (stored.boardInvestor.investors || []).forEach((r) => {
+          for (const [k, v] of Object.entries(INVESTOR_PARTNERS[r.firm] || {})) if (!r[k]) r[k] = v;
+        });
+        (stored.boardInvestor['data-room'] || []).forEach((r) => {
+          const names = String(r.people || '').split(',').map((n) => n.trim()).filter(Boolean);
+          const i = names.indexOf('Shardul Shah');
+          if (i !== -1 && !names.includes('Mark Xu')) names.splice(i + 1, 0, 'Mark Xu');
+          r.people = names.join(', ');
+        });
+        (stored.boardInvestor['potential-investors'] || []).forEach((r) => {
+          if (r.firm !== 'Index Ventures' || !/linkedin\.com\/search/.test(r.linkedin || '')) return;
+          r.linkedin = index.partnerLinkedin;
+          r.linkedinStatus = 'Verified';
+        });
+        stored.boardVersion = 7;
         changed = true;
       }
       // Events v2: CEO EA becomes COO EA, the COO EA owns about three in four checklist items, and placeholder
