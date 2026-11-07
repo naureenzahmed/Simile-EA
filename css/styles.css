@@ -1126,3 +1126,27 @@ body.read-only .coo-sprint-dates { display: none; }
 .coo-day.today .coo-day-dots i { background: #fff; }
 .coo-timeline-legend { display: flex; gap: 14px; font-size: 11px; color: var(--text-dim); margin-top: 8px; }
 .coo-timeline-legend span { display: inline-flex; align-items: center; gap: 5px; }
+
+/* ---------- COO Scheduling: Sprint Calendar ---------- */
+.sc-card { padding: 0; overflow-x: auto; }
+.sc-grid { display: grid; grid-template-columns: 150px repeat(5, minmax(150px, 1fr)); min-width: 900px; }
+.sc-head { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: var(--text-dim); padding: 8px 10px; background: var(--bg-raised-2); border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); }
+.sc-week { padding: 10px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 2px; background: var(--bg-raised-2); }
+.sc-week.now { box-shadow: inset 3px 0 0 var(--accent); }
+.sc-week-date { font-size: 12.5px; font-weight: 600; }
+.sc-week-sprint { font-size: 11px; color: var(--text-dim); }
+.sc-day { min-height: 76px; padding: 6px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); display: flex; flex-direction: column; gap: 4px; transition: background .12s; }
+.sc-day.past { background: color-mix(in srgb, var(--bg-raised-2) 50%, transparent); }
+.sc-day.today { background: color-mix(in srgb, var(--accent) 7%, white); }
+.sc-day.today .sc-day-num { background: var(--accent); color: #fff; }
+.sc-day.drop { background: color-mix(in srgb, var(--accent) 14%, white); box-shadow: inset 0 0 0 2px var(--accent); }
+.sc-day-num { align-self: flex-start; font-size: 11px; color: var(--text-dim); border-radius: 999px; padding: 0 6px; min-width: 20px; text-align: center; }
+.sc-task { display: flex; align-items: center; gap: 6px; padding: 4px 6px 4px 4px; background: var(--bg); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 5px; font-size: 12px; line-height: 1.3; }
+.sc-task[draggable="true"] { cursor: grab; }
+.sc-task[draggable="true"]:hover { border-color: #b8b6b2; border-left-color: var(--accent); }
+.sc-task.done { border-left-color: #4caf7a; color: var(--text-dim); }
+.sc-task.done .sc-task-text { text-decoration: line-through; }
+.sc-task.dragging { opacity: .4; }
+.sc-task:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.sc-task-badge { width: 20px; height: 20px; border-radius: 50%; color: #fff; font-size: 8.5px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.sc-task-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }

@@ -116,6 +116,7 @@ function buildManifest(data) {
         { id: 'coo-inquiries', label: 'Inquiries' },
         { id: 'coo-sprint', label: 'Current Sprint' },
         { id: 'coo-past', label: 'Past Sprints' },
+        { id: 'coo-sprint-calendar', label: 'Sprint Calendar' },
       ],
     },
     {

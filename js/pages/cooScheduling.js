@@ -12,6 +12,7 @@ const PARTS = [
   { id: 'coo-inquiries', label: 'Inquiries' },
   { id: 'coo-sprint', label: 'Current Sprint' },
   { id: 'coo-past', label: 'Past Sprints' },
+  { id: 'coo-sprint-calendar', label: 'Sprint Calendar' },
 ];
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -64,6 +65,7 @@ export function renderCooScheduling(container) {
     <section class="schedule-part" id="coo-inquiries">${renderInquiries(c)}</section>
     <section class="schedule-part" id="coo-sprint">${renderSprint(c.currentSprint)}</section>
     <section class="schedule-part" id="coo-past">${renderPast(c)}</section>
+    <section class="schedule-part" id="coo-sprint-calendar">${renderSprintCalendar(c)}</section>
   `;
   wire(container, c);
 }
@@ -291,7 +293,7 @@ function sprintTimeline(s) {
   const next = days.findIndex((d) => d > today);
   const status = idx >= 0 ? `Today is <b>${label}</b>, day ${idx + 1} of ${days.length}`
     : today < days[0] ? `Today is <b>${label}</b>. The sprint starts ${shortDay(days[0])}`
-    : today > days[days.length - 1] ? `Today is <b>${label}</b>. The sprint ended ${shortDay(days[days.length - 1])}`
+    : today > days[days.length - 1] ? `Ran <b>${shortDay(days[0])}</b> to <b>${shortDay(days[days.length - 1])}</b>, ${days.length} working days`
     : `Today is <b>${label}</b>, a weekend. Next working day: ${shortDay(days[next])}, day ${next + 1} of ${days.length}`;
   return `
     <div class="coo-timeline">
@@ -359,6 +361,115 @@ function renderPast(c) {
       </table>
     </div>
   `;
+}
+
+/* ---------- Sprint Calendar: one row per week, tasks on their due day ---------- */
+function mondayOf(iso) {
+  const d = new Date(iso + 'T00:00:00');
+  return addDaysIso(iso, -((d.getDay() + 6) % 7));
+}
+
+function allSprints(c) {
+  return [...(c.pastSprints || []), c.currentSprint].filter(Boolean);
+}
+
+function renderSprintCalendar(c) {
+  const sprints = allSprints(c).filter((sp) => sp.start && sp.end);
+  if (!sprints.length) return '';
+  const today = todayISO();
+  const first = mondayOf(sprints.reduce((m, sp) => (sp.start < m ? sp.start : m), sprints[0].start));
+  const lastSprintEnd = sprints.reduce((m, sp) => (sp.end > m ? sp.end : m), sprints[0].end);
+  const last = addDaysIso(mondayOf(lastSprintEnd > today ? lastSprintEnd : today), 14); // two weeks ahead to plan into
+  const weeks = [];
+  for (let w = first; w <= last; w = addDaysIso(w, 7)) weeks.push(w);
+  const tasks = sprints.flatMap((sp) => sp.tasks.map((t) => ({ t, sp })));
+  const canMove = !isReadOnly();
+
+  return `
+    <div class="toolbar">
+      <h2 class="schedule-part-title">Sprint Calendar</h2>
+    </div>
+    <div class="section-desc">Each week is its own sprint, with tasks on the day they are due. ${canMove ? 'Drag a task to another day to move it.' : 'Click Edit to drag tasks to another day.'}</div>
+    <div class="card sc-card">
+      <div class="sc-grid">
+        <div class="sc-head sc-week-head">Week</div>
+        ${['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map((d) => `<div class="sc-head">${d}</div>`).join('')}
+        ${weeks.map((w) => {
+          const sp = sprints.find((x) => x.start <= addDaysIso(w, 4) && x.end >= w);
+          const isNow = w === mondayOf(today);
+          const weekNo = sp ? Math.floor((Date.parse(w) - Date.parse(mondayOf(sp.start))) / 604800000) + 1 : 0;
+          return `
+            <div class="sc-week ${isNow ? 'now' : ''}">
+              <span class="sc-week-date">Week of ${fmtDate(w)}</span>
+              <span class="sc-week-sprint">${sp ? `${escapeHtml(sp.name)} · week ${weekNo}` : 'Not planned yet'}</span>
+            </div>
+            ${[0, 1, 2, 3, 4].map((i) => {
+              const day = addDaysIso(w, i);
+              const here = tasks.filter(({ t }) => t.due === day);
+              return `
+                <div class="sc-day ${day === today ? 'today' : ''} ${day < today ? 'past' : ''}" data-sc-day="${day}">
+                  <span class="sc-day-num">${new Date(day + 'T00:00:00').getDate()}</span>
+                  ${here.map(({ t, sp: owner }) => taskChip(t, owner, canMove)).join('')}
+                </div>`;
+            }).join('')}`;
+        }).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function taskChip(t, sp, canMove) {
+  const person = (getData().people || []).find((p) => p.id === t.ownerId);
+  const color = (person && findTeam(person.teamId)?.color) || '#8f9bb3';
+  return `
+    <div class="sc-task ${t.done ? 'done' : ''}" ${canMove ? 'draggable="true"' : ''} data-sc-task="${sp.id}|${t.id}" tabindex="0"
+      title="${escapeHtml(t.text || 'Untitled task')}${person ? ` · ${escapeHtml(person.name)}` : ''} · ${escapeHtml(sp.name)}${t.done ? ' · Done' : ''}">
+      <span class="sc-task-badge" style="background:${color}">${person ? initials(person.name) : '?'}</span>
+      <span class="sc-task-text">${escapeHtml(t.text || 'Untitled task')}</span>
+    </div>`;
+}
+
+function wireSprintCalendar(container, c, rerender) {
+  const find = (key) => {
+    const [spId, tId] = key.split('|');
+    const sp = allSprints(c).find((x) => x.id === spId);
+    return { sp, t: sp?.tasks.find((x) => x.id === tId) };
+  };
+  container.querySelectorAll('[data-sc-task][draggable]').forEach((chip) => {
+    chip.addEventListener('dragstart', (e) => {
+      e.dataTransfer.setData('text/plain', chip.dataset.scTask);
+      e.dataTransfer.effectAllowed = 'move';
+      requestAnimationFrame(() => chip.classList.add('dragging'));
+    });
+    chip.addEventListener('dragend', () => {
+      chip.classList.remove('dragging');
+      container.querySelectorAll('.sc-day.drop').forEach((d) => d.classList.remove('drop'));
+    });
+  });
+  container.querySelectorAll('[data-sc-day]').forEach((cell) => {
+    cell.addEventListener('dragover', (e) => {
+      if (isReadOnly()) return;
+      e.preventDefault();
+      container.querySelectorAll('.sc-day.drop').forEach((d) => d !== cell && d.classList.remove('drop'));
+      cell.classList.add('drop');
+    });
+    cell.addEventListener('dragleave', (e) => { if (!cell.contains(e.relatedTarget)) cell.classList.remove('drop'); });
+    cell.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const { sp, t } = find(e.dataTransfer.getData('text/plain'));
+      if (!t) return;
+      const day = cell.dataset.scDay;
+      t.due = day;
+      // If another sprint covers the new day, the task moves into that sprint.
+      const home = allSprints(c).find((x) => x.start && x.end && x.start <= day && day <= x.end);
+      if (home && home !== sp) {
+        sp.tasks = sp.tasks.filter((x) => x !== t);
+        home.tasks.push(t);
+      }
+      commit();
+      rerender();
+    });
+  });
 }
 
 /* ---------- Events ---------- */
@@ -539,6 +650,8 @@ function wire(container, c) {
     rerender();
   });
 
+  wireSprintCalendar(container, c, rerender);
+
   // Past sprints open in a pop-up.
   container.querySelectorAll('[data-past]').forEach((row) => {
     const open = () => openPastModal(c, c.pastSprints.find((p) => p.id === row.dataset.past), rerender);
@@ -653,6 +766,7 @@ function openPastModal(c, sprint, rerender) {
         <button class="btn btn-ghost" data-close aria-label="Close">✕</button>
       </div>
       <div class="coo-modal-body">
+        ${sprintTimeline(sprint)}
         ${sprintBody(sprint, false)}
         <div class="sched-panel-actions">
           <button class="btn btn-ghost" data-close>Close</button>
