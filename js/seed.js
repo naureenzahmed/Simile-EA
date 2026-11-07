@@ -1122,19 +1122,6 @@ export const BOARD_SECTIONS = [
     ],
   },
   {
-    id: 'investors', title: 'Investors', note: 'Our current investors, the round each joined and who we work with at each firm.',
-    addLabel: 'Add investor',
-    fields: [
-      { key: 'firm', label: 'Firm Name' },
-      { key: 'stage', label: 'Round Joined' },
-      { key: 'partner', label: 'Partner' },
-      { key: 'partnerEmail', label: 'Partner Email' },
-      { key: 'partnerPhone', label: 'Partner Number' },
-      { key: 'boardMember', label: 'Board Member' },
-      { key: 'terms', label: 'Terms Summary', type: 'multiline' },
-    ],
-  },
-  {
     id: 'pitch-deck', title: 'Pitch Deck', note: 'The current pitch deck, plus older versions for reference.',
     topLink: 'Drive link to past decks',
     addLabel: 'Add version',
@@ -1163,6 +1150,19 @@ export const BOARD_SECTIONS = [
       { key: 'title', label: 'Title' },
       { key: 'link', label: 'Link', type: 'url' },
       { key: 'people', label: 'Security Clearance', type: 'people' },
+    ],
+  },
+  {
+    id: 'investors', title: 'Investors', note: 'Our current investors, the round each joined and who we work with at each firm.',
+    addLabel: 'Add investor',
+    fields: [
+      { key: 'firm', label: 'Firm Name' },
+      { key: 'stage', label: 'Round Joined' },
+      { key: 'partner', label: 'Partner' },
+      { key: 'partnerEmail', label: 'Partner Email' },
+      { key: 'partnerPhone', label: 'Partner Number' },
+      { key: 'boardMember', label: 'Board Member' },
+      { key: 'terms', label: 'Terms Summary', type: 'multiline' },
     ],
   },
   {
