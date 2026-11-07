@@ -554,6 +554,14 @@ export const PARTNER_FIELDS = [
 ];
 
 export const EVENT_TYPES = ['GTM Offsite', 'Sales Kickoff', 'Executive Customer Dinner', 'Industry Event', 'Other'];
+// One color per event type, used on the Events page and its calendar.
+export const EVENT_TYPE_COLORS = {
+  'GTM Offsite': '#7fb8e6',
+  'Sales Kickoff': '#b48ee0',
+  'Executive Customer Dinner': '#ff7a66',
+  'Industry Event': '#e0a95a',
+  Other: '#8f9bb3',
+};
 export const EVENT_STATUSES = ['Idea', 'Planning', 'Confirmed', 'Completed', 'Cancelled'];
 export const EVENT_PHASES = [
   { key: 'pre', label: 'Before the Event' },

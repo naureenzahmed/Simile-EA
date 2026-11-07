@@ -1,7 +1,8 @@
 import { getData, commit } from '../store.js';
-import { uid, escapeHtml } from '../utils.js';
+import { uid, escapeHtml, todayISO, dayLabel } from '../utils.js';
+import { isReadOnly } from '../readOnly.js';
 import { notesBoxHtml } from '../notesBox.js';
-import { EVENT_TYPES, EVENT_STATUSES, EVENT_PHASES, EVENT_ROLES, eventChecklist } from '../seed.js';
+import { EVENT_TYPES, EVENT_STATUSES, EVENT_PHASES, EVENT_ROLES, EVENT_TYPE_COLORS, eventChecklist } from '../seed.js';
 
 export const EVENTS_TITLE = 'Events & Offsites';
 
@@ -12,17 +13,23 @@ export function renderEvents(container) {
     ${notesBoxHtml('events')}
     <div class="toolbar">
       <div class="page-title" style="margin:0;">${EVENTS_TITLE}</div>
-      <button class="btn btn-primary" id="add-event-btn">+ Add event</button>
+      <button class="btn btn-primary" id="add-event-btn" data-ro-keep>Create event</button>
     </div>
+    <div class="ev-legend">${EVENT_TYPES.map((t) => `<span><span class="ev-swatch" style="background:${typeColor(t)}"></span>${escapeHtml(t)}</span>`).join('')}</div>
     <datalist id="event-owners">${[...EVENT_ROLES, ...(getData().scheduleLeaders || [])].map((n) => `<option value="${escapeHtml(n)}"></option>`).join('')}</datalist>
     <div class="stack-16">
       ${renderContents(events)}
-      ${events.map(renderEventSection).join('')}
+      ${sortedByDate(events).map(renderEventSection).join('')}
+      ${renderEventCalendar(events)}
     </div>
   `;
 
   wireEvents(container, events);
 }
+
+const typeColor = (t) => EVENT_TYPE_COLORS[t] || EVENT_TYPE_COLORS.Other;
+const typeOf = (e) => (EVENT_TYPES.includes(e.type) ? e.type : 'Other');
+const sortedByDate = (list) => [...list].sort((a, b) => (a.date || '9999').localeCompare(b.date || '9999'));
 
 function options(list, current) {
   const all = current && !list.includes(current) ? [current, ...list] : list;
@@ -45,8 +52,10 @@ function renderContents(events) {
             </tr>
           </thead>
           <tbody>
-            ${events.map((e) => `
-              <tr>
+            ${EVENT_TYPES.filter((t) => events.some((e) => typeOf(e) === t)).map((t) => `
+              <tr class="ev-group"><td colspan="8"><span class="ev-swatch" style="background:${typeColor(t)}"></span>${escapeHtml(t)} <span class="event-phase-count">${events.filter((e) => typeOf(e) === t).length}</span></td></tr>
+              ${sortedByDate(events.filter((e) => typeOf(e) === t)).map((e) => `
+              <tr class="ev-row" style="--ev:${typeColor(t)}">
                 <td><input type="text" class="cell-input events-name" data-event="${e.id}" data-field="name" value="${escapeHtml(e.name)}" /></td>
                 <td><select class="cell-input" data-event="${e.id}" data-field="type">${options(EVENT_TYPES, e.type)}</select></td>
                 <td class="events-desc"><textarea class="cell-input cell-textarea" rows="2" data-event="${e.id}" data-field="description">${escapeHtml(e.description)}</textarea></td>
@@ -60,13 +69,61 @@ function renderContents(events) {
                 <td><a class="checklist-link" href="#/events?anchor=${e.id}">Checklist (${doneCount(e)}) →</a></td>
                 <td><select class="cell-input" data-event="${e.id}" data-field="status">${options(EVENT_STATUSES, e.status)}</select></td>
                 <td><button class="btn btn-ghost" data-remove-event="${e.id}" style="padding:3px 7px;">✕</button></td>
-              </tr>
-            `).join('') || `<tr><td colspan="8" class="empty-hint">No events yet. Click "+ Add event" to add one.</td></tr>`}
+              </tr>`).join('')}
+            `).join('') || `<tr><td colspan="8" class="empty-hint">No events yet. Click "Create event" to add one.</td></tr>`}
           </tbody>
         </table>
       </div>
     </div>
   `;
+}
+
+/* ---------- Events calendar ---------- */
+const calView = { month: null };
+const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const isoOf = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+const shiftMonth = (ym, n) => { const [y, m] = ym.split('-').map(Number); return isoOf(new Date(y, m - 1 + n, 1)).slice(0, 7); };
+
+// Opens on this month if it has events, otherwise on the month of the next upcoming event.
+function startMonth(events) {
+  const today = todayISO();
+  if (events.some((e) => (e.date || '').slice(0, 7) === today.slice(0, 7))) return today.slice(0, 7);
+  const next = sortedByDate(events).find((e) => e.date && e.date >= today);
+  return (next?.date || today).slice(0, 7);
+}
+
+function renderEventCalendar(events) {
+  if (!calView.month) calView.month = startMonth(events);
+  const month = calView.month;
+  const [y, m] = month.split('-').map(Number);
+  const first = new Date(y, m - 1, 1);
+  const days = Array.from({ length: 42 }, (_, i) => isoOf(new Date(y, m - 1, 1 - first.getDay() + i)));
+  const today = todayISO();
+  return `
+    <div class="card doc-card" id="events-calendar">
+      <div class="toolbar sched-nav">
+        <div style="display:flex; gap:6px; align-items:center;">
+          <button class="btn" id="ev-cal-prev" aria-label="Previous month">‹</button>
+          <button class="btn" id="ev-cal-today">Today</button>
+          <button class="btn" id="ev-cal-next" aria-label="Next month">›</button>
+          <h4 style="margin:0 0 0 8px;">Events Calendar · ${first.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</h4>
+        </div>
+        <div class="sched-legend">${EVENT_TYPES.map((t) => `<span><span class="sched-swatch" style="background:${typeColor(t)}"></span>${escapeHtml(t)}</span>`).join('')}</div>
+      </div>
+      ${events.some((e) => (e.date || '').slice(0, 7) === month) ? '' : '<div class="sched-list-empty">No events this month.</div>'}
+      <div class="sched-grid">
+        ${WEEKDAYS.map((d) => `<div class="sched-weekday">${d}</div>`).join('')}
+        ${days.map((day) => {
+          const here = events.filter((e) => e.date === day);
+          return `
+            <div class="sched-day cal-static ${day.slice(0, 7) !== month ? 'other-month' : ''} ${day === today ? 'today' : ''} ${here.length ? 'has-items' : ''}" data-label="${dayLabel(day)}">
+              <div class="sched-date">${Number(day.slice(8))}</div>
+              ${here.map((e) => `<a class="sched-pill" style="--c:${typeColor(typeOf(e))}" href="#/events?anchor=${e.id}" data-ev-jump="${e.id}" title="${escapeHtml(`${typeOf(e)}: ${e.name}${e.location ? ' · ' + e.location : ''}`)}">${escapeHtml(e.name || 'Untitled event')}</a>`).join('')}
+            </div>`;
+        }).join('')}
+      </div>
+      <div class="section-desc" style="margin:8px 0 0;">Pulled from the events above. Click an event to jump to its checklist.</div>
+    </div>`;
 }
 
 function doneCount(e) {
@@ -87,9 +144,9 @@ function metaLine(e) {
 // One section per event, with a checklist for each phase.
 function renderEventSection(e) {
   return `
-    <div class="card doc-card" id="${e.id}">
+    <div class="card doc-card ev-card" id="${e.id}" style="--ev:${typeColor(typeOf(e))}">
       <div class="toolbar" style="margin-bottom:2px;">
-        <h4 style="margin:0;" data-event-title="${e.id}">${escapeHtml(e.name) || 'Untitled event'}</h4>
+        <h4 style="margin:0;" data-event-title="${e.id}"><span class="ev-type-badge">${escapeHtml(typeOf(e))}</span>${escapeHtml(e.name) || 'Untitled event'}</h4>
         <a class="checklist-link" href="#/events?anchor=events-contents">↑ Back to Table of Contents</a>
       </div>
       <div class="section-desc" data-event-meta="${e.id}">${metaLine(e)}</div>
@@ -151,7 +208,21 @@ function findItem(events, key) {
 function wireEvents(container, events) {
   const rerender = () => renderEvents(container);
 
+  container.querySelector('#ev-cal-prev')?.addEventListener('click', () => { calView.month = shiftMonth(calView.month, -1); rerender(); });
+  container.querySelector('#ev-cal-next')?.addEventListener('click', () => { calView.month = shiftMonth(calView.month, 1); rerender(); });
+  container.querySelector('#ev-cal-today')?.addEventListener('click', () => { calView.month = todayISO().slice(0, 7); rerender(); });
+  container.querySelectorAll('[data-ev-jump]').forEach((a) => a.addEventListener('click', (e) => {
+    e.preventDefault();
+    document.getElementById(a.dataset.evJump)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }));
+
   document.getElementById('add-event-btn').addEventListener('click', () => {
+    // Shown in read-only mode too: clicking it turns on editing first, then creates the event.
+    if (isReadOnly()) {
+      document.querySelector('[data-toggle-edit]')?.click();
+      document.getElementById('add-event-btn')?.click();
+      return;
+    }
     const id = uid('evt');
     events.push({ id, name: 'New event', type: 'Other', description: '', date: '', location: '', status: 'Idea', checklist: eventChecklist(id, 'Other') });
     commit();
