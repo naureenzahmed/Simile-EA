@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -460,6 +460,13 @@ function load() {
       if (stored.coo && (stored.cooVersion || 0) < 6) {
         for (const q of stored.coo.inquiries || []) if (q.stage === 'potential') q.stage = 'needed';
         stored.cooVersion = 6;
+        changed = true;
+      }
+      // COO v7: example events for the week of Nov 2, for the new week and day views.
+      if (stored.coo && (stored.cooVersion || 0) < 7) {
+        const ids = new Set((stored.coo.calendar || []).map((e) => e.id));
+        for (const e of cooWeekEvents()) if (!ids.has(e.id)) stored.coo.calendar.push(e);
+        stored.cooVersion = 7;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.

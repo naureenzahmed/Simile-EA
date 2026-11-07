@@ -1389,8 +1389,23 @@ export const SPRINT_TASK_OWNER = {
   'sprint-10-t1': 'person-eileen', 'sprint-10-t2': 'person-isaac-grant',
 };
 
+// A few calendar events for the week of Nov 2, so the week and day views have something to show.
+export const COO_WEEK_EVENTS = [
+  ['2026-11-02', '09:30', '1:1 with Lainie'],
+  ['2026-11-03', '13:00', 'Investor call: Greenoaks'],
+  ['2026-11-04', '11:00', 'Offsite venue walkthrough'],
+  ['2026-11-05', '15:30', 'Pipeline review with RevOps'],
+  ['2026-11-06', '10:00', 'Weekly wrap-up and sprint check-in'],
+  ['2026-11-06', '16:00', 'Prep for board deck review'],
+];
+
+export function cooWeekEvents() {
+  return COO_WEEK_EVENTS.map(([date, time, title], i) => ({ id: `coo-cal-wk-${i + 1}`, date, time, title, notes: '' }));
+}
+
 export function seedCoo() {
   const cal = [
+    ...COO_WEEK_EVENTS,
     ['2026-11-09', '09:00', 'Weekly ops review'],
     ['2026-11-11', '14:00', 'Board prep with Lainie'],
     ['2026-11-13', '10:00', 'Hiring sync'],
@@ -1423,7 +1438,7 @@ export function seedCoo() {
     goal, metrics, notes, team,
   });
   return {
-    calendar: cal.map(([date, time, title], i) => ({ id: `coo-cal-${i + 1}`, date, time, title, notes: '' })),
+    calendar: [...cooWeekEvents(), ...cal.slice(COO_WEEK_EVENTS.length).map(([date, time, title], i) => ({ id: `coo-cal-${i + 1}`, date, time, title, notes: '' }))],
     inbox: mail.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-${i + 1}`, category, from, subject, date, summary, status: MAIL_STATUS_SEED[i] || 'needs' })),
     inquiries: inquiries.map(([stage, title, department, description, owner, deadline], i) => ({ id: `coo-inq-${i + 1}`, stage, title, department, description, owner, deadline })),
     currentSprint: sprint('sprint-12', 'Sprint 12', '2026-11-02', '2026-11-13',
@@ -1552,7 +1567,7 @@ export function seedData() {
     pipelineVersion: 1,
     milestonesVersion: 1,
     peopleVersion: 2,
-    cooVersion: 6,
+    cooVersion: 7,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',
