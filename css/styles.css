@@ -1180,3 +1180,7 @@ body.read-only .cal-week-body:hover, body.read-only .cal-day-slot:hover { backgr
   .cal-week { grid-template-columns: 1fr; }
   .cal-week-body { min-height: 0; }
 }
+#data-room td:first-child .cell-input { min-width: 250px; } #data-room td:nth-child(4) .cell-input { min-width: 200px; }
+/* Read-only: an empty date shows nothing instead of "yyyy-mm-dd". */
+body.read-only #app-page input[type="date"][readonly][value=""],
+body.read-only #app-page input[type="date"][readonly]:not([value]) { color: transparent; }

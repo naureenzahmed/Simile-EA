@@ -1135,6 +1135,40 @@ export const BOARD_SECTIONS = [
     ],
   },
   {
+    id: 'pitch-deck', title: 'Pitch Deck', note: 'The current pitch deck, plus older versions for reference.',
+    topLink: 'Drive link to past decks',
+    addLabel: 'Add version',
+    fields: [
+      { key: 'version', label: 'Version', width: 'sm' },
+      { key: 'link', label: 'Link', type: 'url' },
+      { key: 'updated', label: 'Last Updated', type: 'date' },
+      { key: 'notes', label: 'Notes', type: 'multiline' },
+    ],
+  },
+  {
+    id: 'key-milestones', title: 'Major Milestones', note: 'Links to the latest numbers for revenue, pipeline, headcount and product.',
+    addLabel: 'Add milestone',
+    fields: [
+      { key: 'area', label: 'Milestone', width: 'sm' },
+      { key: 'link', label: 'Link', type: 'url' },
+      { key: 'summary', label: 'Latest Summary', type: 'multiline' },
+      { key: 'updated', label: 'Last Updated', type: 'date' },
+    ],
+  },
+  {
+    id: 'data-room', title: 'Data Room Links',
+    note: 'Everything an investor needs for diligence, in one place. Share access per firm and keep each link current.',
+    addLabel: 'Add link',
+    fields: [
+      { key: 'document', label: 'Document' },
+      { key: 'category', label: 'Category', width: 'sm' },
+      { key: 'link', label: 'Link', type: 'url' },
+      { key: 'access', label: 'Who Has Access' },
+      { key: 'updated', label: 'Last Updated', type: 'date' },
+      { key: 'notes', label: 'Notes', type: 'multiline' },
+    ],
+  },
+  {
     id: 'potential-investors', title: 'Potential Investors',
     note: 'Growth-stage firms with an AI or deep tech focus that could lead or join our next round. Firms that already invest in us are listed under Investors instead.',
     addLabel: 'Add firm',
@@ -1154,27 +1188,6 @@ export const BOARD_SECTIONS = [
       { key: 'why', label: 'Why They Fit Simile', type: 'multiline' },
       { key: 'relationship', label: 'Relationship', width: 'sm' },
       { key: 'source', label: 'Source', type: 'url' },
-    ],
-  },
-  {
-    id: 'pitch-deck', title: 'Pitch Deck', note: 'The current pitch deck, plus older versions for reference.',
-    topLink: 'Drive link to past decks',
-    addLabel: 'Add version',
-    fields: [
-      { key: 'version', label: 'Version', width: 'sm' },
-      { key: 'link', label: 'Link', type: 'url' },
-      { key: 'updated', label: 'Last Updated', type: 'date' },
-      { key: 'notes', label: 'Notes', type: 'multiline' },
-    ],
-  },
-  {
-    id: 'key-milestones', title: 'Major Milestones', note: 'Links to the latest numbers for revenue, pipeline, headcount and product.',
-    addLabel: 'Add milestone',
-    fields: [
-      { key: 'area', label: 'Milestone', width: 'sm' },
-      { key: 'link', label: 'Link', type: 'url' },
-      { key: 'summary', label: 'Latest Summary', type: 'multiline' },
-      { key: 'updated', label: 'Last Updated', type: 'date' },
     ],
   },
 ];
@@ -1208,12 +1221,29 @@ export function potentialInvestorRows() {
     .filter((r) => !isCurrentInvestor(r.firm));
 }
 
+const DATA_ROOM = [
+  ['Company overview deck', 'Overview', 'Board and all investors'],
+  ['Financial model and forecast', 'Finance', 'Lead investors'],
+  ['Cap table', 'Finance', 'Lead investors'],
+  ['Monthly revenue and pipeline report', 'Finance', 'Board and all investors'],
+  ['Customer contracts and pilots', 'Customers', 'Lead investors, under NDA'],
+  ['Product roadmap', 'Product', 'Board and all investors'],
+  ['Board minutes and consents', 'Legal', 'Board only'],
+  ['Incorporation and legal documents', 'Legal', 'Lead investors, under NDA'],
+  ['Hiring plan and org chart', 'Team', 'Board and all investors'],
+];
+
+export function dataRoomRows() {
+  return DATA_ROOM.map(([document, category, access], i) => ({ id: `data-room-${i + 1}`, document, category, access, link: '', updated: '', notes: '' }));
+}
+
 function seedBoardInvestor() {
   const rows = (key, values) => values.map((v, i) => ({ id: `${key}-${i + 1}`, [BOARD_SECTIONS.find((s) => s.id === key).fields[0].key]: v }));
   return {
     'board-decks': rows('board-decks', ['Q4 2025', 'Q1 2026', 'Q2 2026', 'Q3 2026']),
     'investor-updates': rows('investor-updates', ['August 2026', 'September 2026', 'October 2026']),
     investors: currentInvestorRows(),
+    'data-room': dataRoomRows(),
     'potential-investors': potentialInvestorRows(),
     'pitch-deck': rows('pitch-deck', ['Current']),
     'key-milestones': rows('key-milestones', ['Revenue', 'Pipeline', 'Headcount', 'Product Updates']),
