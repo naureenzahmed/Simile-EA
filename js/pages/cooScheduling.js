@@ -79,9 +79,9 @@ const longDate = (iso, opts) => new Date(iso + 'T00:00:00').toLocaleDateString('
 const byTime = (a, b) => (a.time || '99').localeCompare(b.time || '99');
 const pill = (e) => `<button class="sched-pill" style="--c:var(--accent)" data-coo-event="${e.id}" title="${escapeHtml(e.title)}${e.notes ? ' · ' + escapeHtml(e.notes) : ''}">${e.time ? `<b>${fmtTime(e.time)}</b> ` : ''}${escapeHtml(e.title || 'Untitled')}</button>`;
 
-// Department Calendar: everything dated on every page, pulled in read-only. Each source has its own color.
+// Department Calendar: everything dated on the other pages, pulled in read-only. Each source has its own color.
+// Lainie's own events stay on the COO Calendar.
 const DEPT_SOURCES = [
-  { key: 'coo', label: 'Office of COO', color: '#ff4f38', href: '#/coo?anchor=coo-calendar' },
   { key: 'leadership', label: 'Leadership schedule', color: '#7fb8e6', href: '#/schedule?anchor=schedule-leadership' },
   { key: 'roadmap', label: 'GTM Roadmap', color: '#b48ee0', href: '#/roadmap?anchor=roadmap-calendar-section' },
   { key: 'events', label: 'Events & Offsites', color: '#e0a95a', href: '#/events?anchor=events-calendar' },
@@ -92,7 +92,6 @@ function deptEntries(c) {
   const data = getData();
   const out = [];
   const add = (source, date, title, time = '', extra = '') => { if (date) out.push({ source, date, title, time, extra }); };
-  for (const e of c.calendar || []) add('coo', e.date, e.title || 'Untitled', e.time, e.notes);
   for (const e of data.leadershipSchedule || []) {
     for (let d = e.start; d && d <= (e.end || e.start); d = addDaysIso(d, 1)) add('leadership', d, `${e.person} · ${e.title || 'Busy'}`, e.time, e.city);
   }
@@ -133,6 +132,7 @@ function renderCalendar(c) {
       <h2 class="schedule-part-title">Calendar</h2>
       ${editable() ? '<button class="btn btn-primary" id="coo-cal-add">+ Add event</button>' : ''}
     </div>
+    <div class="section-desc cal-source-note">You can click through the COO calendar and department calendar. The COO calendar is only Lainie’s, whereas the department calendar consolidates all of the calendars across all pages: everything that needs to be done, everything that is in progress and all the objectives.</div>
     <div class="cal-source-tabs" role="tablist" aria-label="Which calendar">
       <button class="cal-source-tab ${view.calSource === 'coo' ? 'active' : ''}" data-cal-source="coo" role="tab" aria-selected="${view.calSource === 'coo'}">COO Calendar</button>
       <button class="cal-source-tab ${view.calSource === 'dept' ? 'active' : ''}" data-cal-source="dept" role="tab" aria-selected="${view.calSource === 'dept'}">Department Calendar</button>
