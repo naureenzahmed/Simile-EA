@@ -1375,6 +1375,20 @@ export function cooOtherMail() {
   return OTHER_MAIL.map(([category, from, subject, date, summary], i) => ({ id: `coo-mail-other-${i + 1}`, category, from, subject, date, summary, status: 'done' }));
 }
 
+// Due dates for the example sprint tasks.
+export const SPRINT_TASK_DUE = {
+  'sprint-12-t1': '2026-11-12', 'sprint-12-t2': '2026-11-04', 'sprint-12-t3': '2026-11-05', 'sprint-12-t4': '2026-11-09',
+  'sprint-11-t1': '2026-10-23', 'sprint-11-t2': '2026-10-27', 'sprint-11-t3': '2026-10-30',
+  'sprint-10-t1': '2026-10-08', 'sprint-10-t2': '2026-10-14',
+};
+
+// Owners for the example sprint tasks (person ids).
+export const SPRINT_TASK_OWNER = {
+  'sprint-12-t1': 'person-lainie', 'sprint-12-t2': 'person-olivia', 'sprint-12-t3': 'person-isaac-grant', 'sprint-12-t4': 'person-priya-shah',
+  'sprint-11-t1': 'person-lainie', 'sprint-11-t2': 'person-zoe-martin', 'sprint-11-t3': 'person-grace-kim',
+  'sprint-10-t1': 'person-eileen', 'sprint-10-t2': 'person-isaac-grant',
+};
+
 export function seedCoo() {
   const cal = [
     ['2026-11-09', '09:00', 'Weekly ops review'],
@@ -1405,7 +1419,7 @@ export function seedCoo() {
   ];
   const sprint = (id, name, start, end, tasks, goal, metrics, notes, team) => ({
     id, name, start, end,
-    tasks: tasks.map(([text, done], i) => ({ id: `${id}-t${i + 1}`, text, done })),
+    tasks: tasks.map(([text, done], i) => ({ id: `${id}-t${i + 1}`, text, done, due: SPRINT_TASK_DUE[`${id}-t${i + 1}`] || '', ownerId: SPRINT_TASK_OWNER[`${id}-t${i + 1}`] || null })),
     goal, metrics, notes, team,
   });
   return {
@@ -1536,7 +1550,7 @@ export function seedData() {
     pipelineVersion: 1,
     milestonesVersion: 1,
     peopleVersion: 2,
-    cooVersion: 3,
+    cooVersion: 5,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),
     slackWebhookUrl: '',

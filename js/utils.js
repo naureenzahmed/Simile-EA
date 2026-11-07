@@ -2,14 +2,16 @@ export function uid(prefix = 'id') {
   return prefix + '_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
 }
 
+// Today's date where the viewer is (not UTC), as YYYY-MM-DD.
 export function todayISO() {
-  return new Date().toISOString().slice(0, 10);
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 export function addDays(iso, n) {
   const d = new Date(iso + 'T00:00:00');
   d.setDate(d.getDate() + n);
-  return d.toISOString().slice(0, 10);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
 export function daysBetween(a, b) {

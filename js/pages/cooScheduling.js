@@ -1,5 +1,5 @@
-import { getData, commit } from '../store.js';
-import { uid, escapeHtml, todayISO, fmtDate, dayLabel } from '../utils.js';
+import { getData, commit, findTeam } from '../store.js';
+import { uid, escapeHtml, todayISO, fmtDate, dayLabel, initials } from '../utils.js';
 import { notesBoxHtml } from '../notesBox.js';
 import { isReadOnly } from '../readOnly.js';
 import { COO_INBOX, COO_STAGES, seedCoo } from '../seed.js';
@@ -211,7 +211,26 @@ function renderInquiries(c) {
 }
 
 /* ---------- Sprints ---------- */
+// Owner of a sprint task: a round initials badge in the person's department color.
+function ownerCell(t, canType) {
+  const data = getData();
+  const person = (data.people || []).find((p) => p.id === t.ownerId);
+  const team = person && findTeam(person.teamId);
+  const color = team?.color || '#8f9bb3';
+  const badge = person
+    ? `<span class="coo-owner-badge" style="background:${color}" title="${escapeHtml(person.name)}${team ? `, ${escapeHtml(team.name)}` : ', Leadership'}">${initials(person.name)}</span>`
+    : '<span class="coo-owner-badge empty" title="No owner">?</span>';
+  if (!canType) return badge;
+  return `<span class="coo-owner-edit">${badge}<select class="cell-input" data-task-owner="${t.id}" aria-label="Owner">
+    <option value="">No owner</option>
+    ${(data.people || []).map((p) => `<option value="${p.id}" ${p.id === t.ownerId ? 'selected' : ''}>${escapeHtml(p.name)}</option>`).join('')}
+  </select></span>`;
+}
+
+const shortDay = (iso) => new Date(iso + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
 function sprintBody(s, editable) {
+  const canType = editable && !isReadOnly();
   const field = (key, label, placeholder) => editable
     ? `<div class="coo-sprint-block"><div class="home-sub-title">${label}</div><textarea class="notes-box" data-sprint="${key}" placeholder="${placeholder}">${escapeHtml(s[key] || '')}</textarea></div>`
     : `<div class="coo-sprint-block"><div class="home-sub-title">${label}</div><div class="coo-readonly">${escapeHtml(s[key] || '') || '<span class="empty-hint" style="padding:0;">Nothing written.</span>'}</div></div>`;
@@ -219,17 +238,29 @@ function sprintBody(s, editable) {
   return `
     <div class="coo-sprint-grid">
       <div class="coo-sprint-block coo-sprint-tasks">
-        <div class="home-sub-title">Tasks <span class="event-phase-count">${done}/${s.tasks.length}</span></div>
-        <ul class="coo-tasks">
-          ${s.tasks.map((t) => editable ? `
-            <li class="${t.done ? 'done' : ''}">
-              <input type="checkbox" data-task-done="${t.id}" ${t.done ? 'checked' : ''} aria-label="Done" />
-              <input type="text" class="cell-input" data-task-text="${t.id}" value="${escapeHtml(t.text)}" />
-              <button class="btn btn-ghost" data-task-remove="${t.id}" style="padding:3px 7px;" title="Remove">✕</button>
-            </li>` : `
-            <li class="${t.done ? 'done' : ''}"><span class="coo-check">${t.done ? '✓' : ''}</span><span>${escapeHtml(t.text)}</span></li>`).join('')}
-        </ul>
-        ${editable ? '<input type="text" class="cell-input checklist-add" id="coo-task-add" placeholder="+ Add task (press Enter)" />' : ''}
+        <div class="coo-tasks-head">
+          <div class="home-sub-title" style="margin:0;">Tasks <span class="event-phase-count">${done}/${s.tasks.length}</span></div>
+          ${editable ? '<button class="btn btn-primary" id="coo-task-add" data-ro-keep>Add a task</button>' : ''}
+        </div>
+        <table class="list-table coo-task-table">
+          <thead><tr><th class="ct-check">Done</th><th>Task</th><th class="coo-owner-col">Owner</th><th class="coo-due-col">Due</th>${canType ? '<th></th>' : ''}</tr></thead>
+          <tbody>
+            ${[...s.tasks].sort((x, y) => (x.due || '9').localeCompare(y.due || '9')).map((t) => `
+              <tr class="${t.done ? 'done' : ''}">
+                <td class="ct-check">${canType
+                  ? `<input type="checkbox" data-task-done="${t.id}" ${t.done ? 'checked' : ''} aria-label="Done" />`
+                  : `<span class="coo-check">${t.done ? '✓' : ''}</span>`}</td>
+                <td>${canType
+                  ? `<input type="text" class="cell-input" data-task-text="${t.id}" value="${escapeHtml(t.text)}" placeholder="What needs to get done?" />`
+                  : `<span class="coo-task-text">${escapeHtml(t.text)}</span>`}</td>
+                <td class="coo-owner-col">${ownerCell(t, canType)}</td>
+                <td class="coo-due-col">${canType
+                  ? `<input type="date" class="cell-input" data-task-due="${t.id}" value="${escapeHtml(t.due || '')}" />`
+                  : `<span class="coo-due ${!t.done && t.due && t.due < todayISO() ? 'late' : ''}">${t.due ? shortDay(t.due) : 'No date'}</span>`}</td>
+                ${canType ? `<td><button class="btn btn-ghost" data-task-remove="${t.id}" style="padding:3px 7px;" title="Remove">✕</button></td>` : ''}
+              </tr>`).join('') || `<tr><td colspan="5" class="empty-hint">No tasks yet.</td></tr>`}
+          </tbody>
+        </table>
       </div>
       ${field('goal', 'End Goal', 'What this sprint is meant to achieve.')}
       ${field('metrics', 'Metrics of Success', 'How we will know it worked.')}
@@ -245,6 +276,48 @@ function sprintBody(s, editable) {
   `;
 }
 
+// The sprint as a row of working days, with today marked and each task's due date as a dot.
+function sprintTimeline(s) {
+  if (!s.start || !s.end || s.end < s.start) return '';
+  const today = todayISO();
+  const days = [];
+  for (let d = s.start; d <= s.end && days.length < 62; d = addDaysIso(d, 1)) {
+    const wd = new Date(d + 'T00:00:00').getDay();
+    if (wd !== 0 && wd !== 6) days.push(d);
+  }
+  if (!days.length) return '';
+  const idx = days.indexOf(today);
+  const label = new Date(today + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' });
+  const next = days.findIndex((d) => d > today);
+  const status = idx >= 0 ? `Today is <b>${label}</b>, day ${idx + 1} of ${days.length}`
+    : today < days[0] ? `Today is <b>${label}</b>. The sprint starts ${shortDay(days[0])}`
+    : today > days[days.length - 1] ? `Today is <b>${label}</b>. The sprint ended ${shortDay(days[days.length - 1])}`
+    : `Today is <b>${label}</b>, a weekend. Next working day: ${shortDay(days[next])}, day ${next + 1} of ${days.length}`;
+  return `
+    <div class="coo-timeline">
+      <div class="coo-timeline-status">${status}</div>
+      <div class="coo-timeline-days" style="grid-template-columns: repeat(${days.length}, minmax(0, 1fr));">
+        ${days.map((d) => {
+          const due = s.tasks.filter((t) => t.due === d);
+          const dt = new Date(d + 'T00:00:00');
+          return `
+            <div class="coo-day ${d < today ? 'past' : ''} ${d === today ? 'today' : ''}" title="${escapeHtml(shortDay(d))}${due.length ? ': ' + escapeHtml(due.map((t) => t.text).join(', ')) : ''}">
+              <span class="coo-day-name">${dt.toLocaleDateString('en-US', { weekday: 'short' })}</span>
+              <span class="coo-day-num">${dt.getDate()}</span>
+              <span class="coo-day-dots">${due.map((t) => `<i class="${t.done ? 'done' : ''}"></i>`).join('')}</span>
+            </div>`;
+        }).join('')}
+      </div>
+      <div class="coo-timeline-legend"><span><i></i>Task due</span><span><i class="done"></i>Done</span></div>
+    </div>`;
+}
+
+const addDaysIso = (iso, n) => {
+  const d = new Date(iso + 'T00:00:00');
+  d.setDate(d.getDate() + n);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+};
+
 function renderSprint(s) {
   return `
     <div class="toolbar">
@@ -254,9 +327,12 @@ function renderSprint(s) {
     <div class="card doc-card">
       <div class="coo-sprint-head">
         <input type="text" class="cell-input coo-sprint-name" data-sprint="name" value="${escapeHtml(s.name)}" placeholder="Sprint name" />
-        <label>Start <input type="date" class="cell-input" data-sprint="start" value="${escapeHtml(s.start)}" /></label>
-        <label>End <input type="date" class="cell-input" data-sprint="end" value="${escapeHtml(s.end)}" /></label>
+        <span class="coo-sprint-dates">
+          <label>Start <input type="date" class="cell-input" data-sprint="start" value="${escapeHtml(s.start)}" /></label>
+          <label>End <input type="date" class="cell-input" data-sprint="end" value="${escapeHtml(s.end)}" /></label>
+        </span>
       </div>
+      ${sprintTimeline(s)}
       ${sprintBody(s, true)}
     </div>
   `;
@@ -393,6 +469,8 @@ function wire(container, c) {
     s[input.dataset.sprint] = input.value;
     commit();
   }));
+  // New start or end dates redraw the timeline.
+  container.querySelectorAll('[data-sprint="start"], [data-sprint="end"]').forEach((input) => input.addEventListener('change', rerender));
   container.querySelectorAll('[data-task-done]').forEach((box) => box.addEventListener('change', () => {
     s.tasks.find((t) => t.id === box.dataset.taskDone).done = box.checked;
     commit();
@@ -407,14 +485,31 @@ function wire(container, c) {
     commit();
     rerender();
   }));
-  container.querySelector('#coo-task-add').addEventListener('keydown', (e) => {
-    const v = e.target.value.trim();
-    if (e.key !== 'Enter' || !v) return;
-    s.tasks.push({ id: uid('task'), text: v, done: false });
+  container.querySelector('#coo-task-add')?.addEventListener('click', () => {
+    // Shown in read-only mode too: clicking it turns on editing first, then adds the task.
+    if (isReadOnly()) {
+      document.querySelector('[data-toggle-edit]')?.click();
+      document.querySelector('#coo-task-add')?.click();
+      return;
+    }
+    const today = todayISO();
+    const due = s.start && s.end && today >= s.start && today <= s.end ? today : s.start || today;
+    const id = uid('task');
+    s.tasks.push({ id, text: '', done: false, due });
     commit();
     rerender();
-    container.querySelector('#coo-task-add').focus();
+    container.querySelector(`[data-task-text="${id}"]`)?.focus();
   });
+  container.querySelectorAll('[data-task-owner]').forEach((sel) => sel.addEventListener('change', () => {
+    s.tasks.find((t) => t.id === sel.dataset.taskOwner).ownerId = sel.value || null;
+    commit();
+    rerender();
+  }));
+  container.querySelectorAll('[data-task-due]').forEach((input) => input.addEventListener('change', () => {
+    s.tasks.find((t) => t.id === input.dataset.taskDue).due = input.value;
+    commit();
+    rerender();
+  }));
   container.querySelectorAll('[data-team-remove]').forEach((btn) => btn.addEventListener('click', () => {
     s.team = s.team.filter((n) => n !== btn.dataset.teamRemove);
     commit();

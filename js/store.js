@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -431,6 +431,22 @@ function load() {
       if (stored.coo && (stored.cooVersion || 0) < 3) {
         for (const m of stored.coo.inbox || []) if (!m.status) m.status = mailStatusFor(m.id);
         stored.cooVersion = 3;
+        changed = true;
+      }
+      // COO v4: sprint tasks get due dates.
+      if (stored.coo && (stored.cooVersion || 0) < 4) {
+        for (const sp of [stored.coo.currentSprint, ...(stored.coo.pastSprints || [])]) {
+          for (const t of sp?.tasks || []) if (t.due === undefined) t.due = SPRINT_TASK_DUE[t.id] || '';
+        }
+        stored.cooVersion = 4;
+        changed = true;
+      }
+      // COO v5: sprint tasks get an owner.
+      if (stored.coo && (stored.cooVersion || 0) < 5) {
+        for (const sp of [stored.coo.currentSprint, ...(stored.coo.pastSprints || [])]) {
+          for (const t of sp?.tasks || []) if (t.ownerId === undefined) t.ownerId = SPRINT_TASK_OWNER[t.id] || null;
+        }
+        stored.cooVersion = 5;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
