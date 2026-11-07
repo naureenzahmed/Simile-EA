@@ -9,6 +9,9 @@ export const TEAMS = [
   { id: 'consumer', name: 'Consumer', color: '#5fc4c4' },
   { id: 'ceo', name: 'CEO Office', color: '#e88fb4' },
   { id: 'revops', name: 'Revenue Operations', color: '#a3c45f' },
+  // Engineering and Product don't report to the COO, so they show in Team Management but not on the OKR page.
+  { id: 'engineering', name: 'Engineering', color: '#6c7ee0', okr: false },
+  { id: 'product', name: 'Product', color: '#e6cf5a', okr: false },
 ];
 
 // Old Team A/B/C ids, kept so saved data can be moved onto departments.
@@ -36,6 +39,19 @@ export const TEAM_MEMBERS = [
   ['Estela L. Franca', 'consumer', 'full'], ['Alexandre A.', 'consumer', 'open'],
   ['Sanjeev Musuvathy', 'ceo', 'full'],
   ['Noah Glazov', 'revops', 'over'], ['Amy Shorter', 'revops', 'open'],
+];
+
+// More of the team, added later. Saved data gets anyone here who is missing.
+export const MORE_TEAM_MEMBERS = [
+  ['Blake Pender', 'revops', 'full'], ['Sam Collura', 'revops', 'open'],
+  ['Mika Okamoto', 'evals', 'full'], ['Sanjay Kairam', 'evals', 'over'], ['Sam Hasani', 'evals', 'open'],
+  ['Maria Dulce Zamora', 'ceo', 'over'],
+  ['Tommy F.', 'hr', 'full'],
+  ['Amir Hakimjavadi', 'engineering', 'full'], ['Manav Rathod', 'engineering', 'open'], ['Lucas Haarmann', 'engineering', 'full'],
+  ['Carina Ramos', 'engineering', 'over'], ['Rohit Chouhan', 'engineering', 'open'], ['Tiffany Ding', 'engineering', 'full'],
+  ['Sahana Srinivasan', 'engineering', 'open'], ['Jason Xiong', 'engineering', 'full'], ['Jenning Chen', 'engineering', 'over'],
+  ['Sarah C.', 'engineering', 'full'], ['Tony Lee', 'engineering', 'open'], ['Chinmay Kulkarni', 'engineering', 'full'],
+  ['Isabelle L.', 'product', 'full'], ['Jasmine Stoy', 'product', 'open'], ['Sam Catania', 'product', 'over'], ['Keeyen Y.', 'product', 'full'],
 ];
 
 // Old placeholder names and the real people who replaced them, used to update saved data.
@@ -159,11 +175,34 @@ export const PERSON_FOCUS = {
   "Amy Shorter": [
     "Lead list enrichment",
     "Renewals contract tracker"
-  ]
+  ],
+  "Blake Pender": ["Enterprise prospect outreach", "Pfizer proposal follow-up"],
+  "Sam Collura": ["Quirk's LA lead follow-up", "Demo scheduling"],
+  "Mika Okamoto": ["Eval suite for new simulation features", "Weekly eval report review"],
+  "Sanjay Kairam": ["Simulation accuracy study", "Client eval for Deloitte", "Eval methodology doc review"],
+  "Sam Hasani": ["Data pipeline for client evals", "Survey data cleanup"],
+  "Maria Dulce Zamora": ["Founders' calendars", "December board meeting logistics", "Founder travel"],
+  "Tommy F.": ["Engineering candidate sourcing", "Interview scheduling"],
+  "Amir Hakimjavadi": ["Simulation engine performance"],
+  "Manav Rathod": ["Client data connectors"],
+  "Lucas Haarmann": ["Agent memory improvements"],
+  "Carina Ramos": ["Platform reliability fixes", "On-call rotation"],
+  "Rohit Chouhan": ["API rate limits"],
+  "Tiffany Ding": ["Simulation dashboard front end"],
+  "Sahana Srinivasan": ["Model fine-tuning experiments"],
+  "Jason Xiong": ["Deployment tooling"],
+  "Jenning Chen": ["Infrastructure cost review", "Security review for the Itaú rollout"],
+  "Sarah C.": ["Population modelling for consumer panels"],
+  "Tony Lee": ["Batch simulation jobs"],
+  "Chinmay Kulkarni": ["Human-AI interaction research"],
+  "Isabelle L.": ["Client feedback roundup", "Q1 product spec"],
+  "Jasmine Stoy": ["Onboarding flow redesign"],
+  "Sam Catania": ["Product roadmap review", "Pricing page update", "Customer interviews"],
+  "Keeyen Y.": ["Design system refresh", "Simulation report templates"]
 };
 
 export function teamMemberPeople() {
-  return TEAM_MEMBERS.map(([name, teamId, bandwidth]) => ({ id: personId(name), name, role: '', teamId, bandwidth, focus: [...(PERSON_FOCUS[name] || [])] }));
+  return [...TEAM_MEMBERS, ...MORE_TEAM_MEMBERS].map(([name, teamId, bandwidth]) => ({ id: personId(name), name, role: '', teamId, bandwidth, focus: [...(PERSON_FOCUS[name] || [])] }));
 }
 
 // The team: leadership (the Schedule Management names) plus the department members.
@@ -1649,7 +1688,7 @@ export function seedData() {
     homeVersion: 7,
     pipelineVersion: 1,
     milestonesVersion: 1,
-    peopleVersion: 3,
+    peopleVersion: 4,
     cooVersion: 7,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),

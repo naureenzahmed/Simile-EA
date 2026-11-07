@@ -9,7 +9,7 @@ export function renderOkrSection(container) {
       <div class="page-title" style="margin:0;">OKRs</div>
     </div>
     <div class="okr-columns">
-      ${data.teams.map((t) => renderColumn({ key: t.id, label: t.name }, data)).join('')}
+      ${data.teams.filter((t) => t.okr !== false).map((t) => renderColumn({ key: t.id, label: t.name }, data)).join('')}
     </div>
   `;
 

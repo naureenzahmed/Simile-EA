@@ -688,6 +688,15 @@ function load() {
         stored.peopleVersion = 3;
         changed = true;
       }
+      // People v4: Engineering and Product departments, and more of the team in every department.
+      if (stored.people && (stored.peopleVersion || 0) < 4) {
+        stored.teams = stored.teams || [];
+        for (const t of TEAMS) if (!stored.teams.some((x) => x.id === t.id)) stored.teams.push({ ...t });
+        const have = new Set(stored.people.map((p) => p.id));
+        for (const p of teamMemberPeople()) if (!have.has(p.id)) stored.people.push(p);
+        stored.peopleVersion = 4;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
