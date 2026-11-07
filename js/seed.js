@@ -1511,6 +1511,9 @@ export const SCHEDULE_NOTE = "This page shows the schedules of the leadership an
 
 export const COO_NOTE = "Since I’ll be working closely with our COO, Lainie Yallen, this page is fully dedicated to supporting her.\n\nCalendar\nThe calendar shows Lainie’s schedule by month, week and day, along with everything she needs to get done. Click any item for more details.\n\nEmail\nIncoming emails are sorted by keyword into folders: investors, time-sensitive, potential candidates, spam and other. These folders can be adjusted as needed. I’ll go through these emails, escalate what needs her attention and handle what I can on my own. You can also check the status of each email to see how it’s been addressed.\n\nInquiries\nThis section tracks inquiries and issues that come up for leadership. They’re sorted into categories so we can spot problems early:\n\n• Needs attention\n• Solved\n• Escalated\n• Other\n\nThe categories can be adjusted as needed.\n\nAll inquiries live in HubSpot, and this page pulls from it directly. Team members can submit inquiries through Slack, and they go straight into HubSpot, so everything stays in sync. As work progresses, you can drag items between categories to show what’s done and what’s still open. Click any item to see a detailed description of the issue and who it involves.\n\nSprints\nThe current sprint shows the tasks to complete, the goal for the end of the sprint and who is responsible for each task. Past sprints are collapsed, and you can click to see the same details. Any unfinished task from a past sprint automatically moves to the next week unless marked otherwise.\n\nAt the bottom of the section, a visual overview shows sprint progress at a glance.\n\nOverall\nThis page keeps me focused on the exact goals of the people I work with, so I can track them and help us hit them.";
 
+export const BOARD_NOTE = "This page supports fundraising and managing our current board members. It keeps all of our fundraising and board materials in one easy-to-reach place, organized into:\n\n• Board decks\n• Investor updates\n• Pitch decks and recent drafts\n• Major milestones\n• Data room links\n• Current investors\n• Prospective investors\n\nA note on data room access: Only specific people have clearance to access the data room. I don’t have access myself, but the initials of everyone who does are listed here. If you need to check who can view it, this is the place to look.";
+export const EVENTS_NOTE = "This page holds all the events and offsites I’ve planned. For each one, you’ll find the details, a description, the tasks still to be done and its progress. Events are grouped by type.\n\nConversations with customer leads are tracked in HubSpot, and each event links directly to the related records in HubSpot.";
+
 // Home: About Naureen.
 export const ABOUT_BACKGROUND = "I spent 3 years in venture capital, investing from pre-seed to Series A across North America. My work focused on deal flow and due diligence, and I supported LP reporting and the administrative side of fundraising. In my free time, I hosted a number of large-scale events and smaller event series, including North Star, founder dinners, conference kickoffs and multi-day trips for founders.\n\nAfter graduation, I joined Planned.AI as Growth. My job description was “find problems in the company and solve them, then move to the next thing.” This included redoing the onboarding flow to allow self-serve sign-up, B2C sales, customer success, paid ads and technical recruiting, supporting the company as it scaled from 50 to 90 people. I’m also helping build our brand presence through events and partnerships with startups and community organizations.";
 
@@ -1603,7 +1606,7 @@ export function seedData() {
     consistencyVersion: 1,
     clientVersion: 1,
     docsVersion: 3,
-    notesVersion: 6,
+    notesVersion: 7,
     eventsVersion: 2,
     homeVersion: 4,
     pipelineVersion: 1,
@@ -1622,6 +1625,8 @@ export function seedData() {
       roadmap: ROADMAP_NOTE,
       pipeline: PIPELINE_NOTE,
       coo: COO_NOTE,
+      boardInvestor: BOARD_NOTE,
+      events: EVENTS_NOTE,
     },
     tasks: seedTasks(),
   };
