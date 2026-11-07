@@ -1192,6 +1192,7 @@ export const BOARD_SECTIONS = [
       { key: 'why', label: 'Why They Fit Simile', type: 'multiline' },
       { key: 'relationship', label: 'Relationship', width: 'sm' },
       { key: 'source', label: 'Source', type: 'url' },
+      { key: 'poc', label: 'POC' },
     ],
   },
 ];
@@ -1219,10 +1220,14 @@ export function isCurrentInvestor(firm, current = CURRENT_INVESTORS.map(([f]) =>
   return current.some((f) => firmKey(f) === firmKey(firm));
 }
 
+// Who at Simile owns the relationship. Only a couple are filled in so far.
+export const POTENTIAL_POCS = ['Lainie', 'Joon'];
+
 export function potentialInvestorRows() {
   return POTENTIAL_INVESTORS
     .map((r, i) => ({ id: `potential-investors-${i + 1}`, ...r }))
-    .filter((r) => !isCurrentInvestor(r.firm));
+    .filter((r) => !isCurrentInvestor(r.firm))
+    .map((r, i) => ({ ...r, poc: POTENTIAL_POCS[i] || '' }));
 }
 
 // Security clearance levels for data room documents, most open first.

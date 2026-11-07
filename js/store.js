@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
+import { seedData, POTENTIAL_POCS, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -503,6 +503,12 @@ function load() {
         stored.boardInvestor['data-room'] = fresh.map((row, i) => ({ ...row, link: old[i]?.link || '' }))
           .concat(old.slice(fresh.length).map((r) => ({ id: r.id, title: r.document || r.title || '', link: r.link || '', clearance: 'lead', people: '' })));
         stored.boardVersion = 5;
+        changed = true;
+      }
+      // Board v6: a POC column on Potential Investors, with a couple of rows filled in.
+      if (stored.boardInvestor && (stored.boardVersion || 0) < 6) {
+        (stored.boardInvestor['potential-investors'] || []).forEach((r, i) => { if (!r.poc && POTENTIAL_POCS[i]) r.poc = POTENTIAL_POCS[i]; });
+        stored.boardVersion = 6;
         changed = true;
       }
       // Events v2: CEO EA becomes COO EA, the COO EA owns about three in four checklist items, and placeholder
