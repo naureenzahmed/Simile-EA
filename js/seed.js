@@ -1157,13 +1157,12 @@ export const BOARD_SECTIONS = [
   },
   {
     id: 'data-room', title: 'Data Room Links',
-    note: 'Diligence documents with their security clearance and who can open them. Hover over initials to see names.',
+    note: 'Diligence documents and who is cleared to open them. Hover over initials to see names.',
     addLabel: 'Add link',
     fields: [
       { key: 'title', label: 'Title' },
       { key: 'link', label: 'Link', type: 'url' },
-      { key: 'clearance', label: 'Security Clearance', type: 'clearance' },
-      { key: 'people', label: 'People', type: 'people' },
+      { key: 'people', label: 'Security Clearance', type: 'people' },
     ],
   },
   {
