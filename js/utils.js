@@ -30,12 +30,15 @@ export function relativeDay(iso) {
   return `${Math.abs(diff)}d ago`;
 }
 
-// "Priya Shah" → "PS". One-word names use the first and third letters ("Madison" → "MD", "Matan" → "MT")
-// so people who share a first letter still look different.
+// "Rory Pan" → "RP". Longer names use the first and last name ("Joon Sung Park" → "JP"), skipping
+// suffixes like "III". One-word names use the first and third letters ("Matan" → "MT").
+const SUFFIXES = new Set(['jr', 'sr', 'ii', 'iii', 'iv']);
+
 export function initials(name) {
   const words = String(name || '').trim().split(/\s+/).filter(Boolean);
   if (words.length === 1) return (words[0][0] + (words[0][2] || words[0][1] || '')).toUpperCase();
-  return words.map((w) => w[0]).join('').toUpperCase().slice(0, 2);
+  const named = words.filter((w, i) => i === 0 || !SUFFIXES.has(w.toLowerCase().replace(/\./g, '')));
+  return (named[0][0] + named[named.length - 1][0]).toUpperCase();
 }
 
 const PALETTE = ['#6c8cff', '#ef6f6c', '#57c785', '#f2994a', '#c77dff', '#4dd0e1', '#f4c95d', '#ff8fab'];

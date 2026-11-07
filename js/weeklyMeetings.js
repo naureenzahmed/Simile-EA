@@ -68,7 +68,7 @@ export function openWeeklyMeeting(week, onChange) {
           <input type="time" id="wk-time" class="sched-time" value="${escapeHtml(m.time)}" />
         </div>
         <div class="ts-field"><div class="ts-field-label">Attendees</div>
-          <input type="text" id="wk-attendees" value="${escapeHtml(m.attendees)}" placeholder="e.g. Lainie, Olivia, Madison" />
+          <input type="text" id="wk-attendees" value="${escapeHtml(m.attendees)}" placeholder="e.g. Lainie Yallen, Julia Lauer, Danny Wymer" />
         </div>
         <div class="ts-field"><div class="ts-field-label">Agenda</div>
           <textarea id="wk-agenda" class="wk-agenda">${escapeHtml(m.agenda)}</textarea>

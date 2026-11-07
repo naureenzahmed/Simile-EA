@@ -22,122 +22,141 @@ export const BANDWIDTH = [
 ];
 
 // Leadership: the Schedule Management names, with no department (shown as Leadership).
-const LEADER_BANDWIDTH = { Lainie: 'over', Eileen: 'full', Julia: 'open', Olivia: 'full', Madison: 'open', Mihika: 'over', Matan: 'full', Joon: 'open', Michael: 'full' };
+const LEADER_BANDWIDTH = {
+  'Lainie Yallen': 'over', 'Eileen Smith': 'full', 'Julia Lauer': 'open', 'Danny Wymer': 'full', 'Madison Fox': 'open',
+  'Mihika Kapoor': 'over', 'Matan Amir': 'full', 'Joon Sung Park': 'open', 'Michael Bernstein': 'full',
+};
 
-// Made-up team members for each department, with their bandwidth.
+// Team members in each department, with their bandwidth.
 export const TEAM_MEMBERS = [
-  ['Priya Shah', 'deployments', 'over'], ['Marcus Lee', 'deployments', 'full'], ['Hannah Brooks', 'deployments', 'open'],
-  ['Sofia Alvarez', 'marketing', 'full'], ['Ben Carter', 'marketing', 'open'],
-  ['Grace Kim', 'hr', 'open'], ['Daniel Okafor', 'hr', 'full'],
-  ['Leo Fischer', 'evals', 'over'], ['Ava Thompson', 'evals', 'full'], ['Ryan Patel', 'evals', 'open'],
-  ['Maya Nguyen', 'consumer', 'full'], ['Ethan Walsh', 'consumer', 'open'],
-  ['Zoe Martin', 'ceo', 'full'], ['Isaac Grant', 'ceo', 'open'],
-  ['Noah Rivera', 'revops', 'over'], ['Chloe Dubois', 'revops', 'open'],
+  ['Rory Pan', 'deployments', 'over'], ['Ryan Boyd', 'deployments', 'full'], ['Gurbani Singh', 'deployments', 'open'],
+  ['Sofia Russo', 'marketing', 'full'], ['Olivia Wang', 'marketing', 'full'], ['Shannon Hittson', 'marketing', 'open'],
+  ['Ally Waldman', 'hr', 'open'], ['Christian Guanzing', 'hr', 'full'],
+  ['Kritarth Anand', 'evals', 'over'], ['Skylar Wang', 'evals', 'full'], ['Nico Cavalluzzi', 'evals', 'open'],
+  ['Estela L. Franca', 'consumer', 'full'], ['Alexandre A.', 'consumer', 'open'],
+  ['Sanjeev Musuvathy', 'ceo', 'full'],
+  ['Noah Glazov', 'revops', 'over'], ['Amy Shorter', 'revops', 'open'],
 ];
+
+// Old placeholder names and the real people who replaced them, used to update saved data.
+// Isaac Grant's work went to Sanjeev Musuvathy, and Olivia moved from Leadership to Marketing.
+export const NAME_CHANGES = {
+  Lainie: 'Lainie Yallen', Eileen: 'Eileen Smith', Julia: 'Julia Lauer', Olivia: 'Olivia Wang', Madison: 'Madison Fox',
+  Mihika: 'Mihika Kapoor', Matan: 'Matan Amir', Joon: 'Joon Sung Park', Michael: 'Michael Bernstein',
+  'Priya Shah': 'Rory Pan', 'Marcus Lee': 'Ryan Boyd', 'Hannah Brooks': 'Gurbani Singh',
+  'Sofia Alvarez': 'Sofia Russo', 'Ben Carter': 'Shannon Hittson',
+  'Grace Kim': 'Ally Waldman', 'Daniel Okafor': 'Christian Guanzing',
+  'Leo Fischer': 'Kritarth Anand', 'Ava Thompson': 'Skylar Wang', 'Ryan Patel': 'Nico Cavalluzzi',
+  'Maya Nguyen': 'Estela L. Franca', 'Ethan Walsh': 'Alexandre A.',
+  'Zoe Martin': 'Sanjeev Musuvathy', 'Isaac Grant': 'Sanjeev Musuvathy',
+  'Noah Rivera': 'Noah Glazov', 'Chloe Dubois': 'Amy Shorter',
+};
 
 // What each person is working on right now, shown when you click them in Team Management.
 export const PERSON_FOCUS = {
-  "Lainie": [
+  "Lainie Yallen": [
     "Q4 board meeting prep",
     "Series B investor follow-ups",
     "Hiring a Chief of Staff"
   ],
-  "Eileen": [
-    "NYC executive dinner guest list",
+  "Eileen Smith": [
+    "Consumer insights roadmap",
     "Customer check-ins"
   ],
-  "Julia": [
+  "Julia Lauer": [
     "Renewal calls",
     "Quirk's LA conference plan"
   ],
-  "Olivia": [
+  "Danny Wymer": [
     "Customer QBRs",
-    "December offsite venue"
+    "Q4 pipeline review"
   ],
-  "Madison": [
-    "Expense approvals",
-    "Prospect intro calls"
+  "Madison Fox": [
+    "Deployment capacity planning",
+    "Client kickoffs"
   ],
-  "Mihika": [
-    "Laptops for new hires",
+  "Mihika Kapoor": [
+    "Product roadmap review",
     "Prospect demos"
   ],
-  "Matan": [
-    "Customer kickoffs",
-    "Mastercard lead follow-up"
+  "Matan Amir": [
+    "Platform reliability",
+    "Engineering hiring plan"
   ],
-  "Joon": [
-    "Product roadmap review",
+  "Joon Sung Park": [
+    "Board meeting prep",
     "Customer QBR prep"
   ],
-  "Michael": [
-    "Prospect demos",
-    "Marriott intro"
+  "Michael Bernstein": [
+    "Simulation accuracy research",
+    "Prospect demos"
   ],
-  "Priya Shah": [
+  "Rory Pan": [
     "Lead the CVS onsite plan",
     "Fix data access for the Wealthfront pilot",
     "Deployment checklist v2"
   ],
-  "Marcus Lee": [
+  "Ryan Boyd": [
     "Set up the Suntory deployment",
     "Weekly deployment status report"
   ],
-  "Hannah Brooks": [
+  "Gurbani Singh": [
     "Shadow the Itaú rollout",
     "Draft the client QBR deck"
   ],
-  "Sofia Alvarez": [
+  "Sofia Russo": [
     "Quirk's LA booth materials",
     "Q4 case study with Gallup"
   ],
-  "Ben Carter": [
-    "Paid ads refresh",
+  "Olivia Wang": [
+    "December offsite venue",
     "November newsletter"
   ],
-  "Grace Kim": [
+  "Shannon Hittson": [
+    "Paid ads refresh",
+    "Event follow-up emails"
+  ],
+  "Ally Waldman": [
     "Chief of Staff interview loop",
     "Benefits enrollment reminders"
   ],
-  "Daniel Okafor": [
+  "Christian Guanzing": [
     "Onboarding for three new hires",
     "Update Ashby pipeline stages"
   ],
-  "Leo Fischer": [
+  "Kritarth Anand": [
     "Weekly eval report",
     "Benchmark refresh for consumer models",
     "Client eval for Deloitte"
   ],
-  "Ava Thompson": [
+  "Skylar Wang": [
     "Eval dashboard cleanup",
     "Review simulation accuracy"
   ],
-  "Ryan Patel": [
+  "Nico Cavalluzzi": [
     "Eval methodology doc",
     "Spot-check client results"
   ],
-  "Maya Nguyen": [
+  "Estela L. Franca": [
     "Suntory research findings",
     "Survey design for the Nike lead"
   ],
-  "Ethan Walsh": [
+  "Alexandre A.": [
     "Consumer panel recruiting",
     "Insights summary for CVS"
   ],
-  "Zoe Martin": [
+  "Sanjeev Musuvathy": [
     "Q4 board deck draft",
-    "CEO travel for December"
-  ],
-  "Isaac Grant": [
     "November investor update",
+    "CEO travel for December",
     "NYC customer dinner prep"
   ],
-  "Noah Rivera": [
+  "Noah Glazov": [
     "Pipeline review prep",
     "HubSpot cleanup",
     "Forecast model update"
   ],
-  "Chloe Dubois": [
+  "Amy Shorter": [
     "Lead list enrichment",
     "Renewals contract tracker"
   ]
@@ -677,7 +696,7 @@ function seedEvents() {
   });
 }
 
-export const LEADERS = ['Lainie', 'Eileen', 'Julia', 'Olivia', 'Madison', 'Mihika', 'Matan', 'Joon', 'Michael'];
+export const LEADERS = ['Lainie Yallen', 'Eileen Smith', 'Julia Lauer', 'Danny Wymer', 'Madison Fox', 'Mihika Kapoor', 'Matan Amir', 'Joon Sung Park', 'Michael Bernstein'];
 export const SCHEDULE_TYPES = [
   { key: 'customer', label: 'Customer meeting', color: '#ff7a66' },
   { key: 'onsite', label: 'Onsite', color: '#7fb8e6' },
@@ -706,42 +725,42 @@ export function scheduleCityFor(index) {
 
 export function seedLeadershipSchedule() {
   return [
-    ['Lainie', 'customer', 'Customer QBR', '2026-11-10', '2026-11-10', '10:00'],
-    ['Eileen', 'onsite', 'Client onsite', '2026-11-17', '2026-11-18', ''],
-    ['Julia', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
-    ['Olivia', 'office', 'In office', '2026-11-09', '2026-11-09', ''],
-    ['Madison', 'customer', 'Prospect intro call', '2026-11-11', '2026-11-11', '14:00'],
-    ['Mihika', 'office', 'In office', '2026-11-16', '2026-11-16', ''],
-    ['Matan', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
-    ['Lainie', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
-    ['Lainie', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
-    ['Lainie', 'office', 'In office', '2026-11-16', '2026-11-16', ''],
-    ['Eileen', 'customer', 'Customer check-in', '2026-11-05', '2026-11-05', '11:00'],
-    ['Eileen', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
-    ['Eileen', 'office', 'In office', '2026-11-10', '2026-11-10', ''],
-    ['Julia', 'customer', 'Renewal call', '2026-11-17', '2026-11-17', '13:00'],
-    ['Julia', 'onsite', 'Client onsite', '2026-12-01', '2026-12-02', ''],
-    ['Julia', 'office', 'In office', '2026-11-23', '2026-11-23', ''],
-    ['Olivia', 'customer', 'Customer QBR', '2026-11-12', '2026-11-12', '15:00'],
-    ['Olivia', 'onsite', 'Client onsite', '2026-11-24', '2026-11-25', ''],
-    ['Olivia', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
-    ['Madison', 'onsite', 'Client onsite', '2026-11-18', '2026-11-19', ''],
-    ['Madison', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
-    ['Madison', 'office', 'In office', '2026-11-03', '2026-11-03', ''],
-    ['Mihika', 'customer', 'Prospect demo', '2026-11-09', '2026-11-09', '09:30'],
-    ['Mihika', 'onsite', 'Client onsite', '2026-11-30', '2026-12-01', ''],
-    ['Mihika', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
-    ['Matan', 'customer', 'Customer kickoff', '2026-11-23', '2026-11-23', '16:00'],
-    ['Matan', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
-    ['Matan', 'office', 'In office', '2026-11-11', '2026-11-11', ''],
-    ['Joon', 'customer', 'Customer QBR', '2026-11-18', '2026-11-18', '10:30'],
-    ['Joon', 'onsite', 'Client onsite', '2026-12-07', '2026-12-08', ''],
-    ['Joon', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
-    ['Joon', 'office', 'In office', '2026-11-24', '2026-11-24', ''],
-    ['Michael', 'customer', 'Prospect demo', '2026-11-24', '2026-11-24', '11:00'],
-    ['Michael', 'onsite', 'Client onsite', '2026-11-10', '2026-11-11', ''],
-    ['Michael', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
-    ['Michael', 'office', 'In office', '2026-11-04', '2026-11-04', ''],
+    ['Lainie Yallen', 'customer', 'Customer QBR', '2026-11-10', '2026-11-10', '10:00'],
+    ['Eileen Smith', 'onsite', 'Client onsite', '2026-11-17', '2026-11-18', ''],
+    ['Julia Lauer', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
+    ['Danny Wymer', 'office', 'In office', '2026-11-09', '2026-11-09', ''],
+    ['Madison Fox', 'customer', 'Client kickoff', '2026-11-11', '2026-11-11', '14:00'],
+    ['Mihika Kapoor', 'office', 'In office', '2026-11-16', '2026-11-16', ''],
+    ['Matan Amir', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
+    ['Lainie Yallen', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
+    ['Lainie Yallen', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
+    ['Lainie Yallen', 'office', 'In office', '2026-11-16', '2026-11-16', ''],
+    ['Eileen Smith', 'customer', 'Customer check-in', '2026-11-05', '2026-11-05', '11:00'],
+    ['Eileen Smith', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
+    ['Eileen Smith', 'office', 'In office', '2026-11-10', '2026-11-10', ''],
+    ['Julia Lauer', 'customer', 'Renewal call', '2026-11-17', '2026-11-17', '13:00'],
+    ['Julia Lauer', 'onsite', 'Client onsite', '2026-12-01', '2026-12-02', ''],
+    ['Julia Lauer', 'office', 'In office', '2026-11-23', '2026-11-23', ''],
+    ['Danny Wymer', 'customer', 'Customer QBR', '2026-11-12', '2026-11-12', '15:00'],
+    ['Danny Wymer', 'onsite', 'Client onsite', '2026-11-24', '2026-11-25', ''],
+    ['Danny Wymer', 'conference', 'Industry conference', '2026-12-02', '2026-12-03', ''],
+    ['Madison Fox', 'onsite', 'Client onsite', '2026-11-18', '2026-11-19', ''],
+    ['Madison Fox', 'conference', 'Industry conference', '2026-11-12', '2026-11-13', ''],
+    ['Madison Fox', 'office', 'In office', '2026-11-03', '2026-11-03', ''],
+    ['Mihika Kapoor', 'customer', 'Prospect demo', '2026-11-09', '2026-11-09', '09:30'],
+    ['Mihika Kapoor', 'onsite', 'Client onsite', '2026-11-30', '2026-12-01', ''],
+    ['Mihika Kapoor', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
+    ['Matan Amir', 'customer', 'Customer kickoff', '2026-11-23', '2026-11-23', '16:00'],
+    ['Matan Amir', 'onsite', 'Client onsite', '2026-11-04', '2026-11-05', ''],
+    ['Matan Amir', 'office', 'In office', '2026-11-11', '2026-11-11', ''],
+    ['Joon Sung Park', 'customer', 'Customer QBR', '2026-11-18', '2026-11-18', '10:30'],
+    ['Joon Sung Park', 'onsite', 'Client onsite', '2026-12-07', '2026-12-08', ''],
+    ['Joon Sung Park', 'conference', 'Industry conference', '2026-11-19', '2026-11-20', ''],
+    ['Joon Sung Park', 'office', 'In office', '2026-11-24', '2026-11-24', ''],
+    ['Michael Bernstein', 'customer', 'Prospect demo', '2026-11-24', '2026-11-24', '11:00'],
+    ['Michael Bernstein', 'onsite', 'Client onsite', '2026-11-10', '2026-11-11', ''],
+    ['Michael Bernstein', 'conference', 'Industry conference', '2026-12-09', '2026-12-10', ''],
+    ['Michael Bernstein', 'office', 'In office', '2026-11-04', '2026-11-04', ''],
   ].map(([person, type, title, start, end, time], i) => ({ id: `sched-${i + 1}`, person, type, title, start, end, time, city: SCHEDULE_CITIES[i], notes: '' }));
 }
 
@@ -1233,7 +1252,7 @@ export function isCurrentInvestor(firm, current = CURRENT_INVESTORS.map(([f]) =>
 }
 
 // Who at Simile owns the relationship. Only a couple are filled in so far.
-export const POTENTIAL_POCS = ['Lainie', 'Joon'];
+export const POTENTIAL_POCS = ['Lainie Yallen', 'Joon Sung Park'];
 
 export function potentialInvestorRows() {
   return POTENTIAL_INVESTORS
@@ -1251,15 +1270,15 @@ export const CLEARANCE = [
 
 // [title, clearance, people with access]
 const DATA_ROOM = [
-  ['Overview deck', 'all', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
-  ['Financial model', 'lead', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
-  ['Cap table', 'lead', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu']],
-  ['Revenue report', 'all', ['Lainie', 'Noah Rivera', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
-  ['Customer contracts', 'lead', ['Lainie', 'Priya Shah', 'Shardul Shah', 'Mark Xu']],
-  ['Product roadmap', 'all', ['Joon', 'Lainie', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
-  ['Board minutes', 'board', ['Lainie', 'Joon', 'Shardul Shah', 'Mark Xu']],
-  ['Legal docs', 'lead', ['Lainie', 'Zoe Martin', 'Shardul Shah', 'Mark Xu']],
-  ['Hiring plan', 'all', ['Lainie', 'Grace Kim', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
+  ['Overview deck', 'all', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Financial model', 'lead', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
+  ['Cap table', 'lead', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu']],
+  ['Revenue report', 'all', ['Lainie Yallen', 'Noah Glazov', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Customer contracts', 'lead', ['Lainie Yallen', 'Rory Pan', 'Shardul Shah', 'Mark Xu']],
+  ['Product roadmap', 'all', ['Joon Sung Park', 'Lainie Yallen', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
+  ['Board minutes', 'board', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu']],
+  ['Legal docs', 'lead', ['Lainie Yallen', 'Sanjeev Musuvathy', 'Shardul Shah', 'Mark Xu']],
+  ['Hiring plan', 'all', ['Lainie Yallen', 'Ally Waldman', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
 ];
 
 export function dataRoomRows() {
@@ -1443,9 +1462,9 @@ export const SPRINT_TASK_DUE = {
 
 // Owners for the example sprint tasks (person ids).
 export const SPRINT_TASK_OWNER = {
-  'sprint-12-t1': 'person-lainie', 'sprint-12-t2': 'person-olivia', 'sprint-12-t3': 'person-isaac-grant', 'sprint-12-t4': 'person-priya-shah',
-  'sprint-11-t1': 'person-lainie', 'sprint-11-t2': 'person-zoe-martin', 'sprint-11-t3': 'person-grace-kim',
-  'sprint-10-t1': 'person-eileen', 'sprint-10-t2': 'person-isaac-grant',
+  'sprint-12-t1': 'person-lainie-yallen', 'sprint-12-t2': 'person-olivia-wang', 'sprint-12-t3': 'person-sanjeev-musuvathy', 'sprint-12-t4': 'person-rory-pan',
+  'sprint-11-t1': 'person-lainie-yallen', 'sprint-11-t2': 'person-sanjeev-musuvathy', 'sprint-11-t3': 'person-ally-waldman',
+  'sprint-10-t1': 'person-eileen-smith', 'sprint-10-t2': 'person-sanjeev-musuvathy',
 };
 
 // A few calendar events for the week of Nov 2, so the week and day views have something to show.
@@ -1484,12 +1503,12 @@ export function seedCoo() {
     ...OTHER_MAIL,
   ];
   const inquiries = [
-    ['needed', 'Offsite venue may be overbooked', 'Operations', 'The hotel has flagged a possible double booking for the December offsite.', 'Olivia', '2026-11-14'],
-    ['needed', 'Expense approvals are backed up', 'Finance', 'About 30 expense reports are waiting on approval.', 'Madison', '2026-11-10'],
-    ['needed', 'Laptops for new hires', 'IT', 'Three new hires start on the 17th and need laptops set up.', 'Mihika', '2026-11-12'],
-    ['solved', 'Badge access for the NYC office', 'Facilities', 'New badges were issued to the whole team.', 'Julia', '2026-11-03'],
-    ['escalated', 'Contract terms with Itaú', 'Legal', 'Itaú asked for changes to the data terms that need sign-off.', 'Lainie', '2026-11-15'],
-    ['other', 'Team photo day', 'People', 'Pick a date for new headshots for the website.', 'Eileen', '2026-11-21'],
+    ['needed', 'Offsite venue may be overbooked', 'Operations', 'The hotel has flagged a possible double booking for the December offsite.', 'Olivia Wang', '2026-11-14'],
+    ['needed', 'Expense approvals are backed up', 'Finance', 'About 30 expense reports are waiting on approval.', 'Lainie Yallen', '2026-11-10'],
+    ['needed', 'Laptops for new hires', 'IT', 'Three new hires start on the 17th and need laptops set up.', 'Matt Smith', '2026-11-12'],
+    ['solved', 'Badge access for the NYC office', 'Facilities', 'New badges were issued to the whole team.', 'Sanjeev Musuvathy', '2026-11-03'],
+    ['escalated', 'Contract terms with Itaú', 'Legal', 'Itaú asked for changes to the data terms that need sign-off.', 'Lainie Yallen', '2026-11-15'],
+    ['other', 'Team photo day', 'People', 'Pick a date for new headshots for the website.', 'Ally Waldman', '2026-11-21'],
   ];
   const sprint = (id, name, start, end, tasks, goal, metrics, notes, team) => ({
     id, name, start, end,
@@ -1504,18 +1523,18 @@ export function seedCoo() {
       [['Finalize the Q4 board deck', false], ['Book the venue for the December offsite', true], ['Send the October investor update', true], ['Schedule the CVS onsite', false]],
       'Walk into the Q4 board meeting with the deck, numbers and offsite plan locked.',
       'Board deck approved by Lainie. Offsite venue signed. Investor update sent by the 18th.',
-      '', ['Lainie', 'Olivia', 'Madison']),
+      '', ['Lainie Yallen', 'Olivia Wang', 'Madison Fox']),
     pastSprints: [
       sprint('sprint-11', 'Sprint 11', '2026-10-19', '2026-10-30',
         [['Close Series B paperwork', true], ['Set up board deck template', true], ['Plan Q4 hiring', false]],
         'Wrap up the Series B and set up Q4 planning.',
         'All closing documents signed. Q4 hiring plan drafted.',
-        'Hiring plan moved to Sprint 12.', ['Lainie', 'Julia']),
+        'Hiring plan moved to Sprint 12.', ['Lainie Yallen', 'Julia Lauer']),
       sprint('sprint-10', 'Sprint 10', '2026-10-05', '2026-10-16',
         [['Run the NYC customer dinner', true], ['Update investor list', true]],
         'Strengthen customer and investor relationships ahead of the raise.',
         'Dinner held with 12 executives. Investor list updated.',
-        '', ['Eileen', 'Matan']),
+        '', ['Eileen Smith', 'Danny Wymer']),
     ],
   };
 }
@@ -1575,16 +1594,16 @@ export function seedPipeline() {
   const rows = (prefix, list) => list.map(([company, poc, buyer, status, updated, source], i) => ({ id: `${prefix}-${i + 1}`, company, poc, buyer, status, updated, materials: '', source }));
   return {
     'target-accounts': rows('ta', [
-      ['Unilever', 'Julia', 'VP of Consumer Insights', 'Meeting booked', '2026-11-04', 'Outbound'],
-      ['Delta Air Lines', 'Olivia', 'Head of Customer Research', 'Demo', '2026-11-02', 'Event'],
-      ['Pfizer', 'Madison', 'Director of Market Research', 'Proposal sent', '2026-11-05', 'Referral'],
-      ['Verizon', 'Mihika', 'VP of Customer Experience', 'Demo', '2026-10-30', 'Outbound'],
+      ['Unilever', 'Danny Wymer', 'VP of Consumer Insights', 'Meeting booked', '2026-11-04', 'Outbound'],
+      ['Delta Air Lines', 'Chris Jensen', 'Head of Customer Research', 'Demo', '2026-11-02', 'Event'],
+      ['Pfizer', 'Danny Brown', 'Director of Market Research', 'Proposal sent', '2026-11-05', 'Referral'],
+      ['Verizon', "Sam O'Meara", 'VP of Customer Experience', 'Demo', '2026-10-30', 'Outbound'],
     ]),
     'lead-lists': rows('ll', [
-      ['Nike', 'Eileen', 'Senior Manager, Consumer Insights', 'New', '2026-11-05', 'Inbound'],
-      ['Mastercard', 'Matan', 'Head of Research', 'Contacted', '2026-11-03', 'Event'],
-      ['Spotify', 'Joon', 'Director of User Research', 'Qualified', '2026-11-04', 'Inbound'],
-      ['Marriott', 'Michael', 'VP of Guest Insights', 'New', '2026-11-01', 'Investor intro'],
+      ['Nike', 'Noah Glazov', 'Senior Manager, Consumer Insights', 'New', '2026-11-05', 'Inbound'],
+      ['Mastercard', 'Lori Ferro', 'Head of Research', 'Contacted', '2026-11-03', 'Event'],
+      ['Spotify', 'Conor Leary', 'Director of User Research', 'Qualified', '2026-11-04', 'Inbound'],
+      ['Marriott', 'Giorgio Loiacono', 'VP of Guest Insights', 'New', '2026-11-01', 'Investor intro'],
     ]),
   };
 }
@@ -1628,7 +1647,7 @@ export function seedData() {
     homeVersion: 7,
     pipelineVersion: 1,
     milestonesVersion: 1,
-    peopleVersion: 2,
+    peopleVersion: 3,
     cooVersion: 7,
     scheduleLeaders: [...LEADERS],
     scheduleTypes: SCHEDULE_TYPES.map((t) => ({ ...t })),

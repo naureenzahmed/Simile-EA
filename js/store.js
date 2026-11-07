@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, POTENTIAL_POCS, INVESTOR_PARTNERS, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
+import { seedData, NAME_CHANGES, POTENTIAL_POCS, INVESTOR_PARTNERS, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -149,7 +149,7 @@ function load() {
       }
       // Schedule v3: add Joon and Michael, each with one entry of every type.
       if (stored.leadershipSchedule && stored.scheduleVersion < 3) {
-        const added = ['Joon', 'Michael'];
+        const added = ['Joon Sung Park', 'Michael Bernstein'];
         if (stored.scheduleLeaders) {
           for (const name of added) if (!stored.scheduleLeaders.includes(name)) stored.scheduleLeaders.push(name);
         }
@@ -638,6 +638,42 @@ function load() {
         stored.consistencyVersion = 1;
         changed = true;
       }
+      // People v3: real Simile names replace the placeholder and first-only names everywhere. Olivia Wang moves
+      // to Marketing and Danny Wymer takes her place in Leadership. A few owners change to someone whose role fits.
+      if (stored.people && (stored.peopleVersion || 0) < 3) {
+        for (const e of stored.leadershipSchedule || []) {
+          if (e.person === 'Olivia') e.person = 'Danny Wymer';
+          if (e.person === 'Madison' && e.title === 'Prospect intro call') e.title = 'Client kickoff';
+        }
+        if (stored.scheduleLeaders) stored.scheduleLeaders = stored.scheduleLeaders.map((n) => (n === 'Olivia' ? 'Danny Wymer' : n));
+        const ownerFixes = {
+          'coo-inq-2': ['Madison', 'Lainie Yallen'], 'coo-inq-3': ['Mihika', 'Matt Smith'],
+          'coo-inq-4': ['Julia', 'Sanjeev Musuvathy'], 'coo-inq-6': ['Eileen', 'Ally Waldman'],
+        };
+        for (const q of stored.coo?.inquiries || []) {
+          const f = ownerFixes[q.id];
+          if (f && q.owner === f[0]) q.owner = f[1];
+        }
+        const pocFixes = {
+          'ta-1': ['Julia', 'Danny Wymer'], 'ta-2': ['Olivia', 'Chris Jensen'], 'ta-3': ['Madison', 'Danny Brown'], 'ta-4': ['Mihika', "Sam O'Meara"],
+          'll-1': ['Eileen', 'Noah Glazov'], 'll-2': ['Matan', 'Lori Ferro'], 'll-3': ['Joon', 'Conor Leary'], 'll-4': ['Michael', 'Giorgio Loiacono'],
+        };
+        for (const list of Object.values(stored.pipeline || {})) {
+          for (const r of Array.isArray(list) ? list : []) {
+            const f = pocFixes[r.id];
+            if (f && r.poc === f[0]) r.poc = f[1];
+          }
+        }
+        const s10 = (stored.coo?.pastSprints || []).find((x) => x.id === 'sprint-10');
+        if (s10 && Array.isArray(s10.team)) s10.team = s10.team.map((n) => (n === 'Matan' ? 'Danny Wymer' : n));
+        renameDeep(stored, NAME_CHANGES);
+        // Rebuild the team list, keeping anyone added by hand.
+        const seeded = seedPeople();
+        const ids = new Set(seeded.map((p) => p.id));
+        stored.people = [...seeded, ...stored.people.filter((p) => !ids.has(p.id) && !(p.name in NAME_CHANGES))];
+        stored.peopleVersion = 3;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
@@ -688,6 +724,30 @@ const COPY_FIXES_2 = {
   "as well as conversations with people on the team. I want to show how I’m thinking about addressing the role": "as well as what I’ve learned from conversations with people on the team. I want to show how I’m approaching the role",
   "Issues Needed to Be Addressed": "Issues That Need to Be Addressed"
 };
+
+// Swaps whole names, never parts of sentences: a value that is exactly an old name, an old name in a
+// comma-separated list, or the matching person id ("person-priya-shah").
+function renameDeep(value, names) {
+  const ids = Object.fromEntries(Object.entries(names).map(([from, to]) => [personId(from), personId(to)]));
+  const one = (v) => names[v] || ids[v] || v;
+  const walk = (v) => {
+    if (typeof v === 'string') {
+      if (names[v] || ids[v]) return one(v);
+      if (!v.includes(',')) return v;
+      const parts = v.split(',').map((x) => x.trim());
+      if (!parts.some((x) => names[x])) return v;
+      return [...new Set(parts.map(one))].join(', ');
+    }
+    if (Array.isArray(v)) {
+      const out = v.map(walk);
+      // Two old names can become one person (Zoe Martin and Isaac Grant), so drop the repeat in name lists.
+      return out.some((x, i) => x !== v[i] && typeof x === 'string') ? [...new Set(out)] : out;
+    }
+    if (v && typeof v === 'object') for (const k of Object.keys(v)) v[k] = walk(v[k]);
+    return v;
+  };
+  return walk(value);
+}
 
 function replaceDeep(value, fixes) {
   if (typeof value === 'string') {
