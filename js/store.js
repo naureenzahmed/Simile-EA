@@ -383,6 +383,12 @@ function load() {
         stored.homeVersion = 6;
         changed = true;
       }
+      // Home v7: three new sentences in the Simile paragraph of What I Want to Get Out of This.
+      if (stored.home && (stored.homeVersion || 0) < 7) {
+        stored.home.goals = ABOUT_GOALS;
+        stored.homeVersion = 7;
+        changed = true;
+      }
       if ((stored.copyVersion || 0) < 2) {
         replaceDeep(stored, COPY_FIXES_2);
         stored.copyVersion = 2;
