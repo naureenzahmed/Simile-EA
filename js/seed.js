@@ -1229,6 +1229,7 @@ const CURRENT_INVESTORS = [
   ['CVS Health Ventures', 'Series B'],
   ['Definition', 'Series B'],
   ['Itaú Ventures', 'Series B extension'],
+  ['Angel investor', ''],
 ];
 
 // Who we work with at each firm, where we know it.
@@ -1238,6 +1239,7 @@ export const INVESTOR_PARTNERS = {
     observer: 'Mark Xu', observerLinkedin: 'https://www.linkedin.com/in/marklxu/',
   },
   'Bain Capital Ventures (BCV)': { partner: 'Aaref Hilaly', partnerLinkedin: 'https://www.linkedin.com/in/aarefhilaly/' },
+  'Angel investor': { partner: 'Panos Madamopoulos-Moraris', partnerLinkedin: 'https://www.linkedin.com/in/panosmm/' },
 };
 
 export function currentInvestorRows() {
@@ -1270,15 +1272,15 @@ export const CLEARANCE = [
 
 // [title, clearance, people with access]
 const DATA_ROOM = [
-  ['Overview deck', 'all', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Overview deck', 'all', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi', 'Panos Madamopoulos-Moraris']],
   ['Financial model', 'lead', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
   ['Cap table', 'lead', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu']],
-  ['Revenue report', 'all', ['Lainie Yallen', 'Noah Glazov', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Revenue report', 'all', ['Lainie Yallen', 'Noah Glazov', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Mike Volpi', 'Panos Madamopoulos-Moraris']],
   ['Customer contracts', 'lead', ['Lainie Yallen', 'Rory Pan', 'Shardul Shah', 'Mark Xu']],
-  ['Product roadmap', 'all', ['Joon Sung Park', 'Lainie Yallen', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
+  ['Product roadmap', 'all', ['Joon Sung Park', 'Lainie Yallen', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Panos Madamopoulos-Moraris']],
   ['Board minutes', 'board', ['Lainie Yallen', 'Joon Sung Park', 'Shardul Shah', 'Mark Xu']],
   ['Legal docs', 'lead', ['Lainie Yallen', 'Sanjeev Musuvathy', 'Shardul Shah', 'Mark Xu']],
-  ['Hiring plan', 'all', ['Lainie Yallen', 'Ally Waldman', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly']],
+  ['Hiring plan', 'all', ['Lainie Yallen', 'Ally Waldman', 'Shardul Shah', 'Mark Xu', 'Aaref Hilaly', 'Panos Madamopoulos-Moraris']],
 ];
 
 export function dataRoomRows() {

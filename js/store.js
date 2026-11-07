@@ -533,6 +533,20 @@ function load() {
         stored.boardVersion = 7;
         changed = true;
       }
+      // Board v8: Panos Madamopoulos-Moraris joins the Investors table as an angel, and can open the
+      // data room documents shared with all investors.
+      if (stored.boardInvestor && (stored.boardVersion || 0) < 8) {
+        const angel = INVESTOR_PARTNERS['Angel investor'];
+        const list = stored.boardInvestor.investors = stored.boardInvestor.investors || [];
+        if (!list.some((r) => r.partner === angel.partner)) list.push({ id: `investors-angel-${Date.now()}`, firm: 'Angel investor', stage: '', ...angel });
+        for (const r of stored.boardInvestor['data-room'] || []) {
+          if (r.clearance !== 'all') continue;
+          const names = String(r.people || '').split(',').map((n) => n.trim()).filter(Boolean);
+          if (!names.includes(angel.partner)) r.people = [...names, angel.partner].join(', ');
+        }
+        stored.boardVersion = 8;
+        changed = true;
+      }
       // Events v2: CEO EA becomes COO EA, the COO EA owns about three in four checklist items, and placeholder
       // events fill out the calendar. Owners that are people's names are left alone.
       if (stored.events && (stored.eventsVersion || 0) < 2) {
