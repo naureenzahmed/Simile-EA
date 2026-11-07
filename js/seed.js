@@ -1157,15 +1157,13 @@ export const BOARD_SECTIONS = [
   },
   {
     id: 'data-room', title: 'Data Room Links',
-    note: 'Everything an investor needs for diligence, in one place. Share access per firm and keep each link current.',
+    note: 'Diligence documents with their security clearance and who can open them. Hover over initials to see names.',
     addLabel: 'Add link',
     fields: [
-      { key: 'document', label: 'Document' },
-      { key: 'category', label: 'Category', width: 'sm' },
+      { key: 'title', label: 'Title' },
       { key: 'link', label: 'Link', type: 'url' },
-      { key: 'access', label: 'Who Has Access' },
-      { key: 'updated', label: 'Last Updated', type: 'date' },
-      { key: 'notes', label: 'Notes', type: 'multiline' },
+      { key: 'clearance', label: 'Security Clearance', type: 'clearance' },
+      { key: 'people', label: 'People', type: 'people' },
     ],
   },
   {
@@ -1221,20 +1219,28 @@ export function potentialInvestorRows() {
     .filter((r) => !isCurrentInvestor(r.firm));
 }
 
+// Security clearance levels for data room documents, most open first.
+export const CLEARANCE = [
+  { key: 'all', label: 'All investors' },
+  { key: 'lead', label: 'Lead investors' },
+  { key: 'board', label: 'Board only' },
+];
+
+// [title, clearance, people with access]
 const DATA_ROOM = [
-  ['Company overview deck', 'Overview', 'Board and all investors'],
-  ['Financial model and forecast', 'Finance', 'Lead investors'],
-  ['Cap table', 'Finance', 'Lead investors'],
-  ['Monthly revenue and pipeline report', 'Finance', 'Board and all investors'],
-  ['Customer contracts and pilots', 'Customers', 'Lead investors, under NDA'],
-  ['Product roadmap', 'Product', 'Board and all investors'],
-  ['Board minutes and consents', 'Legal', 'Board only'],
-  ['Incorporation and legal documents', 'Legal', 'Lead investors, under NDA'],
-  ['Hiring plan and org chart', 'Team', 'Board and all investors'],
+  ['Overview deck', 'all', ['Lainie', 'Joon', 'Shardul Shah', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Financial model', 'lead', ['Lainie', 'Joon', 'Shardul Shah', 'Aaref Hilaly']],
+  ['Cap table', 'lead', ['Lainie', 'Joon', 'Shardul Shah']],
+  ['Revenue report', 'all', ['Lainie', 'Noah Rivera', 'Shardul Shah', 'Aaref Hilaly', 'Mike Volpi']],
+  ['Customer contracts', 'lead', ['Lainie', 'Priya Shah', 'Shardul Shah']],
+  ['Product roadmap', 'all', ['Joon', 'Lainie', 'Shardul Shah', 'Aaref Hilaly']],
+  ['Board minutes', 'board', ['Lainie', 'Joon', 'Shardul Shah']],
+  ['Legal docs', 'lead', ['Lainie', 'Zoe Martin', 'Shardul Shah']],
+  ['Hiring plan', 'all', ['Lainie', 'Grace Kim', 'Shardul Shah', 'Aaref Hilaly']],
 ];
 
 export function dataRoomRows() {
-  return DATA_ROOM.map(([document, category, access], i) => ({ id: `data-room-${i + 1}`, document, category, access, link: '', updated: '', notes: '' }));
+  return DATA_ROOM.map(([title, clearance, people], i) => ({ id: `data-room-${i + 1}`, title, link: '', clearance, people: people.join(', ') }));
 }
 
 function seedBoardInvestor() {

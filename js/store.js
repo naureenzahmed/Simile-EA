@@ -475,6 +475,16 @@ function load() {
         stored.boardVersion = 4;
         changed = true;
       }
+      // Board v5: Data Room Links becomes Title, Link, Security Clearance and People. Rows nobody edited are swapped
+      // for the new ones; links already pasted in are kept.
+      if (stored.boardInvestor && (stored.boardVersion || 0) < 5) {
+        const fresh = dataRoomRows();
+        const old = stored.boardInvestor['data-room'] || [];
+        stored.boardInvestor['data-room'] = fresh.map((row, i) => ({ ...row, link: old[i]?.link || '' }))
+          .concat(old.slice(fresh.length).map((r) => ({ id: r.id, title: r.document || r.title || '', link: r.link || '', clearance: 'lead', people: '' })));
+        stored.boardVersion = 5;
+        changed = true;
+      }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
       if (stored.clientMaterials && (stored.clientVersion || 0) < 1) {
         const clients = stored.clientMaterials.find((s) => s.id === 'clients');

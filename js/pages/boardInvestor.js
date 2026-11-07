@@ -1,7 +1,8 @@
 import { getData, commit } from '../store.js';
-import { uid, escapeHtml } from '../utils.js';
+import { uid, escapeHtml, initials, colorForName } from '../utils.js';
+import { isReadOnly } from '../readOnly.js';
 import { notesBoxHtml } from '../notesBox.js';
-import { BOARD_SECTIONS } from '../seed.js';
+import { BOARD_SECTIONS, CLEARANCE } from '../seed.js';
 
 export const BOARD_TITLE = 'Board & Investor Support';
 
@@ -34,6 +35,17 @@ function cell(s, row, f) {
         <input type="url" class="cell-input" data-board-cell="${key}" value="${escapeHtml(value)}" placeholder="Paste link" />
         <a class="board-open ${href ? '' : 'hidden'}" href="${escapeHtml(href)}" target="_blank" rel="noopener" title="Open link">↗</a>
       </div>`;
+  }
+  if (f.type === 'clearance') {
+    const level = CLEARANCE.find((c) => c.key === value) || CLEARANCE[1];
+    if (isReadOnly()) return `<span class="clearance-pill cl-${level.key}">${escapeHtml(level.label)}</span>`;
+    return `<select class="cell-input board-clearance cl-${level.key}" data-board-cell="${key}">${CLEARANCE.map((c) => `<option value="${c.key}" ${c.key === level.key ? 'selected' : ''}>${escapeHtml(c.label)}</option>`).join('')}</select>`;
+  }
+  if (f.type === 'people') {
+    const names = String(value).split(',').map((n) => n.trim()).filter(Boolean);
+    const badges = names.map((n) => `<span class="dr-person" style="background:${colorForName(n)}" title="${escapeHtml(n)}">${initials(n)}</span>`).join('') || '<span class="empty-hint" style="padding:0;">No one yet</span>';
+    if (isReadOnly()) return `<span class="dr-people">${badges}</span>`;
+    return `<div class="dr-people-edit"><span class="dr-people">${badges}</span><input type="text" class="cell-input" data-board-cell="${key}" value="${escapeHtml(value)}" placeholder="Names, separated by commas" /></div>`;
   }
   return `<input type="${f.type === 'date' ? 'date' : 'text'}" class="cell-input ${f.width === 'sm' ? 'board-sm' : ''}" data-board-cell="${key}" value="${escapeHtml(value)}" />`;
 }
@@ -118,6 +130,16 @@ function wire(container, data) {
   });
 
   container.querySelectorAll('[data-board-cell]').forEach((input) => {
+    // Clearance and People redraw so the colored level and initials update.
+    if (input.tagName === 'SELECT' || input.closest('.dr-people-edit')) {
+      input.addEventListener('change', () => {
+        const [sectionId, rowId, field] = input.dataset.boardCell.split('|');
+        data[sectionId].find((r) => r.id === rowId)[field] = input.value;
+        commit();
+        rerender();
+      });
+      return;
+    }
     input.addEventListener('input', () => {
       const [sectionId, rowId, field] = input.dataset.boardCell.split('|');
       const row = data[sectionId].find((r) => r.id === rowId);
