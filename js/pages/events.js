@@ -142,14 +142,29 @@ function metaLine(e) {
 }
 
 // One section per event, with a checklist for each phase.
+// Each event links to its record in the CRM (HubSpot). It opens HubSpot until a record link is pasted in.
+const HUBSPOT = 'https://app.hubspot.com/';
+const toHref = (v) => (/^https?:\/\//i.test(v) ? v : v ? `https://${v}` : '');
+
+function crmLink(e) {
+  const href = toHref(e.crmUrl) || HUBSPOT;
+  return `
+    <div class="ev-crm">
+      <a class="ev-crm-link" href="${escapeHtml(href)}" target="_blank" rel="noopener">Link to CRM ↗</a>
+      <span class="ev-crm-where">${e.crmUrl ? 'HubSpot record' : 'HubSpot'}</span>
+      ${isReadOnly() ? '' : `<input type="text" class="cell-input ev-crm-input" data-event="${e.id}" data-field="crmUrl" value="${escapeHtml(e.crmUrl || '')}" placeholder="Paste the HubSpot record link" />`}
+    </div>`;
+}
+
 function renderEventSection(e) {
   return `
     <div class="card doc-card ev-card" id="${e.id}" style="--ev:${typeColor(typeOf(e))}">
       <div class="toolbar" style="margin-bottom:2px;">
-        <h4 style="margin:0;" data-event-title="${e.id}"><span class="ev-type-badge">${escapeHtml(typeOf(e))}</span>${escapeHtml(e.name) || 'Untitled event'}</h4>
+        <h4 style="margin:0;"><span class="ev-type-badge">${escapeHtml(typeOf(e))}</span><span data-event-title="${e.id}">${escapeHtml(e.name) || 'Untitled event'}</span></h4>
         <a class="checklist-link" href="#/events?anchor=events-contents">↑ Back to Table of Contents</a>
       </div>
       <div class="section-desc" data-event-meta="${e.id}">${metaLine(e)}</div>
+      ${crmLink(e)}
       <div class="event-phases">
         ${EVENT_PHASES.map((p) => {
           const items = e.checklist[p.key] || [];
@@ -248,6 +263,11 @@ function wireEvents(container, events) {
       if (el.dataset.field === 'date') container.querySelector(`[data-date-label="${e.id}"]`).textContent = longDate(e.date) || 'Pick a date';
       commit();
       container.querySelector(`[data-event-title="${e.id}"]`).textContent = e.name || 'Untitled event';
+      if (el.dataset.field === 'crmUrl') {
+        const card = container.querySelector(`#${e.id} .ev-crm`);
+        card.querySelector('.ev-crm-link').href = toHref(e.crmUrl) || HUBSPOT;
+        card.querySelector('.ev-crm-where').textContent = e.crmUrl ? 'HubSpot record' : 'HubSpot';
+      }
       container.querySelector(`[data-event-meta="${e.id}"]`).innerHTML = metaLine(e);
     };
     el.addEventListener(el.tagName === 'SELECT' ? 'change' : 'input', save);

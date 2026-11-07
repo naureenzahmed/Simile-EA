@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows } from './seed.js';
+import { seedData, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -483,6 +483,25 @@ function load() {
         stored.boardInvestor['data-room'] = fresh.map((row, i) => ({ ...row, link: old[i]?.link || '' }))
           .concat(old.slice(fresh.length).map((r) => ({ id: r.id, title: r.document || r.title || '', link: r.link || '', clearance: 'lead', people: '' })));
         stored.boardVersion = 5;
+        changed = true;
+      }
+      // Events v2: CEO EA becomes COO EA, the COO EA owns about three in four checklist items, and placeholder
+      // events fill out the calendar. Owners that are people's names are left alone.
+      if (stored.events && (stored.eventsVersion || 0) < 2) {
+        const roles = ['CEO EA', 'COO EA', 'CTO EA', 'Chief of Staff'];
+        for (const e of stored.events) {
+          let n = 0;
+          for (const ph of EVENT_PHASES) {
+            for (const item of e.checklist?.[ph.key] || []) {
+              if (item.owner === 'CEO EA') item.owner = 'COO EA';
+              if (roles.includes(item.owner)) item.owner = eventOwnerAt(n, item.owner);
+              n++;
+            }
+          }
+        }
+        const ids = new Set(stored.events.map((e) => e.id));
+        for (const e of placeholderEvents()) if (!ids.has(e.id)) stored.events.push(e);
+        stored.eventsVersion = 2;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
