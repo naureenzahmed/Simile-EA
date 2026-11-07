@@ -344,6 +344,8 @@ export function toolAccessRows() {
 }
 
 // Documentation: templates, SOPs and team onboarding, kept in their own sections at the top.
+export const SALES_DOC_TITLES = {"sales-doc-1": "Sales Deck Template", "pitch-doc-1": "Pitch Deck Template", "demos-doc-1": "Demo Slide Template", "marketing-materials-1": "Marketing Material Components", "one-pager-1": "One-Pager Template"};
+
 export function seedDocLibrary() {
   const doc = (id, title, notes) => ({ id, title, url: '', notes });
   return [
@@ -380,42 +382,13 @@ function seedDocs() {
     ...seedDocLibrary(),
     toolAccessGuide(),
     {
-      id: 'docs-tofu', title: 'Setup Instructions',
-      entries: [
-        { id: 'tofu-1', title: 'Setting up HubSpot sequences', url: '', notes: '' },
-        { id: 'tofu-2', title: 'Setting up HeyReach sequences', url: '', notes: '' },
-        { id: 'tofu-3', title: 'Setting up Google Ads', url: '', notes: '' },
-        { id: 'tofu-4', title: 'Setting up LinkedIn Ads', url: '', notes: '' },
-        { id: 'tofu-5', title: 'Setting up Meta Ads', url: '', notes: '' },
-        { id: 'tofu-6', title: 'Setting up ChatGPT Ads', url: '', notes: '' },
-      ],
-    },
-    {
       id: 'docs-sales-pitch', title: 'Sales & Pitch Documents',
       entries: [
-        { id: 'sales-doc-1', title: 'Sales Document', url: '', notes: '' },
-        { id: 'pitch-doc-1', title: 'Pitch Document', url: '', notes: '' },
-        { id: 'demos-doc-1', title: 'Demo Documents', url: '', notes: '' },
-        { id: 'marketing-materials-1', title: 'Marketing Materials', url: '', notes: '' },
-        { id: 'one-pager-1', title: 'One-Pager', url: '', notes: '' },
-      ],
-    },
-    {
-      id: 'docs-ads-materials', title: 'Ad Materials',
-      entries: [
-        { id: 'ad-creatives-google', title: 'Ad Creatives: Google', url: '', notes: '' },
-        { id: 'ad-creatives-meta', title: 'Ad Creatives: Meta', url: '', notes: '' },
-        { id: 'ad-creatives-chatgpt', title: 'Ad Creatives: ChatGPT', url: '', notes: '' },
-        { id: 'ad-creatives-linkedin', title: 'Ad Creatives: LinkedIn', url: '', notes: '' },
-      ],
-    },
-    {
-      id: 'docs-ads-audiences', title: 'Ad Audience Lists',
-      entries: [
-        { id: 'ad-audience-google', title: 'Google', url: '', notes: '' },
-        { id: 'ad-audience-meta', title: 'Meta', url: '', notes: '' },
-        { id: 'ad-audience-chatgpt', title: 'ChatGPT', url: '', notes: '' },
-        { id: 'ad-audience-linkedin', title: 'LinkedIn', url: '', notes: '' },
+        { id: 'sales-doc-1', title: 'Sales Deck Template', url: '', notes: '' },
+        { id: 'pitch-doc-1', title: 'Pitch Deck Template', url: '', notes: '' },
+        { id: 'demos-doc-1', title: 'Demo Slide Template', url: '', notes: '' },
+        { id: 'marketing-materials-1', title: 'Marketing Material Components', url: '', notes: '' },
+        { id: 'one-pager-1', title: 'One-Pager Template', url: '', notes: '' },
       ],
     },
   ];
@@ -1629,7 +1602,7 @@ export function seedData() {
     copyVersion: 2,
     consistencyVersion: 1,
     clientVersion: 1,
-    docsVersion: 2,
+    docsVersion: 3,
     notesVersion: 6,
     eventsVersion: 2,
     homeVersion: 4,
