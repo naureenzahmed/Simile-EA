@@ -1383,7 +1383,7 @@ function seedRecruitment() {
   ];
 }
 
-// COO Scheduling: calendar, inbox, inquiries board and sprints.
+// Office of COO: calendar, inbox, inquiries board and sprints.
 export const COO_INBOX = [
   { key: 'investors', label: 'Investors' },
   { key: 'clients', label: 'Client Responses' },
@@ -1392,7 +1392,7 @@ export const COO_INBOX = [
   { key: 'other', label: 'Other' },
 ];
 
-// Inquiry columns, matching the COO Scheduling notes. (Potential issues were folded into Needs attention.)
+// Inquiry columns, matching the Office of COO notes. (Potential issues were folded into Needs attention.)
 export const COO_STAGES = [
   { key: 'needed', label: 'Needs Attention' },
   { key: 'solved', label: 'Solved' },

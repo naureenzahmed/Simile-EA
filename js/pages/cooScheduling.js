@@ -1,10 +1,10 @@
 import { getData, commit, findTeam } from '../store.js';
-import { uid, escapeHtml, todayISO, fmtDate, dayLabel, initials } from '../utils.js';
+import { uid, escapeHtml, todayISO, fmtDate, dayLabel, initials, milestoneDate } from '../utils.js';
 import { notesBoxHtml } from '../notesBox.js';
 import { isReadOnly } from '../readOnly.js';
 import { COO_INBOX, COO_STAGES, seedCoo } from '../seed.js';
 
-export const COO_TITLE = 'COO Scheduling';
+export const COO_TITLE = 'Office of COO';
 
 const PARTS = [
   { id: 'coo-calendar', label: 'Calendar' },
@@ -18,7 +18,7 @@ const PARTS = [
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 // Not saved: calendar month, open inbox folder and email, and the last sync time.
-const view = { month: todayISO().slice(0, 7), calMode: 'month', focus: todayISO(), folder: 'investors', openMail: null, syncedAt: Date.now() - 2 * 60000, syncing: false };
+const view = { month: todayISO().slice(0, 7), calMode: 'month', calSource: 'coo', hiddenSources: new Set(), focus: todayISO(), folder: 'investors', openMail: null, syncedAt: Date.now() - 2 * 60000, syncing: false };
 
 function coo() {
   const data = getData();
@@ -79,6 +79,44 @@ const longDate = (iso, opts) => new Date(iso + 'T00:00:00').toLocaleDateString('
 const byTime = (a, b) => (a.time || '99').localeCompare(b.time || '99');
 const pill = (e) => `<button class="sched-pill" style="--c:var(--accent)" data-coo-event="${e.id}" title="${escapeHtml(e.title)}${e.notes ? ' · ' + escapeHtml(e.notes) : ''}">${e.time ? `<b>${fmtTime(e.time)}</b> ` : ''}${escapeHtml(e.title || 'Untitled')}</button>`;
 
+// Department Calendar: everything dated on every page, pulled in read-only. Each source has its own color.
+const DEPT_SOURCES = [
+  { key: 'coo', label: 'Office of COO', color: '#ff4f38', href: '#/coo?anchor=coo-calendar' },
+  { key: 'leadership', label: 'Leadership schedule', color: '#7fb8e6', href: '#/schedule?anchor=schedule-leadership' },
+  { key: 'roadmap', label: 'GTM Roadmap', color: '#b48ee0', href: '#/roadmap?anchor=roadmap-calendar-section' },
+  { key: 'events', label: 'Events & Offsites', color: '#e0a95a', href: '#/events?anchor=events-calendar' },
+  { key: 'sprints', label: 'Sprint tasks', color: '#5fc4c4', href: '#/coo?anchor=coo-sprint-calendar' },
+];
+
+function deptEntries(c) {
+  const data = getData();
+  const out = [];
+  const add = (source, date, title, time = '', extra = '') => { if (date) out.push({ source, date, title, time, extra }); };
+  for (const e of c.calendar || []) add('coo', e.date, e.title || 'Untitled', e.time, e.notes);
+  for (const e of data.leadershipSchedule || []) {
+    for (let d = e.start; d && d <= (e.end || e.start); d = addDaysIso(d, 1)) add('leadership', d, `${e.person} · ${e.title || 'Busy'}`, e.time, e.city);
+  }
+  for (const t of data.tasks || []) add('roadmap', t.endDate, `${t.title} due`, '', 'Objective');
+  for (const o of data.okrs || []) for (const kr of o.keyResults || []) add('roadmap', kr.deadline, `${kr.title} deadline`, '', o.objective);
+  for (const m of data.milestones || []) add('roadmap', milestoneDate(m), m.title, '', 'Milestone');
+  for (const e of data.events || []) add('events', e.date, e.name || 'Untitled event', '', e.location);
+  for (const sp of allSprints(c)) for (const t of sp.tasks || []) add('sprints', t.due, t.text || 'Untitled task', '', sp.name);
+  return out.filter((x) => !view.hiddenSources.has(x.source));
+}
+
+function deptPill(x) {
+  const src = DEPT_SOURCES.find((d) => d.key === x.source);
+  return `<a class="sched-pill" style="--c:${src.color}" href="${src.href}" title="${escapeHtml(`${src.label}: ${x.title}${x.extra ? ' · ' + x.extra : ''}`)}">${x.time ? `<b>${fmtTime(x.time)}</b> ` : ''}${escapeHtml(x.title)}</a>`;
+}
+
+// What the calendar shows: the COO's own events, or everything from every page.
+function calItems(c) {
+  if (view.calSource === 'dept') return deptEntries(c).map((x) => ({ ...x, html: deptPill(x) }));
+  return (c.calendar || []).map((e) => ({ date: e.date, time: e.time, title: e.title, html: pill(e) }));
+}
+const editable = () => view.calSource === 'coo';
+const dayAttrs = (day, time = '') => (editable() ? `data-coo-day="${day}"${time ? ` data-coo-time="${time}"` : ''}` : '');
+
 function calTitle() {
   if (view.calMode === 'month') return monthLabel(view.focus.slice(0, 7));
   if (view.calMode === 'day') return longDate(view.focus, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
@@ -93,8 +131,17 @@ function renderCalendar(c) {
   return `
     <div class="toolbar">
       <h2 class="schedule-part-title">Calendar</h2>
-      <button class="btn btn-primary" id="coo-cal-add">+ Add event</button>
+      ${editable() ? '<button class="btn btn-primary" id="coo-cal-add">+ Add event</button>' : ''}
     </div>
+    <div class="cal-source-tabs" role="tablist" aria-label="Which calendar">
+      <button class="cal-source-tab ${view.calSource === 'coo' ? 'active' : ''}" data-cal-source="coo" role="tab" aria-selected="${view.calSource === 'coo'}">COO Calendar</button>
+      <button class="cal-source-tab ${view.calSource === 'dept' ? 'active' : ''}" data-cal-source="dept" role="tab" aria-selected="${view.calSource === 'dept'}">Department Calendar</button>
+    </div>
+    ${view.calSource === 'dept' ? `
+      <div class="dept-legend">
+        ${DEPT_SOURCES.map((d) => `<button class="sched-chip ${view.hiddenSources.has(d.key) ? '' : 'on'}" data-dept-source="${d.key}"><span class="sched-swatch" style="background:${d.color}"></span>${d.label}</button>`).join('')}
+        <span class="dept-legend-hint">Pulled from every page. Click a source to show or hide it, or an item to open its page.</span>
+      </div>` : ''}
     <div class="card sched-card">
       <div class="toolbar sched-nav">
         <div style="display:flex; gap:6px; align-items:center;">
@@ -108,7 +155,7 @@ function renderCalendar(c) {
         </div>
       </div>
       ${mode === 'month' ? monthView(c) : mode === 'week' ? weekView(c) : dayView(c)}
-      <div class="section-desc" style="margin:8px 0 0;">Click ${mode === 'day' ? 'an hour' : 'a day'} to add an event, or click an event to see or edit it.</div>
+      ${editable() ? `<div class="section-desc" style="margin:8px 0 0;">Click ${mode === 'day' ? 'an hour' : 'a day'} to add an event, or click an event to see or edit it.</div>` : ''}
     </div>
   `;
 }
@@ -116,16 +163,17 @@ function renderCalendar(c) {
 function monthView(c) {
   const today = todayISO();
   const month = view.focus.slice(0, 7);
+  const all = calItems(c);
   return `
-    ${c.calendar.some((e) => e.date.slice(0, 7) === month) ? '' : '<div class="sched-list-empty">Nothing on the calendar this month.</div>'}
+    ${all.some((e) => e.date.slice(0, 7) === month) ? '' : '<div class="sched-list-empty">Nothing on the calendar this month.</div>'}
     <div class="sched-grid">
       ${WEEKDAYS.map((d) => `<div class="sched-weekday">${d}</div>`).join('')}
       ${gridDays(month).map((day) => {
-        const items = c.calendar.filter((e) => e.date === day).sort(byTime);
+        const items = all.filter((e) => e.date === day).sort(byTime);
         return `
-          <div class="sched-day ${day.slice(0, 7) !== month ? 'other-month' : ''} ${day === today ? 'today' : ''} ${items.length ? 'has-items' : ''}" data-coo-day="${day}" data-label="${dayLabel(day)}">
+          <div class="sched-day ${day.slice(0, 7) !== month ? 'other-month' : ''} ${day === today ? 'today' : ''} ${items.length ? 'has-items' : ''} ${editable() ? '' : 'cal-static'}" ${dayAttrs(day)} data-label="${dayLabel(day)}">
             <div class="sched-date">${Number(day.slice(8))}</div>
-            ${items.map(pill).join('')}
+            ${items.map((x) => x.html).join('')}
           </div>`;
       }).join('')}
     </div>`;
@@ -135,17 +183,18 @@ function weekView(c) {
   const today = todayISO();
   const start = weekStart(view.focus);
   const days = Array.from({ length: 7 }, (_, i) => addDaysIso(start, i));
+  const all = calItems(c);
   return `
     <div class="cal-week">
       ${days.map((day) => {
-        const items = c.calendar.filter((e) => e.date === day).sort(byTime);
+        const items = all.filter((e) => e.date === day).sort(byTime);
         return `
           <div class="cal-week-col ${day === today ? 'today' : ''}">
             <button type="button" class="cal-week-head" data-cal-goto-day="${day}" title="Open this day">
               <span>${longDate(day, { weekday: 'short' })}</span><b>${new Date(day + 'T00:00:00').getDate()}</b>
             </button>
-            <div class="cal-week-body" data-coo-day="${day}">
-              ${items.map(pill).join('') || '<span class="cal-week-empty">Free</span>'}
+            <div class="cal-week-body ${editable() ? '' : 'static'}" ${dayAttrs(day)}>
+              ${items.map((x) => x.html).join('') || '<span class="cal-week-empty">Free</span>'}
             </div>
           </div>`;
       }).join('')}
@@ -154,14 +203,14 @@ function weekView(c) {
 
 function dayView(c) {
   const day = view.focus;
-  const items = c.calendar.filter((e) => e.date === day).sort(byTime);
+  const items = calItems(c).filter((e) => e.date === day).sort(byTime);
   const allDay = items.filter((e) => !e.time);
   const hourOf = (e) => Math.min(Math.max(Number(e.time.slice(0, 2)), HOURS[0]), HOURS[HOURS.length - 1]);
   return `
     <div class="cal-day">
       <div class="cal-day-row cal-day-allday">
         <div class="cal-day-hour">All day</div>
-        <div class="cal-day-slot" data-coo-day="${day}">${allDay.map(pill).join('')}</div>
+        <div class="cal-day-slot ${editable() ? '' : 'static'}" ${dayAttrs(day)}>${allDay.map((x) => x.html).join('')}</div>
       </div>
       ${HOURS.map((h) => {
         const here = items.filter((e) => e.time && hourOf(e) === h);
@@ -169,7 +218,7 @@ function dayView(c) {
         return `
           <div class="cal-day-row ${day === todayISO() && new Date().getHours() === h ? 'now' : ''}">
             <div class="cal-day-hour">${fmtTime(`${hh}:00`)}</div>
-            <div class="cal-day-slot" data-coo-day="${day}" data-coo-time="${hh}:00">${here.map(pill).join('')}</div>
+            <div class="cal-day-slot ${editable() ? '' : 'static'}" ${dayAttrs(day, `${hh}:00`)}>${here.map((x) => x.html).join('')}</div>
           </div>`;
       }).join('')}
     </div>`;
@@ -578,7 +627,13 @@ function wire(container, c) {
     view.focus = b.dataset.calGotoDay;
     rerender();
   }));
-  container.querySelector('#coo-cal-add').addEventListener('click', () => openEventPanel(c, null, todayISO(), rerender));
+  container.querySelector('#coo-cal-add')?.addEventListener('click', () => openEventPanel(c, null, todayISO(), rerender));
+  container.querySelectorAll('[data-cal-source]').forEach((b) => b.addEventListener('click', () => { view.calSource = b.dataset.calSource; rerender(); }));
+  container.querySelectorAll('[data-dept-source]').forEach((b) => b.addEventListener('click', () => {
+    const k = b.dataset.deptSource;
+    if (view.hiddenSources.has(k)) view.hiddenSources.delete(k); else view.hiddenSources.add(k);
+    rerender();
+  }));
   container.querySelectorAll('[data-coo-day]').forEach((cell) => cell.addEventListener('click', (ev) => {
     if (ev.target.closest('[data-coo-event]')) return;
     openEventPanel(c, null, cell.dataset.cooDay, rerender, cell.dataset.cooTime || '');

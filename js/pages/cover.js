@@ -80,6 +80,17 @@ export function renderCover(container) {
 function buildManifest(data) {
   return [
     {
+      key: 'coo', label: 'Office of COO',
+      subsections: [
+        { id: 'coo-calendar', label: 'Calendar' },
+        { id: 'coo-inbox', label: 'Inbox' },
+        { id: 'coo-inquiries', label: 'Inquiries' },
+        { id: 'coo-sprint', label: 'Current Sprint' },
+        { id: 'coo-past', label: 'Past Sprints' },
+        { id: 'coo-sprint-calendar', label: 'Sprint Calendar' },
+      ],
+    },
+    {
       key: 'roadmap', label: 'GTM Roadmap',
       subsections: [
         { id: 'roadmap-timeline-section', label: 'Timeline / List / Board' },
@@ -106,17 +117,6 @@ function buildManifest(data) {
         { id: 'ops-milestones', label: 'Key Milestones This Week' },
         { id: 'ops-availability', label: 'Availability' },
         { id: 'ops-teams', label: 'Team Composition' },
-      ],
-    },
-    {
-      key: 'coo', label: 'COO Scheduling',
-      subsections: [
-        { id: 'coo-calendar', label: 'Calendar' },
-        { id: 'coo-inbox', label: 'Inbox' },
-        { id: 'coo-inquiries', label: 'Inquiries' },
-        { id: 'coo-sprint', label: 'Current Sprint' },
-        { id: 'coo-past', label: 'Past Sprints' },
-        { id: 'coo-sprint-calendar', label: 'Sprint Calendar' },
       ],
     },
     {

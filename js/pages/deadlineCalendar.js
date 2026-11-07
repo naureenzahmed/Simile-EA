@@ -4,7 +4,7 @@ import { openTaskSidebar } from '../taskSidebar.js';
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-// Same look as the Schedule Management and COO Scheduling calendars.
+// Same look as the Schedule Management and Office of COO calendars.
 const KINDS = {
   task: { label: 'Objective due', color: 'var(--accent)' },
   kr: { label: 'Key result deadline', color: '#7fb8e6' },

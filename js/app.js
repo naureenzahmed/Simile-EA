@@ -13,10 +13,10 @@ import { renderPipeline, PIPELINE_TITLE } from './pages/pipeline.js';
 
 const PAGES = {
   home: { label: 'Home', render: renderCover },
+  coo: { label: COO_TITLE, render: renderCooScheduling },
   roadmap: { label: 'GTM Roadmap', render: renderRoadmap },
   pipeline: { label: PIPELINE_TITLE, render: renderPipeline },
   schedule: { label: SCHEDULE_PAGE_TITLE, render: renderScheduleManagement },
-  coo: { label: COO_TITLE, render: renderCooScheduling },
   boardInvestor: { label: BOARD_TITLE, render: renderBoardInvestor },
   events: { label: EVENTS_TITLE, render: renderEvents },
   documentation: { label: 'Documentation', render: renderDocumentation },
