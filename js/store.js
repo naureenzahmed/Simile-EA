@@ -697,6 +697,12 @@ function load() {
         stored.peopleVersion = 5;
         changed = true;
       }
+      // Copy v3: small spelling and grammar fixes.
+      if ((stored.copyVersion || 0) < 3) {
+        replaceDeep(stored, COPY_FIXES_3);
+        stored.copyVersion = 3;
+        changed = true;
+      }
       for (const key of Object.keys(fresh)) {
         if (!(key in stored)) { stored[key] = fresh[key]; changed = true; }
       }
@@ -733,6 +739,15 @@ export function syncPeople(d) {
   }
   return added;
 }
+
+// Copy v3: small spelling and grammar fixes, applied wherever the old phrase appears in saved data.
+const COPY_FIXES_3 = {
+  "Population modelling for consumer panels": "Population modeling for consumer panels",
+  "Concentrated growth bets in AI, enterprise, fintech": "Concentrated growth bets in AI, enterprise and fintech",
+  "Click a name or initial to see": "Click a name or initials to see",
+  "I know in the long run, I want to be a founder.": "I know that in the long run I want to be a founder.",
+  "took the organization from seven people to 77": "took the organization from 7 people to 77"
+};
 
 // Copy v2: grammar and wording fixes, applied wherever the old phrase appears in saved data.
 const COPY_FIXES_2 = {
