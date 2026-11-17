@@ -1,5 +1,5 @@
 import { isReadOnly } from './readOnly.js';
-import { seedData, NAME_CHANGES, POTENTIAL_POCS, INVESTOR_PARTNERS, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
+import { seedData, NAME_CHANGES, POTENTIAL_POCS, INVESTOR_PARTNERS, TECH_STACK_FIELDS, techStackRows, seedLeadershipSchedule, SCHOOL_FIELDS, schoolRows, CONFERENCE_FIELDS, conferenceRows, PARTNER_FIELDS, potentialInvestorRows, currentInvestorRows, clientFields, clientRows, cooOtherMail, OKR_DEPARTMENTS, starterOkr, TEAMS, OLD_TEAM_MAP, seedPeople, personId, isCurrentInvestor, scheduleCityFor, seedDocLibrary, eventChecklist, EVENT_PHASES, QUIRKS_LA, TOOL_ACCESS_NOTE, TOOL_ACCESS_FIELDS, toolAccessRows, CONFERENCE_FIXES, CONFERENCE_GROUPS, conferenceGroupOf, TECH_STACK_COSTS, ABOUT_BACKGROUND, ABOUT_EXPERIENCE, ABOUT_GOALS, ABOUT_WHY, ROADMAP_NOTE, PIPELINE_NOTE, SCHEDULE_NOTE, COO_NOTE, BOARD_NOTE, EVENTS_NOTE, DOCS_NOTE, RECRUITMENT_NOTE, seedMilestones, teamMemberPeople, leaderBandwidth, PERSON_FOCUS, mailStatusFor, SPRINT_TASK_DUE, SPRINT_TASK_OWNER, cooWeekEvents, dataRoomRows, placeholderEvents, eventOwnerAt, SALES_DOC_TITLES } from './seed.js';
 
 const STORAGE_KEY = 'simileEAData.v2';
 
@@ -581,6 +581,26 @@ function load() {
           stored.pageNotes[key] = cur && !cur.startsWith(note.slice(0, 30)) ? `${note}\n\n${cur}` : note;
         }
         stored.notesVersion = 7;
+        changed = true;
+      }
+      // Notes v8: every page note tells a short story (the problem, what I built, what it gives Lainie).
+      // An old starter note is replaced; anything else written there is kept below the new note.
+      if (stored.pageNotes && (stored.notesVersion || 0) < 8) {
+        const notes = [
+          ['coo', COO_NOTE, 'Since I’ll be working closely'],
+          ['roadmap', ROADMAP_NOTE, 'This page supports GTM leadership'],
+          ['pipeline', PIPELINE_NOTE, 'This page shows our major revenue metrics'],
+          ['schedule', SCHEDULE_NOTE, 'This page shows the schedules of the leadership'],
+          ['boardInvestor', BOARD_NOTE, 'This page supports fundraising'],
+          ['events', EVENTS_NOTE, 'This page holds all the events'],
+          ['documentation', DOCS_NOTE, 'This page keeps all the processes'],
+          ['recruitment', RECRUITMENT_NOTE, 'After the chat with Sanjeev'],
+        ];
+        for (const [key, note, oldStart] of notes) {
+          const cur = (stored.pageNotes[key] || '').trim();
+          stored.pageNotes[key] = cur && !cur.startsWith(oldStart) && !cur.startsWith('The problem') ? `${note}\n\n${cur}` : note;
+        }
+        stored.notesVersion = 8;
         changed = true;
       }
       // Clients v1: column types (Industry becomes a dropdown) and the starting client list.
