@@ -74,94 +74,76 @@ function modeBar() {
   return bar;
 }
 
+// The header shows the open page's name, a Menu with every page, and Previous / Next buttons
+// that walk through the pages in order, each labelled with the page it leads to.
 function renderHeader(route) {
   const header = document.getElementById('app-header');
+  const keys = Object.keys(PAGES);
+  const i = keys.indexOf(route);
+  const prev = keys[i - 1];
+  const next = keys[i + 1];
+  const icon = (key) => (key === 'home' ? HOUSE_ICON : FOLDER_ICON);
+  const step = (key, dir) => `
+    <a class="step-btn step-${dir}" href="#/${key}" aria-label="${dir === 'prev' ? 'Previous' : 'Next'} page: ${escapeAttr(PAGES[key].label)}">
+      ${dir === 'prev' ? `<span class="step-arrow" aria-hidden="true">←</span>` : ''}
+      <span class="step-text"><span class="step-dir">${dir === 'prev' ? 'Previous' : 'Next'}</span><span class="step-title">${PAGES[key].label}</span></span>
+      ${dir === 'next' ? `<span class="step-arrow" aria-hidden="true">→</span>` : ''}
+    </a>`;
 
   header.innerHTML = `
     <div class="header-left">
       <a class="wordmark" href="#/home" title="Home"><img src="assets/simile-logo.png" alt="Simile" /></a>
-      <nav class="nav-tabs" aria-label="Pages">
-        <a class="nav-home ${route === 'home' ? 'active' : ''}" href="#/home" aria-label="Home" title="Home" ${route === 'home' ? 'aria-current="page"' : ''}>${HOUSE_ICON}</a>
-        ${Object.entries(PAGES).filter(([key]) => key !== 'home').map(([key, p]) => `
-          <a class="nav-tab ${key === route ? 'active' : ''}" data-key="${key}" href="#/${key}" ${key === route ? 'aria-current="page"' : ''}>${FOLDER_ICON}<span>${p.label}</span></a>
-        `).join('')}
-        <button class="nav-tab nav-more" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="nav-more-menu" hidden>
-          <span class="nav-more-label">More</span><span class="nav-more-count"></span><span class="nav-more-caret" aria-hidden="true">▾</span>
-        </button>
-      </nav>
+      <button class="nav-menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="nav-menu">
+        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        <span>Menu</span>
+      </button>
+      <h1 class="header-title"><span class="header-count">${i + 1}/${keys.length}</span>${PAGES[route].label}</h1>
     </div>
-    <div class="nav-more-menu" id="nav-more-menu" role="menu" hidden></div>
+    <nav class="header-steps" aria-label="Previous and next page">
+      ${prev ? step(prev, 'prev') : ''}
+      ${next ? step(next, 'next') : ''}
+    </nav>
+    <div class="nav-menu" id="nav-menu" role="menu" hidden>
+      ${keys.map((key, n) => `
+        <a role="menuitem" href="#/${key}" class="${key === route ? 'active' : ''}" ${key === route ? 'aria-current="page"' : ''}>
+          <span class="nav-menu-num">${n + 1}</span>${icon(key)}<span>${PAGES[key].label}</span>
+        </a>`).join('')}
+    </div>
   `;
 
-  const more = header.querySelector('.nav-more');
-  const menu = header.querySelector('.nav-more-menu');
-  more.addEventListener('click', (e) => {
+  const btn = header.querySelector('.nav-menu-btn');
+  const menu = header.querySelector('.nav-menu');
+  btn.addEventListener('click', (e) => {
     e.stopPropagation();
     setMenu(menu.hidden);
   });
   menu.addEventListener('click', (e) => { if (e.target.closest('a')) setMenu(false); });
-  fitTabs();
 }
 
 function setMenu(open) {
-  const header = document.getElementById('app-header');
-  const more = header.querySelector('.nav-more');
-  const menu = header.querySelector('.nav-more-menu');
-  if (!more || !menu) return;
+  const btn = document.querySelector('#app-header .nav-menu-btn');
+  const menu = document.getElementById('nav-menu');
+  if (!btn || !menu) return;
   menu.hidden = !open;
-  more.setAttribute('aria-expanded', String(open));
-  more.classList.toggle('open', open);
-  if (open) {
-    const h = header.getBoundingClientRect();
-    const b = more.getBoundingClientRect();
-    menu.style.left = `${Math.max(8, Math.min(b.left - h.left, h.width - menu.offsetWidth - 8))}px`;
-    menu.querySelector('a')?.focus();
-  }
+  btn.setAttribute('aria-expanded', String(open));
+  btn.classList.toggle('open', open);
+  if (open) (menu.querySelector('a.active') || menu.querySelector('a'))?.focus();
 }
 
-// Show as many tabs as fit; the rest go into the "More" menu. The open page's tab always stays visible.
-function fitTabs() {
-  const header = document.getElementById('app-header');
-  const nav = header?.querySelector('.nav-tabs');
-  if (!nav) return;
-  const tabs = [...nav.querySelectorAll('.nav-tab[data-key]')];
-  const more = nav.querySelector('.nav-more');
-  const menu = header.querySelector('.nav-more-menu');
-
-  tabs.forEach((t) => { t.hidden = false; });
-  more.hidden = true;
-  setMenu(false);
-  if (nav.scrollWidth <= nav.clientWidth + 1) { menu.innerHTML = ''; return; }
-
-  more.hidden = false;
-  const overlap = 6;
-  const home = nav.querySelector('.nav-home');
-  const room = nav.clientWidth - more.offsetWidth - (home ? home.offsetWidth + 14 : 0) - 12;
-  const active = tabs.find((t) => t.classList.contains('active'));
-  let used = active ? active.offsetWidth - overlap : 0;
-  const hidden = [];
-  for (const t of tabs) {
-    if (t === active) continue;
-    const w = t.offsetWidth - overlap;
-    if (!hidden.length && used + w <= room) used += w;
-    else hidden.push(t);
-  }
-  hidden.forEach((t) => { t.hidden = true; });
-  more.querySelector('.nav-more-count').textContent = ` (${hidden.length})`;
-  more.setAttribute('aria-label', `More pages: ${hidden.length}`);
-  menu.innerHTML = hidden.map((t) => `<a role="menuitem" href="${t.getAttribute('href')}">${FOLDER_ICON}<span>${t.textContent.trim()}</span></a>`).join('');
-}
-
-document.addEventListener('click', (e) => { if (!e.target.closest('.nav-more-menu, .nav-more')) setMenu(false); });
+document.addEventListener('click', (e) => { if (!e.target.closest('.nav-menu, .nav-menu-btn')) setMenu(false); });
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape' && !document.querySelector('.nav-more-menu')?.hidden) {
+  const menu = document.getElementById('nav-menu');
+  if (!menu || menu.hidden) return;
+  if (e.key === 'Escape') {
     setMenu(false);
-    document.querySelector('.nav-more')?.focus();
+    document.querySelector('.nav-menu-btn')?.focus();
+  } else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const items = [...menu.querySelectorAll('a')];
+    const at = items.indexOf(document.activeElement);
+    items[(at + (e.key === 'ArrowDown' ? 1 : -1) + items.length) % items.length]?.focus();
   }
 });
-let fitTimer;
-window.addEventListener('resize', () => { clearTimeout(fitTimer); fitTimer = setTimeout(fitTabs, 60); });
-document.fonts?.ready.then(fitTabs);
 
 function escapeAttr(s) {
   return String(s ?? '').replace(/"/g, '&quot;');
