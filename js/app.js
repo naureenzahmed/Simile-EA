@@ -81,7 +81,8 @@ function renderHeader(route) {
   const keys = Object.keys(PAGES);
   const i = keys.indexOf(route);
   const prev = keys[i - 1];
-  const next = keys[i + 1];
+  // After the last page, Next starts over at the first page.
+  const next = keys[(i + 1) % keys.length];
   const icon = (key) => (key === 'home' ? HOUSE_ICON : FOLDER_ICON);
   const step = (key, dir) => `
     <a class="step-btn step-${dir}" href="#/${key}" aria-label="${dir === 'prev' ? 'Previous' : 'Next'} page: ${escapeAttr(PAGES[key].label)}">
