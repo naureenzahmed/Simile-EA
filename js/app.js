@@ -94,14 +94,14 @@ function renderHeader(route) {
   header.innerHTML = `
     <div class="header-left">
       <a class="wordmark" href="#/home" title="Home"><img src="assets/simile-logo.png" alt="Simile" /></a>
+      <h1 class="header-title"><span class="header-count">${i + 1}/${keys.length}</span>${PAGES[route].label}</h1>
+    </div>
+    <nav class="header-steps" aria-label="Page navigation">
+      ${prev ? step(prev, 'prev') : ''}
       <button class="nav-menu-btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="nav-menu">
         <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 4h12M2 8h12M2 12h12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
         <span>Menu</span>
       </button>
-      <h1 class="header-title"><span class="header-count">${i + 1}/${keys.length}</span>${PAGES[route].label}</h1>
-    </div>
-    <nav class="header-steps" aria-label="Previous and next page">
-      ${prev ? step(prev, 'prev') : ''}
       ${next ? step(next, 'next') : ''}
     </nav>
     <div class="nav-menu" id="nav-menu" role="menu" hidden>
